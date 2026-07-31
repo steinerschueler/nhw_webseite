@@ -1,10 +1,5 @@
 # Arbeitsordner für Dateien zur Ansicht / Reviews – nie deployen oder committen
 tmp/
 
-# Interne Arbeitsnotiz – gehört laut README nicht ins öffentliche Repo
+# Interne Arbeitsnotiz – gehört nicht ins öffentliche Repo
 CLAUDE.md
-
-# Privater Ordner (Businessplan, Wissensbasis, Entscheidungen) – gehört NICHT
-# auf die Website. Liegt eigentlich getrennt neben diesem Repo; dieser Eintrag
-# verhindert, dass eine versehentliche Kopie im Website-Repo committet wird.
-naville_handwerk_privat/

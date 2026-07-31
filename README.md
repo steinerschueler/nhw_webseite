@@ -12,31 +12,38 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Normaltarif & Notstromer")
 - `kalender.html` — Jahreskalender (Verfügbarkeit; freie Tage per E-Mail anfragen, kein Backend)
 - `impressum.html` — Impressum / Datenschutz
-- `verfuegbarkeit.js` — **hier das Verfügbarkeits-Datum pflegen** (siehe unten); `banner.js` rendert die Anzeige
-- `kalender.js` — **hier die belegten Tage pflegen** (Format wie `verfuegbarkeit.js`); die Logik liegt in `kalender.html`
-- `logo/` — grosse Embleme + Claim-Lockups
+- `verfuegbarkeit.js` — Verfügbarkeits-Datum; **wird vom Admin-Toolkit generiert** (siehe unten);
+  `banner.js` rendert die Anzeige
+- `kalender.js` — belegte Tage; **wird vom Admin-Toolkit generiert**; die Logik liegt in `kalender.html`
+- `design/logo/` — grosse Embleme + Claim-Lockups (`design/grafiken/` = Arbeitsmaterial Piktogramme)
 - `fonts/archivo-600.woff2` (+ `OFL.txt`) — Display-Schrift (self-hosted)
 - Icons: `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `site.webmanifest`
 - `404.html`, `robots.txt`, `sitemap.xml`, `CNAME`
 
-## Verfügbarkeit ändern (rote/grüne Anzeige oben)
+## Verfügbarkeit & Kalender pflegen
 
-In **`verfuegbarkeit.js`** die eine Zeile anpassen — das Datum, ab dem du wieder buchbar bist:
+Beides pflegt das Admin-Toolkit: Termine in der Werkbank (Reiter «Kalender») bzw.
+`naville kalender erfassen …`, dann `naville kalender webexport [--verfuegbar-ab JJJJ-MM-TT]`
+— der Export schreibt `kalender.js` und `verfuegbarkeit.js` in diesen Klon (Kopfkommentar
+«NICHT von Hand ändern»; Inhalt nur Farbe + Datum, keine internen Angaben). Danach committen
+und `main` pushen (Deploy).
+
+Notweg ohne Toolkit — in `verfuegbarkeit.js` die eine Zeile von Hand anpassen:
 
 ```js
 window.VERFUEGBAR_AB = "2026-09-01";   // Format JJJJ-MM-TT;  "" = sofort verfügbar (grün)
 ```
 
 Bis zu diesem Datum zeigt die Seite oben einen roten Balken „nicht verfügbar · ab … buchbar", danach
-automatisch grün „jetzt verfügbar". Nach dem Ändern committen und `main` pushen (Deploy).
-
-Der **Jahreskalender** (`kalender.html`) liest dasselbe Datum: alle Tage **vor** `VERFUEGBAR_AB`
-erscheinen grau (noch nicht buchbar). Die belegten Einsatztage selbst stehen in `kalender.js`.
+automatisch grün „jetzt verfügbar". Der **Jahreskalender** (`kalender.html`) liest dasselbe Datum:
+alle Tage **vor** `VERFUEGBAR_AB` erscheinen grau (noch nicht buchbar). Die belegten Einsatztage
+stehen in `kalender.js` (gleicher Notweg möglich; der nächste Toolkit-Export überschreibt
+Handeinträge).
 
 ## Deployment (GitHub Pages)
 
-1. Den **Inhalt dieses Ordners** ins Repo-Root legen (nicht den Ordner `webseite/` selbst) — ODER den
-   Ordner im Repo zu `docs/` umbenennen und die Pages-Quelle auf `/docs` stellen. Die Datei `CNAME` muss mit.
+1. Dieses Repo ist selbst die Pages-Quelle (Branch `main`, Root; `CNAME` liegt bei) —
+   **Push auf `main` = Publikation.**
 2. In den Repo-Einstellungen unter *Pages* die Custom Domain `naville-handwerk.ch` setzen und die Domain
    **verifizieren** (TXT-Challenge), **bevor** die DNS-Records gesetzt werden (Schutz vor Takeover).
 3. **„Enforce HTTPS"** aktivieren.
@@ -45,8 +52,8 @@ erscheinen grau (noch nicht buchbar). Die belegten Einsatztage selbst stehen in 
 
 ## Sicherheit — bitte unbedingt beachten
 
-- **Nur dieser Ordner gehört ins öffentliche Repo.** Niemals den übergeordneten Arbeitsordner committen
-  (er enthält interne Notizen wie `CLAUDE.md`, Partner-/BTAG-Entwürfe).
+- **Nur Website-Dateien gehören in dieses öffentliche Repo.** Interne Notizen, Strategie- und
+  Geschäftsdokumente liegen getrennt in den privaten Arbeitsrepos — nie hierher kopieren.
 - **Niemals Geheimnisse oder Personendaten committen:** keine API-Keys, Passwörter, SMTP-/DKIM-Schlüssel,
   keine Kundendaten, Wochenrapporte oder Rechnungen. Ein öffentliches Repo ist weltweit lesbar und bleibt
   **dauerhaft in der Git-History** (auch nach dem Löschen). `.gitignore` ist **keine** Sicherheitsschicht.
@@ -62,4 +69,5 @@ erscheinen grau (noch nicht buchbar). Die belegten Einsatztage selbst stehen in 
 
 Login, Wochenrapporte, Rechnungen und Automatisierung dürfen **nicht** auf GitHub Pages laufen (statisch,
 öffentlich). Sie gehören als **getrennte App mit Backend** (Auth + Datenbank) auf eine eigene Subdomain
-(z. B. `app.naville-handwerk.ch`). Details: `../Sicherheit_Naville_Handwerk.md`.
+(z. B. `app.naville-handwerk.ch`). Details: Sicherheitskonzept `Sicherheit_Naville_Handwerk.md`
+im privaten Arbeitsrepo.
