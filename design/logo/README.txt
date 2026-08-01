@@ -37,3 +37,16 @@ Einbau (Beispiel Website):
      style="max-width:100%;height:auto">
 
 Hinweis: Noch nicht in die HTML eingebunden – die Dateien liegen bereit.
+
+
+Mit / ohne «i.G.» (ergänzt 2026-08-01)
+---------------------------------------
+Die zehn Dateien direkt in diesem Ordner tragen die Anhänger-Aufschrift
+«NAVILLE HANDWERK GMBH» – ohne «i.G.» – für Merch (Aufkleber, T-Shirt usw.),
+das schon vor der Gründung produziert wird. Der Unterordner mit_iG/ enthält
+dieselben zehn Varianten mit «GMBH i.G.» (offizielle Fassung mit
+Gründungszusatz). Beide Sätze sind sonst pixelgleich.
+
+Erzeugt wird die i.G.-freie Fassung aus mit_iG/ per
+../merch/entferne_ig_logos.py (das Master-Emblem brand/emblem_ohne_ig.png
+bleibt dabei unberührt).
