@@ -7,3 +7,4 @@
 *.jpeg
 *.pdf
 probe_*.typ
+__pycache__/
