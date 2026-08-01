@@ -9,14 +9,18 @@ Farben: Rot #C1121C · Schwarz #000000 · Anthrazit #23252B · Creme #EFEEE8
 
 Gestapelte Wortmarke (T-Shirt, NEU 2026-08-01)
 ----------------------------------------------
-- tshirt_wortmarke_gestapelt.png     Bestell-/Druckdatei
-- erzeuge_wortmarke_gestapelt.py     Quelle/Regenerator (PIL + Archivo-TTF)
+Zwei Fassungen, gleiche Gestaltung:
+- tshirt_wortmarke_gestapelt.png       auf Creme-Karte (jede Shirt-Farbe)
+  erzeuge_wortmarke_gestapelt.py       Quelle/Regenerator (PIL + Archivo-TTF)
+- tshirt_wortmarke_gestapelt_weiss.png transparenter Hintergrund (weisse/helle
+  erzeuge_wortmarke_gestapelt_weiss.py Shirts) -- Schrift direkt auf dem Stoff
 
-  "naville" (schwarz) ueber "handwerk" (rot), zentriert und gestapelt, auf
-  abgerundeter Creme-Karte (#EFEEE8); ausserhalb der Rundung transparent,
-  laeuft also auf jeder Shirt-Farbe. Eine Datei fuer linke Brust (klein) und
-  Ruecken (gross) -- im Druck einfach skalieren. Aktuell 3088x1599 px
-  (~26 cm bei 300 dpi).
+  "naville" (schwarz) ueber "handwerk" (rot), zentriert und gestapelt. Die
+  Karten-Fassung sitzt auf abgerundeter Creme-Karte (#EFEEE8), ausserhalb der
+  Rundung transparent -> laeuft auf jeder Shirt-Farbe. Die weiss-Fassung hat
+  gar keine Karte (voll transparent), gedacht fuer weisse/helle Shirts. Je
+  eine Datei fuer linke Brust (klein) und Ruecken (gross) -- im Druck skaliert
+  (Karte 3088x1599 px / weiss 2704x1321 px, ~23-26 cm bei 300 dpi).
 
   Gestaltungs-Entscheid (Eric): "naville" ist so weit vergroessert, dass es
   exakt dieselbe Breite wie "handwerk" hat -> beide Zeilen kantenbuendig,
