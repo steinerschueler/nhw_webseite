@@ -15,9 +15,11 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `verfuegbarkeit.js` — Verfügbarkeits-Datum; **wird vom Admin-Toolkit generiert** (siehe unten);
   `banner.js` rendert die Anzeige
 - `kalender.js` — belegte Tage; **wird vom Admin-Toolkit generiert**; die Logik liegt in `kalender.html`
-- `design/logo/` — grosse Embleme + Claim-Lockups (`design/grafiken/` = Arbeitsmaterial Piktogramme)
+- `bilder/` — die von der Seite **ausgelieferten** Bilder: Kopf-Emblem (`emblem.png`) + Favicon-Satz.
+  Die **Design-Quellen** (Logos, Merch, Visitenkarte) liegen privat in `nhw_privat/design/`
+  (Marken-Hub) — **nicht** in diesem öffentlichen Repo.
 - `fonts/archivo-600.woff2` (+ `OFL.txt`) — Display-Schrift (self-hosted)
-- Icons: `favicon.svg` (Root) + `design/icon/` (`favicon-32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`); `site.webmanifest`
+- Icons: `favicon.svg` (Root) + `bilder/` (`favicon-32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`); `site.webmanifest`
 - `404.html`, `robots.txt`, `sitemap.xml`, `CNAME`
 
 ## Verfügbarkeit & Kalender pflegen
