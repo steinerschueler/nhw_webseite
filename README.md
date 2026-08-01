@@ -17,7 +17,7 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `kalender.js` — belegte Tage; **wird vom Admin-Toolkit generiert**; die Logik liegt in `kalender.html`
 - `design/logo/` — grosse Embleme + Claim-Lockups (`design/grafiken/` = Arbeitsmaterial Piktogramme)
 - `fonts/archivo-600.woff2` (+ `OFL.txt`) — Display-Schrift (self-hosted)
-- Icons: `favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `site.webmanifest`
+- Icons: `favicon.svg` (Root) + `design/icon/` (`favicon-32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`); `site.webmanifest`
 - `404.html`, `robots.txt`, `sitemap.xml`, `CNAME`
 
 ## Verfügbarkeit & Kalender pflegen
