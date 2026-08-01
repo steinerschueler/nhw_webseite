@@ -1,0 +1,9 @@
+# Render-Artefakte (regenerierbar via bauen.py) und die externe Vorbild-Datei
+# bleiben aus dem oeffentlichen Repo. Committet werden nur Quelltexte (.typ/.py),
+# Reports (.md), README, .gitignore.
+# Hinweis: die .typ-Quelle der Rueckseite traegt die Geschaefts-Telefonnummer.
+*.png
+*.jpg
+*.jpeg
+*.pdf
+probe_*.typ
