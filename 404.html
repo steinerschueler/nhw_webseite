@@ -7,12 +7,10 @@
 <link rel="apple-touch-icon" href="bilder/apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#EFEEE8">
+<link rel="stylesheet" href="basis.css">
 <style>
-@font-face{font-family:'Archivo';font-weight:600;font-display:swap;src:url(fonts/archivo-600.woff2) format('woff2');}
-:root{--ink:#22242A;--ink2:#43423C;--paper:#EFEEE8;--red:#C1121C;--grey:#6E6B64;--line:#DCD6CB;}
-*{box-sizing:border-box;margin:0}
-body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
-.wire{height:4px;background:var(--red)}
+/* eigenes Seitenlayout; line-height/overflow neutralisieren die Basis exakt */
+body{min-height:100vh;display:flex;flex-direction:column;line-height:normal;overflow-x:visible}
 .mid{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px 24px}
 .box{max-width:540px}
 .err-logo{width:100%;max-width:300px;height:auto;margin:0 auto 26px;display:block}
@@ -20,16 +18,7 @@ body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--paper);c
 h1{font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(20px,3vw,26px);color:var(--ink);margin:8px 0 12px;letter-spacing:-.01em}
 p{color:var(--ink2);font-size:16px;max-width:40ch;margin:0 auto}
 .btn{display:inline-block;margin-top:24px;background:var(--red);color:#fff;text-decoration:none;font-weight:700;padding:14px 26px;border-radius:3px}
-.foot{background:#22242A;color:#b9b3a7;text-align:center;padding:20px;font-size:14px}
-.foot a{color:#eee}
-.availbar{background:var(--paper);padding:11px 16px 3px;text-align:center}
-.availbar[hidden]{display:none}
-.availpill{display:inline-flex;align-items:center;gap:9px;border-radius:999px;padding:8px 18px;font-size:14px;line-height:1.3;color:#fff;text-decoration:none;font-weight:500;max-width:100%}
-.availbar.av-off .availpill{background:var(--red)}
-.availbar.av-on .availpill{background:#127A3C}
-.availpill .av-ic{flex:none;width:18px;height:18px}
-.availpill b{font-weight:700}
-.availpill:hover{filter:brightness(1.07)}
+.foot{padding:20px}
 </style>
 </head>
 <body>
