@@ -10,6 +10,11 @@ Reines HTML/CSS/JS, kein Server nötig.
 
 ## Inhalt
 
+- `basis.css` — **gemeinsames Grundgerüst** aller Seiten (Schrift, Farbvariablen, Reset,
+  Typo, Kopf/Nav + Burger, Verfügbarkeits-Banner, Footer). Design-Änderungen daran wirken
+  auf alle Seiten; das `<link>` steht auf jeder Seite **vor** dem `<style>`-Block, darum
+  gewinnt bei gleicher Spezifität immer die seitenspezifische Inline-Regel (Overrides).
+  Seitenspezifisches CSS bleibt bewusst im jeweiligen `<style>` — kein Build-System.
 - `index.html` — Startseite
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
