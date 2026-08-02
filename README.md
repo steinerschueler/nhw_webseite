@@ -3,6 +3,11 @@
 Statischer Webauftritt der **Naville Handwerk GmbH i.G.** (Personalverleih im Handwerk, Raum Bern).
 Reines HTML/CSS/JS, kein Server nötig.
 
+> **Rolle in der `nhw_*`-Landschaft:** das **öffentliche** Repo (GitHub Pages) — nur
+> Website-Dateien, nie private oder Echtdaten. Die massgebliche Landkarte und das Doku-Register
+> aller fünf `nhw_*`-Verzeichnisse führt der Hub `nhw_tool/doku/landschaft.md`; hier steht nur
+> die eigene Rolle, keine zweite Landschafts-Tabelle.
+
 ## Inhalt
 
 - `index.html` — Startseite
