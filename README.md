@@ -1,6 +1,6 @@
 # naville-handwerk.ch — öffentliche Webseite
 
-Statischer Webauftritt der **Naville Handwerk GmbH i.G.** (Personalverleih im Handwerk, Raum Bern).
+Statischer Webauftritt der **Naville Handwerk GmbH** (Personalverleih im Handwerk, Raum Bern).
 Reines HTML/CSS/JS, kein Server nötig.
 
 > **Rolle in der `nhw_*`-Landschaft:** das **öffentliche** Repo (GitHub Pages) — nur
