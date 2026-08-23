@@ -451,10 +451,13 @@ function makePDF(){
   line('Verliehene Person:',owner);
   line('Einsatzbetrieb / Auftraggeber:',einsatz);
   line('Profil:',v('alter')+' J., Berufserfahrung '+v('erf')+' J.'+(d2?', '+d2.b:''));
-  gap(4);d.setFontSize(12);
+  gap(5);
+  d.setFillColor(246,244,238);d.setDrawColor(220,214,203);
+  d.roundedRect(x-3,y-5.5,(right-x)+6,18,1.5,1.5,'FD');
+  d.setFontSize(12);
   line('Vereinbarter Stundenansatz (netto):',chf(ansatz),true);
   line('inkl. MWST '+mwst.toLocaleString('de-CH')+' %:',chf(mwsth),true);
-  d.setFontSize(10);gap(3);
+  d.setFontSize(10);d.setFont('helvetica','normal');gap(5);
   var bem='Diese Vereinbarung hält den für den Einsatz vereinbarten Stundenansatz fest und ersetzt keinen Einsatz-/Rahmenvertrag. Die detaillierte Kostenaufstellung (Grundlage des Ansatzes) folgt auf den nächsten Seiten; die Unterschriften befinden sich am Schluss des Dokuments.';
   d.text(d.splitTextToSize(bem,170),x,y);y+=16;
   if(d2){d.setFontSize(8.5);d.setTextColor(90,90,90);d.text(d.splitTextToSize('GAV-Referenz: '+d2.b+' – '+d2.e+': '+d2.w+' ('+(d2.ave?'allgemeinverbindlich':'nicht allgemeinverbindlich')+', Stand '+d2.y+')',170),x,y);d.setTextColor(40,40,40);d.setFontSize(10);}
@@ -491,15 +494,18 @@ function makePDF(){
   line('Umsatz GmbH / Jahr (netto)',chf0(ansatz*vstd));
   gap(2);d.setFontSize(8);d.setTextColor(120,120,120);
   d.text(d.splitTextToSize('Alle Werte sind Richtwerte; FAK/BVG/Feiertage kassen- bzw. kantonsabhängig. Kein Rechts-/Steuerrat.',170),x,y);d.setTextColor(40,40,40);d.setFontSize(10);
-  if(y>PH-72){d.addPage();y=22;}else{y=Math.max(y+12,PH-72);}
-  d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(193,18,28);d.text('Unterschriften',x,y);y+=4;d.setDrawColor(193,18,28);d.line(x,y,right,y);y+=14;
+  if(y>PH-112){d.addPage();y=22;}else{y=Math.max(y+12,PH-112);}
+  d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(193,18,28);d.text('Unterschriften',x,y);y+=4;d.setDrawColor(193,18,28);d.line(x,y,right,y);y+=10;
   d.setTextColor(40,40,40);d.setFontSize(11);d.setFont('helvetica','bold');
-  d.text(gmbh,x,y);d.text(einsatz,110,y);y+=2;d.setDrawColor(120,120,120);d.line(x,y,90,y);d.line(110,y,180,y);y+=5;
+  d.text(gmbh,x,y);d.text(einsatz,110,y);y+=4.5;
   d.setFont('helvetica','normal');d.setFontSize(8.5);d.setTextColor(90,90,90);
-  d.text(d.splitTextToSize('Verleiher (GmbH), vertreten durch '+owner,80),x,y);d.text('Einsatzbetrieb / Auftraggeber',110,y);y+=18;
-  d.setFontSize(11);d.setTextColor(40,40,40);
-  d.line(x,y,90,y);d.line(110,y,180,y);y+=5;d.setFontSize(8.5);d.setTextColor(90,90,90);
-  d.text('Unterschrift  ·  Ort / Datum',x,y);d.text('Unterschrift  ·  Ort / Datum',110,y);y+=13;
+  d.text(d.splitTextToSize('Verleiher (GmbH), vertreten durch '+owner,80),x,y);d.text('Einsatzbetrieb / Auftraggeber',110,y);
+  y+=20;d.setDrawColor(120,120,120);
+  d.line(x,y,90,y);d.line(110,y,180,y);y+=4.5;
+  d.text('Ort / Datum',x,y);d.text('Ort / Datum',110,y);
+  y+=26;
+  d.line(x,y,90,y);d.line(110,y,180,y);y+=4.5;
+  d.text('Unterschrift',x,y);d.text('Unterschrift',110,y);y+=12;
   d.setFontSize(9);d.setTextColor(40,40,40);
   d.text(d.splitTextToSize('Bitte zweifach ausdrucken, beide Parteien unterschreiben – je ein Exemplar pro Partei.',170),x,y);
   var n=d.getNumberOfPages();
