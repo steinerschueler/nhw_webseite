@@ -186,6 +186,7 @@ button{max-width:100%;white-space:normal}
 <div id="warn"></div>
 
 <div class="out"><span>Deckungsbeitrag pro Jahr (vor Steuern/Risiko)</span><span id="r_gewinn"></span></div>
+<div class="out"><span>Geschätzte Gewinnmarge (vor Steuern)<sup class="fn"><a href="#r29">29</a></sup></span><span id="r_marge"></span></div>
 <div class="out"><span>Jahres-Bruttolohn</span><span id="r_jahrlohn"></span></div>
 <div class="out"><span>Betrag an den Endkunden / Std<sup class="fn"><a href="#r23">23</a></sup></span><span id="r_spanne"></span></div>
 
@@ -253,6 +254,7 @@ button{max-width:100%;white-space:normal}
 <li id="r26"><b>Beruf-/GAV-Referenz:</b> Mindestlöhne aus offiziellen GAV (gav-service.ch, servizio-ccl.ch, swissstaffing) – nur Referenz, nicht verbindlich übernommen. Equal-Pay: bei Verleih in einen Betrieb mit allgemeinverbindlichem Branchen-GAV gelten dessen Lohnbedingungen. Stand 2025/2026; bei region-/erfahrungsabhängigen Stufen sind mehrere Werte angegeben (übernommen wird der erste/höchste). <a href="https://www.gav-service.ch" target="_blank">www.gav-service.ch</a></li>
 <li id="r27"><b>Deckungsbeitrag (Aufschlag auf die Selbstkosten):</b> die Differenz zwischen deinem Ansatz und den Selbstkosten je Stunde. <i>Kein</i> reiner Gewinn – davon gehen noch Gewinnsteuer, unternehmerisches Risiko (Leerzeiten, Krankheit) und Reserven ab. Nicht vergleichbar mit der Netto-Marge eines Temporärbüros.</li>
 <li id="r28"><b>Telefon, IT, Bank &amp; Marketing:</b> Geschäftsanteil Telefon, Software/Cloud, Bankspesen (KMU-Konto), Drucksachen/Werbung, GAV-Vollzugsbeitrag. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
+<li id="r29"><b>Geschätzte Gewinnmarge:</b> Jahres-Deckungsbeitrag abzüglich des Lohns für bezahlte, aber nicht verrechenbare Stunden (Jahreslohn inkl. 13. ML und Arbeitgeberkosten minus der über die verrechenbaren Stunden gedeckten Lohnkosten) und abzüglich ~1 % Debitorenrisiko, geteilt durch den Jahresumsatz. Vor Gewinnsteuer, ohne Reserven – ein Schätzwert; der grösste Hebel ist die Auslastung (verrechenbare Stunden). <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
 </ol>
 </div><!-- /side-box -->
 </aside>
@@ -400,6 +402,7 @@ function calc(){
  if(hard){
   setF('ansatz','');setF('db_chf','');setF('db_pct','');setF('rechnung','');
   document.getElementById('r_gewinn').textContent='–';
+  document.getElementById('r_marge').textContent='–';
   document.getElementById('r_jahrlohn').textContent=chf0(brutto*vstd);
   document.getElementById('r_spanne').textContent=chf(v('endk'))+' /h';
   w.className='hint';w.textContent='Nicht ausrechenbar: '+hard;
@@ -408,6 +411,10 @@ function calc(){
  var marge=A-S,margep=(S>0?marge/S*100:NaN),rechnung=A*(1+m),umsatz=A*vstd;
  setF('ansatz',r2(A));setF('db_chf',r2(marge));setF('db_pct',isFinite(margep)?r1(margep):'');setF('rechnung',r2(rechnung));
  document.getElementById('r_gewinn').textContent=chf0(marge*vstd);
+ var jahreslohnreal=v('lohn')*12*(1+v('ml13')/100)*(1+ag);
+ var leerlohn=Math.max(0,jahreslohnreal-lohnk*vstd);
+ var gewinnjahr=marge*vstd-leerlohn-0.01*umsatz;
+ document.getElementById('r_marge').textContent=(umsatz>0?(gewinnjahr/umsatz*100).toLocaleString('de-CH',{maximumFractionDigits:1})+' % ('+chf0(gewinnjahr)+'/J.)':'–');
  document.getElementById('r_jahrlohn').textContent=chf0(brutto*vstd);
  document.getElementById('r_spanne').textContent=chf(v('endk'))+' /h';
  if(S<=0){w.className='hint';w.textContent='Hinweis: Selbstkosten sind 0 – der Deckungsbeitrag % ist nicht definiert. Bitte Kostenfelder (A–E) ausfüllen.';}
