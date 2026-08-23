@@ -191,7 +191,7 @@ button{max-width:100%;white-space:normal}
 <div class="out"><span>Betrag an den Endkunden / Std<sup class="fn"><a href="#r23">23</a></sup></span><span id="r_spanne"></span></div>
 
 <button id="pdfbtn" type="button">📄 Vereinbarung als PDF erstellen</button>
-<div class="disc">Die PDF ist eine Stundenansatz-Vereinbarung zwischen GmbH (Verleiher) und Einsatzbetrieb. Zweifach ausdrucken, beide unterschreiben – je ein Exemplar pro Partei. GAV-Mindestlöhne, FAK-, BVG- und Feiertagswerte sind hinterlegte Richtwerte (Stand 2025/2026) – bitte selber nachprüfen. Kein Rechts-/Steuerrat.</div>
+<div class="disc">Die PDF ist eine einseitige Stundenansatz-Vereinbarung zwischen GmbH (Verleiher) und Einsatzbetrieb – ohne die Kostenaufstellung, die bleibt hier im Rechner. Zweifach ausdrucken, beide unterschreiben – je ein Exemplar pro Partei. Kein Rechts-/Steuerrat.</div>
 
 </div><!-- /calc-main -->
 
@@ -429,13 +429,7 @@ function makePDF(){
  var gmbh=val('gmbh')||'________________';var owner=val('owner')||'________________';var einsatz=val('einsatz')||'________________';
  var kn=KANTONE[val('kanton')]?KANTONE[val('kanton')][0]:val('kanton');var gem=val('gemeinde')||'';
  var today=new Date().toLocaleDateString('de-CH');
- var mstd=v('wstd')*v('wj')/12;var basis=mstd?v('lohn')/mstd:0;var zu=v('ferien')+v('feier')+v('ml13');
- var brutto=basis*(1+zu/100);var agp=v('ahv')+v('alv')+v('fak')+v('uvg')+v('vwk')+v('bvg');
- var lohnk=brutto*(1+agp/100);
- var gkjahr=v('wz_afa')+v('wz_unt')+v('transport')+v('wb_hj')*2+v('vers')+v('treu')+v('div')+v('it_bank');
- var vstd=v('vstd');var gkstd=vstd?gkjahr/vstd:0;var spesen=v('spesen');
- var selbst=lohnk+spesen+gkstd;var ansatz=v('ansatz');var marge=ansatz-selbst;var margep=selbst?marge/selbst*100:0;
- var mwst=v('mwst');var mwsth=ansatz*(1+mwst/100);var d2=currentGav();
+ var ansatz=v('ansatz');var mwst=v('mwst');var mwsth=ansatz*(1+mwst/100);var d2=currentGav();
  try{
   var jsPDF=window.jspdf.jsPDF;var d=new jsPDF({unit:'mm',format:'a4'});
   var x=20,right=190,PH=297,y=22;
@@ -458,42 +452,9 @@ function makePDF(){
   line('Vereinbarter Stundenansatz (netto):',chf(ansatz),true);
   line('inkl. MWST '+mwst.toLocaleString('de-CH')+' %:',chf(mwsth),true);
   d.setFontSize(10);d.setFont('helvetica','normal');gap(5);
-  var bem='Diese Vereinbarung hält den für den Einsatz vereinbarten Stundenansatz fest und ersetzt keinen Einsatz-/Rahmenvertrag. Die detaillierte Kostenaufstellung (Grundlage des Ansatzes) folgt auf den nächsten Seiten; die Unterschriften befinden sich am Schluss des Dokuments.';
+  var bem='Diese Vereinbarung hält den für den Einsatz vereinbarten Stundenansatz fest und ersetzt keinen Einsatz-/Rahmenvertrag. Die offene Kalkulation hinter dem Ansatz lässt sich jederzeit im Preisrechner auf naville-handwerk.ch nachvollziehen.';
   d.text(d.splitTextToSize(bem,170),x,y);y+=16;
   if(d2){d.setFontSize(8.5);d.setTextColor(90,90,90);d.text(d.splitTextToSize('GAV-Referenz: '+d2.b+' – '+d2.e+': '+d2.w+' ('+(d2.ave?'allgemeinverbindlich':'nicht allgemeinverbindlich')+', Stand '+d2.y+')',170),x,y);d.setTextColor(40,40,40);d.setFontSize(10);}
-  d.addPage();y=22;head('Kostenaufstellung (Grundlage des Stundenansatzes)');
-  d.setFont('helvetica','bold');d.text('1 · Lohn',x,y);y+=6;d.setFont('helvetica','normal');
-  line('Referenz-Monatslohn (brutto)',chf0(v('lohn')));
-  line('Wochenarbeitszeit / Monatsstunden',v('wstd')+' Std/Wo  ·  '+mstd.toFixed(1)+' Std/Mt');
-  line('Basis-Stundenlohn',chf(basis));
-  line('Zuschläge (Ferien '+v('ferien')+'% + Feiertage '+v('feier')+'% + 13. ML '+v('ml13')+'%)',zu.toFixed(2)+' %');
-  line('Brutto-Stundenlohn',chf(brutto),true);
-  line('Essensspesen',chf(spesen));
-  gap(2);d.setFont('helvetica','bold');d.text('2 · Arbeitgeberkosten',x,y);y+=6;d.setFont('helvetica','normal');
-  line('AHV/IV/EO (AG)',v('ahv')+' %');line('ALV (AG)',v('alv')+' %');line('FAK',v('fak')+' %');
-  line('UVG Berufsunfall (BU)',v('uvg')+' %');line('Verwaltungskosten',v('vwk')+' %');line('BVG / Pensionskasse (AG)',v('bvg')+' %');
-  line('Summe Arbeitgeberkosten',agp.toFixed(2)+' %',true);
-  line('Lohnkosten je Std (inkl. AG-Kosten)',chf(lohnk),true);
-  gap(2);d.setFont('helvetica','bold');d.text('3 · Betriebskosten (pro Jahr)',x,y);y+=6;d.setFont('helvetica','normal');
-  line('Werkzeug/Geräte – Abschreibung',chf0(v('wz_afa')));
-  line('Werkzeug/Geräte – Unterhalt',chf0(v('wz_unt')));
-  line('Transport / Fahrzeug',chf0(v('transport')));
-  line('Weiterbildung (×2 Halbjahr)',chf0(v('wb_hj')*2));
-  line('Betriebshaftpflicht & Versicherungen',chf0(v('vers')));
-  line('Treuhand / Buchhaltung / Admin',chf0(v('treu')));
-  line('Berufskleidung / Diverses',chf0(v('div')));
-  line('Telefon, IT, Bank & Marketing',chf0(v('it_bank')));
-  line('Total Betriebskosten / Jahr',chf0(gkjahr),true);
-  line('Betriebskosten je Std (bei '+vstd+' verr. Std)',chf(gkstd));
-  gap(2);d.setFont('helvetica','bold');d.text('4 · Ergebnis',x,y);y+=6;d.setFont('helvetica','normal');
-  line('Selbstkosten je Std',chf(selbst),true);
-  line('Ansatz an den Einsatzbetrieb (netto)',chf(ansatz),true);
-  line('Deckungsbeitrag je Std',chf(marge)+'  ('+margep.toLocaleString('de-CH',{maximumFractionDigits:0})+' %)');
-  line('Rechnungsbetrag inkl. MWST je Std',chf(mwsth));
-  line('Jahres-Bruttolohn (verliehene Person)',chf0(brutto*vstd));
-  line('Umsatz GmbH / Jahr (netto)',chf0(ansatz*vstd));
-  gap(2);d.setFontSize(8);d.setTextColor(120,120,120);
-  d.text(d.splitTextToSize('Alle Werte sind Richtwerte; FAK/BVG/Feiertage kassen- bzw. kantonsabhängig. Kein Rechts-/Steuerrat.',170),x,y);d.setTextColor(40,40,40);d.setFontSize(10);
   if(y>PH-112){d.addPage();y=22;}else{y=Math.max(y+12,PH-112);}
   d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(193,18,28);d.text('Unterschriften',x,y);y+=4;d.setDrawColor(193,18,28);d.line(x,y,right,y);y+=10;
   d.setTextColor(40,40,40);d.setFontSize(11);d.setFont('helvetica','bold');
@@ -511,7 +472,7 @@ function makePDF(){
   var n=d.getNumberOfPages();
   for(var i=1;i<=n;i++){d.setPage(i);d.setFont('helvetica','normal');d.setFontSize(8);d.setTextColor(120,120,120);
    d.setDrawColor(200,200,200);d.line(x,PH-13,right,PH-13);
-   d.text('Stundenansatz-Vereinbarung'+(val('gmbh')?' – '+val('gmbh'):'')+'  ·  Dokument umfasst '+n+' Seite(n)',x,PH-9);
+   d.text('Stundenansatz-Vereinbarung'+(val('gmbh')?' – '+val('gmbh'):'')+'  ·  Dokument umfasst '+(n>1?n+' Seiten':'1 Seite'),x,PH-9);
    d.text('Seite '+i+' von '+n,right,PH-9,{align:'right'});}
   d.save((gmbh.replace(/[^A-Za-z0-9]/g,'_')||'Vereinbarung')+'_Stundenansatz_Vereinbarung.pdf');
  }catch(e){alert('PDF-Bibliothek nicht geladen (Internet nötig). Es öffnet sich die Druckansicht – dort "Als PDF speichern" wählen.');window.print();}
