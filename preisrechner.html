@@ -50,6 +50,8 @@ ol.refs a{color:var(--red)}
 button{background:var(--red);color:#fff;border:none;border-radius:3px;padding:14px 24px;font-size:1.02em;font-weight:700;cursor:pointer;margin:16px 0;font-family:inherit}
 button:hover{background:#a50f18}
 .disc{background:#F6F4EE;border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:.82em;color:var(--ink2);margin:8px 0;line-height:1.5}
+.pdfopt{display:flex;align-items:center;gap:8px;margin:12px 0 6px;font-size:.9em;color:var(--ink2);cursor:pointer}
+.pdfopt input{width:auto;accent-color:var(--red)}
 .calc-side{position:sticky;top:78px;display:flex;flex-direction:column;gap:16px}
 .side-box{background:#F6F4EE;border:1px solid var(--line);border-radius:12px;padding:15px 17px}
 .side-box h3{margin:0 0 9px;font-family:'Archivo';font-weight:600;font-size:16px;color:var(--ink)}
@@ -190,6 +192,7 @@ button{max-width:100%;white-space:normal}
 <div class="out"><span>Jahres-Bruttolohn</span><span id="r_jahrlohn"></span></div>
 <div class="out"><span>Betrag an den Endkunden / Std<sup class="fn"><a href="#r23">23</a></sup></span><span id="r_spanne"></span></div>
 
+<label class="pdfopt"><input type="checkbox" id="nhwstyle"> PDF im Naville-Handwerk-Design (Emblem und Wortmarke im Kopf) – sonst neutral</label>
 <button id="pdfbtn" type="button">📄 Vereinbarung als PDF erstellen</button>
 <div class="disc">Die PDF ist eine einseitige Stundenansatz-Vereinbarung zwischen GmbH (Verleiher) und Einsatzbetrieb – ohne die Kostenaufstellung, die bleibt hier im Rechner. Zweifach ausdrucken, beide unterschreiben – je ein Exemplar pro Partei. Kein Rechts-/Steuerrat.</div>
 
@@ -424,6 +427,14 @@ function calc(){
  else{w.className='';w.textContent='';}
  LAST={brutto:brutto,selbst:S,ansatz:A,mwsth:rechnung,mwst:v('mwst')};
 }
+// Marken-Bilder fürs Naville-Handwerk-Design der PDF (beim Laden als Data-URL
+// vorbereitet; schlägt das fehl, fällt der Kopf auf den Schriftzug zurück).
+var PDFIMG={emblem:null,wort:null};
+(function(){
+ function lade(pfad,ziel){var im=new Image();im.onload=function(){try{var c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);PDFIMG[ziel]=c.toDataURL('image/png');}catch(e){}};im.src=pfad;}
+ lade('bilder/emblem-2x.png','emblem');    // 250x80 px -> 31.3x10 mm
+ lade('bilder/wortmarke-2x.png','wort');   // 495x46 px -> 49.5x4.6 mm
+})();
 function makePDF(){
  calc();
  var gmbh=val('gmbh')||'________________';var owner=val('owner')||'________________';var einsatz=val('einsatz')||'________________';
@@ -432,48 +443,71 @@ function makePDF(){
  var ansatz=v('ansatz');var mwst=v('mwst');var mwsth=ansatz*(1+mwst/100);var d2=currentGav();
  try{
   var jsPDF=window.jspdf.jsPDF;var d=new jsPDF({unit:'mm',format:'a4'});
-  var x=20,right=190,PH=297,y=22;
-  function head(t){d.setFont('helvetica','bold');d.setFontSize(14);d.setTextColor(193,18,28);d.text(t,x,y);y+=7;d.setDrawColor(193,18,28);d.line(x,y,right,y);y+=7;d.setFontSize(10);d.setTextColor(40,40,40);d.setFont('helvetica','normal');}
-  function line(l,val2,bold){if(y>PH-24){d.addPage();y=22;}d.setFont('helvetica',bold?'bold':'normal');d.text(String(l),x,y);if(val2!==undefined&&val2!==null)d.text(String(val2),right,y,{align:'right'});y+=5.5;}
+  var x=20,right=190,PH=297,y=0;
+  var NHW=document.getElementById('nhwstyle').checked;
+  var INK=[34,36,42],GRAU=[110,107,100],LINIE=[220,214,203],ROT=[193,18,28];
   function gap(mm){y+=(mm||3);}
-  head('Stundenansatz-Vereinbarung – Personalverleih');
-  line((gem?gem+', ':'')+kn+', '+today);gap(2);
-  d.setFont('helvetica','bold');d.text('Übereinkunft',x,y);y+=6;d.setFont('helvetica','normal');
+  function sect(t){gap(5);d.setFont('helvetica','bold');d.setFontSize(11);d.setTextColor(INK[0],INK[1],INK[2]);d.text(t,x,y);y+=2.5;d.setDrawColor(LINIE[0],LINIE[1],LINIE[2]);d.setLineWidth(0.3);d.line(x,y,right,y);y+=6.5;d.setFont('helvetica','normal');d.setFontSize(10);d.setTextColor(INK[0],INK[1],INK[2]);}
+  function feld(l,w2,bold){d.setFont('helvetica','normal');d.setTextColor(GRAU[0],GRAU[1],GRAU[2]);d.text(l,x,y);d.setFont('helvetica',bold?'bold':'normal');d.setTextColor(INK[0],INK[1],INK[2]);d.text(String(w2),x+66,y);y+=6;}
+  // Kopf: neutral schlicht; mit Häkchen im Naville-Handwerk-Design (wie brand.typ:
+  // rote Linie über die volle Breite, Emblem links, Wortmarke rechts, feine Trennlinie)
+  if(NHW){
+    d.setFillColor(ROT[0],ROT[1],ROT[2]);d.rect(0,10,210,0.8,'F');
+    if(PDFIMG.emblem){d.addImage(PDFIMG.emblem,'PNG',x,14,31.3,10);}
+    if(PDFIMG.wort){d.addImage(PDFIMG.wort,'PNG',right-49.5,17.4,49.5,4.6);}
+    else{d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(ROT[0],ROT[1],ROT[2]);d.text('handwerk',right,21,{align:'right'});var hw=d.getTextWidth('handwerk ');d.setTextColor(INK[0],INK[1],INK[2]);d.text('naville',right-hw,21,{align:'right'});}
+    d.setDrawColor(LINIE[0],LINIE[1],LINIE[2]);d.setLineWidth(0.3);d.line(x,27,right,27);
+    y=37;
+  }else{
+    d.setDrawColor(INK[0],INK[1],INK[2]);d.setLineWidth(0.6);d.line(x,14,right,14);
+    y=24;
+  }
+  d.setFont('helvetica','bold');d.setFontSize(16);d.setTextColor(INK[0],INK[1],INK[2]);
+  d.text('Stundenansatz-Vereinbarung',x,y);y+=6;
+  d.setFont('helvetica','normal');d.setFontSize(9.5);d.setTextColor(GRAU[0],GRAU[1],GRAU[2]);
+  d.text('Personalverleih nach AVG/AVV  ·  '+(gem?gem+', ':'')+kn+', '+today,x,y);y+=3;
+  sect('Übereinkunft');
   var intro='Die nachstehenden Parteien vereinbaren den Einsatz der verliehenen Person im Rahmen des Personalverleihs nach AVG/AVV. Der Verleiher bleibt rechtlicher Arbeitgeber und schuldet sämtliche Sozialversicherungsbeiträge; der Einsatzbetrieb entrichtet das vereinbarte Honorar (Stundenansatz). Die MWST wird zusätzlich in Rechnung gestellt.';
-  d.text(d.splitTextToSize(intro,170),x,y);y+=19;
-  line('Verleiher (Arbeitgeber):',gmbh,true);
-  line('Verliehene Person:',owner);
-  line('Einsatzbetrieb / Auftraggeber:',einsatz);
-  line('Profil:',v('alter')+' J., Berufserfahrung '+v('erf')+' J.'+(d2?', '+d2.b:''));
-  gap(5);
-  d.setFillColor(246,244,238);d.setDrawColor(220,214,203);
-  d.roundedRect(x-3,y-5.5,(right-x)+6,18,1.5,1.5,'FD');
-  d.setFontSize(12);
-  line('Vereinbarter Stundenansatz (netto):',chf(ansatz),true);
-  line('inkl. MWST '+mwst.toLocaleString('de-CH')+' %:',chf(mwsth),true);
-  d.setFontSize(10);d.setFont('helvetica','normal');gap(5);
+  var introZ=d.splitTextToSize(intro,170);
+  d.text(introZ,x,y);y+=introZ.length*4.4+2;
+  sect('Parteien und Einsatz');
+  feld('Verleiher (Arbeitgeber)',gmbh,true);
+  feld('Verliehene Person',owner);
+  feld('Einsatzbetrieb / Auftraggeber',einsatz,true);
+  feld('Profil',v('alter')+' J., Berufserfahrung '+v('erf')+' J.'+(d2?', '+d2.b:''));
+  gap(7);
+  var akz=NHW?ROT:INK;
+  d.setFillColor(246,244,238);d.setDrawColor(LINIE[0],LINIE[1],LINIE[2]);d.setLineWidth(0.3);
+  d.roundedRect(x-3,y-6,(right-x)+6,19,1.5,1.5,'FD');
+  d.setFillColor(akz[0],akz[1],akz[2]);d.rect(x-3,y-6,1.4,19,'F');
+  d.setFontSize(12);d.setFont('helvetica','bold');d.setTextColor(INK[0],INK[1],INK[2]);
+  d.text('Vereinbarter Stundenansatz (netto):',x+2,y);d.text(chf(ansatz),right,y,{align:'right'});y+=6.5;
+  d.text('inkl. MWST '+mwst.toLocaleString('de-CH')+' %:',x+2,y);d.text(chf(mwsth),right,y,{align:'right'});y+=7;
+  d.setFont('helvetica','normal');gap(4);
   var bem='Diese Vereinbarung hält den für den Einsatz vereinbarten Stundenansatz fest und ersetzt keinen Einsatz-/Rahmenvertrag. Die offene Kalkulation hinter dem Ansatz lässt sich jederzeit im Preisrechner auf naville-handwerk.ch nachvollziehen.';
-  d.text(d.splitTextToSize(bem,170),x,y);y+=16;
-  if(d2){d.setFontSize(8.5);d.setTextColor(90,90,90);d.text(d.splitTextToSize('GAV-Referenz: '+d2.b+' – '+d2.e+': '+d2.w+' ('+(d2.ave?'allgemeinverbindlich':'nicht allgemeinverbindlich')+', Stand '+d2.y+')',170),x,y);d.setTextColor(40,40,40);d.setFontSize(10);}
+  d.setFontSize(9.5);d.setTextColor(GRAU[0],GRAU[1],GRAU[2]);
+  var bemZ=d.splitTextToSize(bem,170);d.text(bemZ,x,y);y+=bemZ.length*4.2+4;
+  if(d2){d.setFontSize(8.5);d.text(d.splitTextToSize('GAV-Referenz: '+d2.b+' – '+d2.e+': '+d2.w+' ('+(d2.ave?'allgemeinverbindlich':'nicht allgemeinverbindlich')+', Stand '+d2.y+')',170),x,y);}
+  // Unterschriften am Seitenende
   if(y>PH-112){d.addPage();y=22;}else{y=Math.max(y+12,PH-112);}
-  d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(193,18,28);d.text('Unterschriften',x,y);y+=4;d.setDrawColor(193,18,28);d.line(x,y,right,y);y+=10;
-  d.setTextColor(40,40,40);d.setFontSize(11);d.setFont('helvetica','bold');
+  sect('Unterschriften');y+=1.5;
+  d.setFontSize(11);d.setFont('helvetica','bold');
   d.text(gmbh,x,y);d.text(einsatz,110,y);y+=4.5;
-  d.setFont('helvetica','normal');d.setFontSize(8.5);d.setTextColor(90,90,90);
+  d.setFont('helvetica','normal');d.setFontSize(8.5);d.setTextColor(GRAU[0],GRAU[1],GRAU[2]);
   d.text(d.splitTextToSize('Verleiher (GmbH), vertreten durch '+owner,80),x,y);d.text('Einsatzbetrieb / Auftraggeber',110,y);
-  y+=20;d.setDrawColor(120,120,120);
+  y+=20;d.setDrawColor(120,120,120);d.setLineWidth(0.2);
   d.line(x,y,90,y);d.line(110,y,180,y);y+=4.5;
   d.text('Ort / Datum',x,y);d.text('Ort / Datum',110,y);
   y+=26;
   d.line(x,y,90,y);d.line(110,y,180,y);y+=4.5;
   d.text('Unterschrift',x,y);d.text('Unterschrift',110,y);y+=12;
-  d.setFontSize(9);d.setTextColor(40,40,40);
+  d.setFontSize(9);d.setTextColor(INK[0],INK[1],INK[2]);
   d.text(d.splitTextToSize('Bitte zweifach ausdrucken, beide Parteien unterschreiben – je ein Exemplar pro Partei.',170),x,y);
   var n=d.getNumberOfPages();
-  for(var i=1;i<=n;i++){d.setPage(i);d.setFont('helvetica','normal');d.setFontSize(8);d.setTextColor(120,120,120);
-   d.setDrawColor(200,200,200);d.line(x,PH-13,right,PH-13);
-   d.text('Stundenansatz-Vereinbarung'+(val('gmbh')?' – '+val('gmbh'):'')+'  ·  Dokument umfasst '+(n>1?n+' Seiten':'1 Seite'),x,PH-9);
-   d.text('Seite '+i+' von '+n,right,PH-9,{align:'right'});}
+  for(var i=1;i<=n;i++){d.setPage(i);d.setFont('helvetica','normal');d.setFontSize(8);d.setTextColor(GRAU[0],GRAU[1],GRAU[2]);
+   d.setDrawColor(LINIE[0],LINIE[1],LINIE[2]);d.setLineWidth(0.3);d.line(x,PH-13,right,PH-13);
+   d.text('Stundenansatz-Vereinbarung'+(val('gmbh')?' – '+val('gmbh'):''),x,PH-9);
+   d.text('Seite '+i+'/'+n,right,PH-9,{align:'right'});}
   d.save((gmbh.replace(/[^A-Za-z0-9]/g,'_')||'Vereinbarung')+'_Stundenansatz_Vereinbarung.pdf');
  }catch(e){alert('PDF-Bibliothek nicht geladen (Internet nötig). Es öffnet sich die Druckansicht – dort "Als PDF speichern" wählen.');window.print();}
 }
