@@ -163,7 +163,8 @@ button{max-width:100%;white-space:normal}
 <div class="row"><label>Weiterbildung / Kurse (pro Halbjahr)<sup class="fn"><a href="#r17">17</a></sup><small>×2 = pro Jahr</small></label><input id="wb_hj" type="number" value="3000"><span class="unit">CHF/HJ</span></div>
 <div class="row"><label>Betriebshaftpflicht &amp; Versicherungen<sup class="fn"><a href="#r18">18</a></sup></label><input id="vers" type="number" value="3380"><span class="unit">CHF</span></div>
 <div class="row"><label>Treuhand / Buchhaltung / Admin<sup class="fn"><a href="#r19">19</a></sup></label><input id="treu" type="number" value="4000"><span class="unit">CHF</span></div>
-<div class="row"><label>Berufskleidung / Diverses<sup class="fn"><a href="#r20">20</a></sup></label><input id="div" type="number" value="500"><span class="unit">CHF</span></div>
+<div class="row"><label>Berufskleidung / Diverses<sup class="fn"><a href="#r20">20</a></sup></label><input id="div" type="number" value="800"><span class="unit">CHF</span></div>
+<div class="row"><label>Telefon, IT, Bank &amp; Marketing<sup class="fn"><a href="#r28">28</a></sup></label><input id="it_bank" type="number" value="1400"><span class="unit">CHF</span></div>
 
 <h2>F · Auslastung, Preise &amp; MWST</h2>
 <div class="row"><label>Verrechenbare Stunden pro Jahr<sup class="fn"><a href="#r21">21</a></sup></label><input id="vstd" type="number" value="1800"><span class="unit">Std</span></div>
@@ -251,6 +252,7 @@ button{max-width:100%;white-space:normal}
 <li id="r25"><b>Zivilstand &amp; Kinder:</b> beeinflussen persönliche Einkommenssteuer/Kinderzulagen, nicht den Stundenansatz. FAK bleibt auch ohne Kinder geschuldet. <a href="https://www.ahv-iv.ch/p/6.08.d" target="_blank">www.ahv-iv.ch/p/6.08.d</a></li>
 <li id="r26"><b>Beruf-/GAV-Referenz:</b> Mindestlöhne aus offiziellen GAV (gav-service.ch, servizio-ccl.ch, swissstaffing) – nur Referenz, nicht verbindlich übernommen. Equal-Pay: bei Verleih in einen Betrieb mit allgemeinverbindlichem Branchen-GAV gelten dessen Lohnbedingungen. Stand 2025/2026; bei region-/erfahrungsabhängigen Stufen sind mehrere Werte angegeben (übernommen wird der erste/höchste). <a href="https://www.gav-service.ch" target="_blank">www.gav-service.ch</a></li>
 <li id="r27"><b>Deckungsbeitrag (Aufschlag auf die Selbstkosten):</b> die Differenz zwischen deinem Ansatz und den Selbstkosten je Stunde. <i>Kein</i> reiner Gewinn – davon gehen noch Gewinnsteuer, unternehmerisches Risiko (Leerzeiten, Krankheit) und Reserven ab. Nicht vergleichbar mit der Netto-Marge eines Temporärbüros.</li>
+<li id="r28"><b>Telefon, IT, Bank &amp; Marketing:</b> Geschäftsanteil Telefon, Software/Cloud, Bankspesen (KMU-Konto), Drucksachen/Werbung, GAV-Vollzugsbeitrag. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
 </ol>
 </div><!-- /side-box -->
 </aside>
@@ -380,7 +382,7 @@ function calc(){
  var brutto=basis*(1+(v('ferien')+v('feier')+v('ml13'))/100);
  var ag=(v('ahv')+v('alv')+v('fak')+v('uvg')+v('vwk')+v('bvg'))/100;
  var lohnk=brutto*(1+ag);
- var gkjahr=v('wz_afa')+v('wz_unt')+v('transport')+v('wb_hj')*2+v('vers')+v('treu')+v('div');
+ var gkjahr=v('wz_afa')+v('wz_unt')+v('transport')+v('wb_hj')*2+v('vers')+v('treu')+v('div')+v('it_bank');
  var vstd=v('vstd');var gkstd=vstd?gkjahr/vstd:0;
  var S=lohnk+v('spesen')+gkstd;var m=v('mwst')/100;
  document.getElementById('r_brutto').textContent=chf(brutto);
@@ -423,7 +425,7 @@ function makePDF(){
  var mstd=v('wstd')*v('wj')/12;var basis=mstd?v('lohn')/mstd:0;var zu=v('ferien')+v('feier')+v('ml13');
  var brutto=basis*(1+zu/100);var agp=v('ahv')+v('alv')+v('fak')+v('uvg')+v('vwk')+v('bvg');
  var lohnk=brutto*(1+agp/100);
- var gkjahr=v('wz_afa')+v('wz_unt')+v('transport')+v('wb_hj')*2+v('vers')+v('treu')+v('div');
+ var gkjahr=v('wz_afa')+v('wz_unt')+v('transport')+v('wb_hj')*2+v('vers')+v('treu')+v('div')+v('it_bank');
  var vstd=v('vstd');var gkstd=vstd?gkjahr/vstd:0;var spesen=v('spesen');
  var selbst=lohnk+spesen+gkstd;var ansatz=v('ansatz');var marge=ansatz-selbst;var margep=selbst?marge/selbst*100:0;
  var mwst=v('mwst');var mwsth=ansatz*(1+mwst/100);var d2=currentGav();
@@ -470,6 +472,7 @@ function makePDF(){
   line('Betriebshaftpflicht & Versicherungen',chf0(v('vers')));
   line('Treuhand / Buchhaltung / Admin',chf0(v('treu')));
   line('Berufskleidung / Diverses',chf0(v('div')));
+  line('Telefon, IT, Bank & Marketing',chf0(v('it_bank')));
   line('Total Betriebskosten / Jahr',chf0(gkjahr),true);
   line('Betriebskosten je Std (bei '+vstd+' verr. Std)',chf(gkstd));
   gap(2);d.setFont('helvetica','bold');d.text('4 · Ergebnis',x,y);y+=6;d.setFont('helvetica','normal');
