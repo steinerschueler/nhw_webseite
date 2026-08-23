@@ -155,6 +155,7 @@
     </span>
     <a class="cal-btn is-disabled" id="anfrage" role="button" aria-disabled="true">Anfrage per E-Mail</a>
     <button class="cal-link" id="showtext" type="button" hidden>Text kopieren</button>
+    <button class="cal-link" id="clearsel" type="button" hidden>Alles abwählen</button>
   </div>
 </div></div>
 
@@ -464,7 +465,8 @@
       rateN=document.getElementById("rateN"),
       rateS=document.getElementById("rateS"),
       rateNwrap=document.getElementById("rateNwrap"),
-      rateSwrap=document.getElementById("rateSwrap");
+      rateSwrap=document.getElementById("rateSwrap"),
+      clearsel=document.getElementById("clearsel");
 
   /* Gebot lesen: mindestens der Netto-Ansatz, auf 5 Rappen gerundet.
      Der Betrieb darf freiwillig MEHR bieten (Eric 2026-08-23); weniger geht nicht. */
@@ -495,6 +497,7 @@
       anfrage.setAttribute("aria-disabled","true");
       anfrage.removeAttribute("href");
       showtext.hidden = true;
+      clearsel.hidden = true;
       fallback.hidden = true;
       return;
     }
@@ -507,6 +510,7 @@
     anfrage.classList.remove("is-disabled");
     anfrage.setAttribute("aria-disabled","false");
     showtext.hidden = false;
+    clearsel.hidden = false;
     fbtext.value = req.body;
   }
 
@@ -515,6 +519,14 @@
     if(!fallback.hidden){
       fallback.scrollIntoView({behavior: reduce()?"auto":"smooth", block:"center"});
     }
+  });
+  clearsel.addEventListener("click", function(){
+    selection = {};
+    Array.prototype.forEach.call(document.querySelectorAll(".d-pick-normal, .d-pick-notstromer"), function(cell){
+      cell.classList.remove("d-pick-normal","d-pick-notstromer");
+      cell.setAttribute("aria-pressed","false");
+    });
+    updateBar();
   });
   document.getElementById("fbcopy").addEventListener("click", function(){
     var ok = document.getElementById("fbok");
