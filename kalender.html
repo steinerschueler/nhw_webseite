@@ -33,6 +33,10 @@
 .cal-btn:hover{filter:brightness(1.07)}
 .cal-btn.is-disabled{background:var(--grey);opacity:.5;cursor:not-allowed;pointer-events:none}
 .cal-link{background:none;border:none;color:var(--red);font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;text-decoration:underline;padding:4px 2px}
+.cal-rates{display:inline-flex;gap:8px 14px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--ink2)}
+.cal-rates label{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-weight:600}
+.cal-rates[hidden],.cal-rates label[hidden]{display:none}
+.cal-rates input{width:4.8em;font:inherit;font-weight:700;color:var(--ink);background:#fff;border:1px solid #cfc9bd;border-radius:6px;padding:5px 6px}
 
 /* ---- Fallback (kein Mailprogramm) ---- */
 .cal-fallback{padding-block:16px 0}
@@ -113,18 +117,18 @@
 <section class="wrap phead">
   <div class="kick mono">Jahreskalender</div>
   <h1 class="disp">Wann ich frei bin</h1>
-  <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst – <b>einmal</b> für den Normaltarif (65.–), <b>zweimal</b> für den Notstromer (75.–), ein drittes Mal hebt die Wahl wieder auf. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail. Reserviert wird dabei nichts – du fragst, ich sage zu oder ab.</p>
+  <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst – <b>einmal</b> für den Normaltarif (68.–), <b>zweimal</b> für den Notstromer (76.50), ein drittes Mal hebt die Wahl wieder auf. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail – den Ansatz darfst du darin freiwillig erhöhen. Reserviert wird dabei nichts – du fragst, ich sage zu oder ab.</p>
 </section>
 
 <section class="wrap">
   <div class="cal-cards">
     <div class="cal-card">
       <h3><span class="cc-sw sw-orange"></span>Was Orange dir zusichert</h3>
-      <p>Ein oranger Tag ist ein zugesagter Einsatz zu 65.–. Die Zusage gilt. Verschieben kann sie einzig ein Notstromer-Einsatz bei einem anderen Betrieb – und der wird mindestens drei Arbeitstage im Voraus gebucht, du weisst also rechtzeitig Bescheid. Selten, und mit sofortiger Meldung an dich.</p>
+      <p>Ein oranger Tag ist ein zugesagter Einsatz zum Normaltarif. Die Zusage gilt. Verschieben kann sie einzig ein Notstromer-Einsatz bei einem anderen Betrieb – und der wird mindestens drei Arbeitstage im Voraus gebucht, du weisst also rechtzeitig Bescheid. Selten, und mit sofortiger Meldung an dich.</p>
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-red"></span>Zwei Tarife</h3>
-      <p>Normal 65.–/Std, Mo–Fr – ein üblicher Arbeitstag rund 8 Std (Zeitfenster 06:45–18:00). Notstromer 75.–/Std für kurzfristige Einsätze – auch nachts oder am Wochenende, dann auf Anfrage ausserhalb des Kalenders. Nacht-, Sonntags- und Feiertagsstunden laufen zum höheren Notstromer-Ansatz (75.–); der GAV-Zuschlag kommt als zusätzliche Zeit auf den Rapport, nicht als eigener Tarif.</p>
+      <p>Normal 68.–/Std, Mo–Fr – ein üblicher Arbeitstag rund 8 Std (Zeitfenster 06:45–18:00). Notstromer 76.50/Std für kurzfristige Einsätze – auch nachts oder am Wochenende, dann auf Anfrage ausserhalb des Kalenders. Nacht-, Sonntags- und Feiertagsstunden laufen zum höheren Notstromer-Ansatz; der GAV-Zuschlag kommt als zusätzliche Zeit auf den Rapport, nicht als eigener Tarif. Beides sind Netto-Ansätze mit 15 % Einführungsrabatt (Listenpreise 80.–/90.–) – und Mindestwerte: In der Anfrage darfst du den Ansatz freiwillig erhöhen, wenn dir die Tage besonders wichtig sind.</p>
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-grey"></span>Graue Tage</h3>
@@ -136,12 +140,16 @@
 <div class="cal-toolbar"><div class="wrap cal-toolbar-in">
   <div class="cal-legend" aria-label="Legende">
     <span class="lg"><span class="sw sw-green"></span>frei</span>
-    <span class="lg"><span class="sw sw-orange"></span>Einsatz 65.–</span>
-    <span class="lg"><span class="sw sw-red"></span>Notstromer 75.–</span>
+    <span class="lg"><span class="sw sw-orange"></span>Einsatz Normaltarif</span>
+    <span class="lg"><span class="sw sw-red"></span>Notstromer</span>
     <span class="lg"><span class="sw sw-grey"></span>nicht verfügbar</span>
   </div>
   <div class="cal-select">
-    <span class="cal-selsum" id="selsum">Grüne Tage antippen: 1× <span class="t-normal">Normal</span> 65.– · 2× <span class="t-notstromer">Notstromer</span> 75.– · 3× frei — Ziehen malt</span>
+    <span class="cal-selsum" id="selsum">Grüne Tage antippen: 1× <span class="t-normal">Normal</span> · 2× <span class="t-notstromer">Notstromer</span> · 3× frei — Ziehen malt</span>
+    <span class="cal-rates" id="rates" hidden title="Netto-Ansätze als Mindestwert – mehr bieten ist erlaubt">
+      <label id="rateNwrap" hidden><span class="t-normal">Normal</span>&nbsp;CHF <input id="rateN" type="number" min="68" step="0.50" value="68" inputmode="decimal" aria-label="Ansatz Normaltarif, CHF je Stunde – Mindestwert 68, mehr bieten erlaubt">/Std</label>
+      <label id="rateSwrap" hidden><span class="t-notstromer">Notstromer</span>&nbsp;CHF <input id="rateS" type="number" min="76.5" step="0.50" value="76.50" inputmode="decimal" aria-label="Ansatz Notstromer, CHF je Stunde – Mindestwert 76.50, mehr bieten erlaubt">/Std</label>
+    </span>
     <a class="cal-btn is-disabled" id="anfrage" role="button" aria-disabled="true">Anfrage per E-Mail</a>
     <button class="cal-link" id="showtext" type="button" hidden>Text kopieren</button>
   </div>
@@ -178,11 +186,12 @@
   "use strict";
   var K = window.KALENDER || {};
   var MAIL = "info@naville-handwerk.ch";
-  var RATE_NORMAL = 65;                    // Normaltarif  65.-/Std (orange)
-  var RATE_NOTST  = 75;                    // Notstromer   75.-/Std (rot)
+  var RATE_NORMAL = 68;                    // Normaltarif, netto (Liste 80.- mit 15 % Einführungsrabatt)
+  var RATE_NOTST  = 76.5;                  // Notstromer,  netto (Liste 90.- mit 15 % Einführungsrabatt)
+                                           // Beides Mindestwerte: im Anfrage-Feld darf der Betrieb mehr bieten.
   var LBL_N = '<span class="t-normal">Normal</span>';         // orange unterstrichen
   var LBL_S = '<span class="t-notstromer">Notstromer</span>'; // rot unterstrichen
-  var HINT = 'Grüne Tage antippen: 1× '+LBL_N+' 65.– · 2× '+LBL_S+' 75.– · 3× frei — Ziehen malt';
+  var HINT = 'Grüne Tage antippen: 1× '+LBL_N+' · 2× '+LBL_S+' · 3× frei — Ziehen malt';
   var HOURS = 8;                           // Richtwert Std/Tag für die CHF-Schätzung:
                                            // normale Arbeitszeit = 40-Std-Woche = Ø 8 h/Tag
                                            // (GAV Art. 20.2). Die 10 h/Tag = 50-Std-Woche sind
@@ -201,6 +210,7 @@
   function fmtDate(d){ return pad(d.getDate())+"."+pad(d.getMonth()+1)+"."+d.getFullYear(); }
   function fmtChf(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,"'"); }
   function fmtH(h){ return String(h).replace(".",","); }   // 8.5 -> "8,5"
+  function fmtRate(n){ return n%1 ? n.toFixed(2) : n+".–"; }   // 68 -> "68.–", 76.5 -> "76.50"
 
   var today = new Date(); today.setHours(0,0,0,0);
   var todayISO = iso(today);
@@ -260,8 +270,8 @@
   /* ---- Zustand eines Tages bestimmen (Reihenfolge = Vorrang) ---- */
   function stateFor(d){
     var k = iso(d);
-    if(NOTST[k]) return {cls:"d-notstromer",cap:"Notstromer",title:"Notstromer-Einsatz · 75.–/Std",st:"notstromer"};
-    if(NORM[k])  return {cls:"d-normal",cap:"Einsatz",title:"Einsatz · Normaltarif 65.–/Std",st:"normal"};
+    if(NOTST[k]) return {cls:"d-notstromer",cap:"Notstromer",title:"Notstromer-Einsatz",st:"notstromer"};
+    if(NORM[k])  return {cls:"d-normal",cap:"Einsatz",title:"Einsatz · Normaltarif",st:"normal"};
     if(AUSF[k])  return {cls:"d-grey",cap:"krank",title:"krank / Unfall — nicht verfügbar",st:"grey"};
     if(FER[k])   return {cls:"d-grey",cap:"Ferien",title:"Ferien — nicht verfügbar",st:"grey"};
     if(WEIT[k])  return {cls:"d-grey",cap:"Kurs/Messe",title:"Weiterbildung / Messe — nicht verfügbar",st:"grey"};
@@ -386,9 +396,11 @@
   /* ---- Anfrage-Text + mailto bauen (mit Längen-Schutz) ---- */
   var SUBJECT = "Einsatz-Anfrage über naville-handwerk.ch";
   function tarifLine(nCount,sCount){
-    if(nCount && sCount) return "Normaltarif "+RATE_NORMAL+".– / Notstromer "+RATE_NOTST+".– je Std";
-    if(sCount)           return "Notstromer "+RATE_NOTST+".–/Std";
-    return "Normaltarif "+RATE_NORMAL+".–/Std";
+    var n = "Normaltarif "+fmtRate(curRateN())+"/Std"+(curRateN()>RATE_NORMAL ? " (dein Angebot; Richtsatz "+fmtRate(RATE_NORMAL)+")" : "");
+    var s = "Notstromer "+fmtRate(curRateS())+"/Std"+(curRateS()>RATE_NOTST ? " (dein Angebot; Richtsatz "+fmtRate(RATE_NOTST)+")" : "");
+    if(nCount && sCount) return n+" / "+s;
+    if(sCount)           return s;
+    return n;
   }
   function makeBody(lines, nCount, sCount, total, chf){
     return "Hallo Eric\n\n"+
@@ -410,11 +422,11 @@
   }
   function buildRequest(){
     var nCount=countFor("normal"), sCount=countFor("notstromer"), total=nCount+sCount;
-    var chf = Math.round((nCount*HOURS*RATE_NORMAL + sCount*HOURS*RATE_NOTST)/10)*10;   // auf 10.- gerundet
+    var chf = Math.round((nCount*HOURS*curRateN() + sCount*HOURS*curRateS())/10)*10;   // auf 10.- gerundet
     var lines=[];
-    if(nCount) lines = lines.concat(groupLines("Normaltarif ("+RATE_NORMAL+".–/Std):", rangesFor("normal")));
+    if(nCount) lines = lines.concat(groupLines("Normaltarif ("+fmtRate(curRateN())+"/Std):", rangesFor("normal")));
     if(nCount && sCount) lines.push("");
-    if(sCount) lines = lines.concat(groupLines("Notstromer ("+RATE_NOTST+".–/Std):", rangesFor("notstromer")));
+    if(sCount) lines = lines.concat(groupLines("Notstromer ("+fmtRate(curRateS())+"/Std):", rangesFor("notstromer")));
     var body = makeBody(lines, nCount, sCount, total, chf);   // voller Text (Fallback-Feld, ohne Limit)
     // mailto-Längenlimit (~2000): nur die URL notfalls kürzen, der Fallback-Text bleibt vollständig
     var urlLines = lines.slice(), url = makeURL(body);
@@ -431,10 +443,36 @@
       anfrage=document.getElementById("anfrage"),
       showtext=document.getElementById("showtext"),
       fallback=document.getElementById("fallback"),
-      fbtext=document.getElementById("fbtext");
+      fbtext=document.getElementById("fbtext"),
+      rates=document.getElementById("rates"),
+      rateN=document.getElementById("rateN"),
+      rateS=document.getElementById("rateS"),
+      rateNwrap=document.getElementById("rateNwrap"),
+      rateSwrap=document.getElementById("rateSwrap");
+
+  /* Gebot lesen: mindestens der Netto-Ansatz, auf 5 Rappen gerundet.
+     Der Betrieb darf freiwillig MEHR bieten (Eric 2026-08-23); weniger geht nicht. */
+  function rateVal(input, min){
+    var v = parseFloat(String(input.value).replace(",","."));
+    if(!isFinite(v) || v < min) v = min;
+    return Math.round(v*20)/20;
+  }
+  function curRateN(){ return rateVal(rateN, RATE_NORMAL); }
+  function curRateS(){ return rateVal(rateS, RATE_NOTST); }
+  [rateN, rateS].forEach(function(inp){
+    inp.addEventListener("input", function(){ updateBar(); });
+    inp.addEventListener("change", function(){          // beim Verlassen normalisieren
+      var v = rateVal(inp, inp===rateN ? RATE_NORMAL : RATE_NOTST);
+      inp.value = v%1 ? v.toFixed(2) : String(v);
+      updateBar();
+    });
+  });
 
   function updateBar(){
     var nCount=countFor("normal"), sCount=countFor("notstromer"), total=nCount+sCount;
+    rates.hidden = (total===0);
+    rateNwrap.hidden = !nCount;
+    rateSwrap.hidden = !sCount;
     if(total===0){
       selsum.innerHTML = HINT;
       anfrage.classList.add("is-disabled");
@@ -446,8 +484,8 @@
     }
     var req = buildRequest();
     var H = fmtH(HOURS), parts=[];
-    if(nCount) parts.push(LBL_N+" ("+nCount+" Tag"+(nCount>1?"e":"")+" × "+H+" Std/Tag × "+RATE_NORMAL+".–)");
-    if(sCount) parts.push(LBL_S+" ("+sCount+" Tag"+(sCount>1?"e":"")+" × "+H+" Std/Tag × "+RATE_NOTST+".–)");
+    if(nCount) parts.push(LBL_N+" ("+nCount+" Tag"+(nCount>1?"e":"")+" × "+H+" Std/Tag × "+fmtRate(curRateN())+")");
+    if(sCount) parts.push(LBL_S+" ("+sCount+" Tag"+(sCount>1?"e":"")+" × "+H+" Std/Tag × "+fmtRate(curRateS())+")");
     selsum.innerHTML = parts.join(" + ")+" = <b>ca. CHF "+fmtChf(req.chf)+"</b>";
     anfrage.href = req.url;
     anfrage.classList.remove("is-disabled");
