@@ -157,12 +157,12 @@ button{max-width:100%;white-space:normal}
 <div class="row"><label>BVG / Pensionskasse (AG)<sup class="fn"><a href="#r13">13</a></sup><small>nur AG-Anteil (mind. die Hälfte); Richtwert nach Alter vorbefüllt – exakten Satz bei der Pensionskasse nachschauen</small></label><input id="bvg" class="auto" type="number" step="0.01" value="4.00"><span class="unit">%</span></div>
 
 <h2>E · Betriebskosten (pro Jahr)</h2>
-<div class="row"><label>Werkzeug &amp; Messgeräte – Abschreibung<sup class="fn"><a href="#r14">14</a></sup></label><input id="wz_afa" type="number" value="2000"><span class="unit">CHF</span></div>
+<div class="row"><label>Werkzeug &amp; Messgeräte – Abschreibung<sup class="fn"><a href="#r14">14</a></sup></label><input id="wz_afa" type="number" value="3000"><span class="unit">CHF</span></div>
 <div class="row"><label>Werkzeug/Messgeräte – Unterhalt &amp; Reparatur<sup class="fn"><a href="#r15">15</a></sup></label><input id="wz_unt" type="number" value="800"><span class="unit">CHF</span></div>
-<div class="row"><label>Transportgeräte / Fahrzeug<sup class="fn"><a href="#r16">16</a></sup></label><input id="transport" type="number" value="600"><span class="unit">CHF</span></div>
-<div class="row"><label>Weiterbildung / Kurse (pro Halbjahr)<sup class="fn"><a href="#r17">17</a></sup><small>×2 = pro Jahr</small></label><input id="wb_hj" type="number" value="1200"><span class="unit">CHF/HJ</span></div>
-<div class="row"><label>Betriebshaftpflicht &amp; Versicherungen<sup class="fn"><a href="#r18">18</a></sup></label><input id="vers" type="number" value="800"><span class="unit">CHF</span></div>
-<div class="row"><label>Treuhand / Buchhaltung / Admin<sup class="fn"><a href="#r19">19</a></sup></label><input id="treu" type="number" value="1500"><span class="unit">CHF</span></div>
+<div class="row"><label>Transportgeräte / Fahrzeug<sup class="fn"><a href="#r16">16</a></sup></label><input id="transport" type="number" value="1500"><span class="unit">CHF</span></div>
+<div class="row"><label>Weiterbildung / Kurse (pro Halbjahr)<sup class="fn"><a href="#r17">17</a></sup><small>×2 = pro Jahr</small></label><input id="wb_hj" type="number" value="3000"><span class="unit">CHF/HJ</span></div>
+<div class="row"><label>Betriebshaftpflicht &amp; Versicherungen<sup class="fn"><a href="#r18">18</a></sup></label><input id="vers" type="number" value="3380"><span class="unit">CHF</span></div>
+<div class="row"><label>Treuhand / Buchhaltung / Admin<sup class="fn"><a href="#r19">19</a></sup></label><input id="treu" type="number" value="4000"><span class="unit">CHF</span></div>
 <div class="row"><label>Berufskleidung / Diverses<sup class="fn"><a href="#r20">20</a></sup></label><input id="div" type="number" value="500"><span class="unit">CHF</span></div>
 
 <h2>F · Auslastung, Preise &amp; MWST</h2>
@@ -240,9 +240,9 @@ button{max-width:100%;white-space:normal}
 <li id="r14"><b>Werkzeug-Abschreibung:</b> Anschaffung verteilt auf Nutzungsdauer (ESTV-Abschreibungssätze). <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
 <li id="r15"><b>Werkzeug-Unterhalt:</b> Betriebsaufwand. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
 <li id="r16"><b>Transport/Fahrzeug:</b> Abschreibung &amp; Unterhalt. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
-<li id="r17"><b>Weiterbildung:</b> Geschäftsaufwand; teils branchenüblich oder normativ verlangte Kurse/Zertifikate. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
+<li id="r17"><b>Weiterbildung:</b> Geschäftsaufwand; teils branchenüblich oder normativ verlangte Kurse/Zertifikate. Die Voreinstellung entspricht zwei Kurswochen pro Jahr zum Nichtmitglieder-Tarif von EIT.swiss (Stand 2026) – ohne Installationsbewilligung kann meine GmbH keine EIT.bern-/EIT.swiss-Mitgliedschaft abschliessen, darum kosten die Kurse rund das Doppelte des Mitgliederpreises. <a href="https://www.eit.swiss" target="_blank">www.eit.swiss</a> <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
 <li id="r18"><b>Betriebshaftpflicht:</b> freiwillig; Unfall bereits über SUVA. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
-<li id="r19"><b>Treuhand/Buchhaltung:</b> Buchführungspflicht der GmbH (Art. 957 ff. OR). <a href="https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de#art_957" target="_blank">www.fedlex.admin.ch/eli/cc/27/317_321_377/de#art_957</a></li>
+<li id="r19"><b>Treuhand/Buchhaltung:</b> Buchführungspflicht der GmbH (Art. 957 ff. OR). Die Voreinstellung entspricht der marktüblichen Vollauslagerung für eine Kleinst-GmbH – Buchhaltung, Jahresabschluss, MWST-Abrechnungen, Lohn für eine Person und Steuererklärung (Marktband ~3'000–5'500/Jahr, Stand 2026). <a href="https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de#art_957" target="_blank">www.fedlex.admin.ch/eli/cc/27/317_321_377/de#art_957</a></li>
 <li id="r20"><b>Berufskleidung/Diverses:</b> Geschäftsaufwand. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
 <li id="r21"><b>Verrechenbare Stunden:</b> Erfahrungswert ~1'600–1'800. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
 <li id="r22"><b>Ansatz an Einsatzbetrieb:</b> Marktwert; Koeffizient ~1,5–1,8 × Bruttostundenlohn. SECO. <a href="https://www.seco.admin.ch/seco/de/home/Arbeit/Personenfreizugigkeit_Arbeitsbeziehungen/Private_Arbeitsvermittlung_und_Personalverleih.html" target="_blank">www.seco.admin.ch/seco/de/home/Arbeit/Personenfreizugigkeit_Arbeitsbeziehungen/Private_Arbeitsvermittlung_und_Personalverleih.html</a></li>
