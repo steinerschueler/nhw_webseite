@@ -69,6 +69,9 @@
 .d-notstromer{background:var(--red);color:#fff}
 .d-grey{background:var(--grey);color:#fff}
 .d-muted{background:#ECEAE1;color:#AEA99D}
+.d-we{cursor:pointer}
+.d-we:hover{filter:brightness(.95)}
+.d-we:focus-visible{outline:2.5px solid var(--ink);outline-offset:1px}
 .is-past{opacity:.4;filter:grayscale(.5);cursor:default!important}
 .is-past.d-free:hover{filter:grayscale(.5)}
 .is-today{outline:2.5px solid var(--ink);outline-offset:1px;z-index:2}
@@ -117,7 +120,7 @@
 <section class="wrap phead">
   <div class="kick mono">Jahreskalender</div>
   <h1 class="disp">Wann ich frei bin</h1>
-  <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst – <b>einmal</b> für den Normaltarif (68.–), <b>zweimal</b> für den Notstromer (76.50), ein drittes Mal hebt die Wahl wieder auf. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail – den Ansatz darfst du darin freiwillig erhöhen. Reserviert wird dabei nichts – du fragst, ich sage zu oder ab.</p>
+  <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst – <b>einmal</b> für den Normaltarif (68.–), <b>zweimal</b> für den Notstromer (76.50), ein drittes Mal hebt die Wahl wieder auf. Samstage und Sonntage kannst du ebenfalls antippen – am Wochenende gilt nur der Notstromer. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail – den Ansatz darfst du darin freiwillig erhöhen. Reserviert wird dabei nichts – du fragst, ich sage zu oder ab.</p>
 </section>
 
 <section class="wrap">
@@ -128,7 +131,7 @@
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-red"></span>Zwei Tarife</h3>
-      <p>Normal 68.–/Std, Mo–Fr – ein üblicher Arbeitstag rund 8 Std (Zeitfenster 06:45–18:00). Notstromer 76.50/Std für kurzfristige Einsätze – auch nachts oder am Wochenende, dann auf Anfrage ausserhalb des Kalenders. Nacht-, Sonntags- und Feiertagsstunden laufen zum höheren Notstromer-Ansatz; der GAV-Zuschlag kommt als zusätzliche Zeit auf den Rapport, nicht als eigener Tarif. Beides sind Netto-Ansätze mit 15 % Einführungsrabatt (Listenpreise 80.–/90.–) – und Mindestwerte: In der Anfrage darfst du den Ansatz freiwillig erhöhen, wenn dir die Tage besonders wichtig sind.</p>
+      <p>Normal 68.–/Std, Mo–Fr – ein üblicher Arbeitstag rund 8 Std (Zeitfenster 06:45–18:00). Notstromer 76.50/Std für kurzfristige Einsätze – auch nachts oder am Wochenende. Samstag und Sonntag kannst du direkt im Kalender anwählen (nur Notstromer); Nachteinsätze bleiben auf Anfrage. Nacht-, Sonntags- und Feiertagsstunden laufen zum höheren Notstromer-Ansatz; der GAV-Zuschlag kommt als zusätzliche Zeit auf den Rapport, nicht als eigener Tarif. Beides sind Netto-Ansätze mit 15 % Einführungsrabatt (Listenpreise 80.–/90.–) – und Mindestwerte: In der Anfrage darfst du den Ansatz freiwillig erhöhen, wenn dir die Tage besonders wichtig sind.</p>
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-grey"></span>Graue Tage</h3>
@@ -267,6 +270,10 @@
   var STARTISO = START ? iso(START) : null;
   var STARTTXT = START ? (START.getDate()+". "+MONTHS[START.getMonth()]+" "+START.getFullYear()) : "";
 
+  /* ---- Fix gesperrte Tage, jährlich wiederkehrend: "MM-TT" -> Wort auf dem Tag.
+     27.12. nicht reservierbar (Eric 2026-08-23). ---- */
+  var SPERR = { "12-27": "belegt" };
+
   /* ---- Zustand eines Tages bestimmen (Reihenfolge = Vorrang) ---- */
   function stateFor(d){
     var k = iso(d);
@@ -276,10 +283,11 @@
     if(FER[k])   return {cls:"d-grey",cap:"Ferien",title:"Ferien — nicht verfügbar",st:"grey"};
     if(WEIT[k])  return {cls:"d-grey",cap:"Kurs/Messe",title:"Weiterbildung / Messe — nicht verfügbar",st:"grey"};
     if(TERM[k])  return {cls:"d-grey",cap:"Termin",title:"Termin — nicht verfügbar",st:"grey"};
+    if(SPERR[k.slice(5)]) return {cls:"d-grey",cap:SPERR[k.slice(5)],title:"belegt — nicht verfügbar",st:"grey"};
     if(STARTISO && k < STARTISO) return {cls:"d-grey",cap:"",title:"Noch nicht verfügbar – buchbar ab "+STARTTXT,st:"grey"};
     if(FEIER[k]) return {cls:"d-grey",cap:"Feiertag",title:"Feiertag: "+FEIER[k]+" — nicht verfügbar",st:"grey"};
     var wd = d.getDay();
-    if(wd===0||wd===6) return {cls:"d-muted",cap:"",title:"Wochenende — ausserhalb Regelfenster; Notstromer auf Anfrage",st:"muted"};
+    if(wd===0||wd===6) return {cls:"d-muted d-we",cap:"",title:"Wochenende — nur Notstromer: antippen und anfragen",st:"wochenende"};
     return {cls:"d-free",cap:"",title:"frei — antippen und anfragen",st:"free"};
   }
 
@@ -311,8 +319,9 @@
       if(s.cap) cell.appendChild(el("span","dcap",s.cap));
       cell.title = (past?"vergangen · ":"")+s.title;
       cell.setAttribute("aria-label", fmtDate(d)+" — "+(past?"vergangen, ":"")+s.title);
-      var selectable = (s.st==="free") && !past;
+      var selectable = (s.st==="free" || s.st==="wochenende") && !past;
       if(selectable){
+        if(s.st==="wochenende") cell.dataset.we = "1";
         cell.setAttribute("role","button");
         cell.setAttribute("tabindex","0");
         cell.setAttribute("aria-pressed","false");
@@ -330,15 +339,18 @@
   /* ---- Auswahl per Klick ODER Ziehen (Maustaste gedrückt halten) ----
      Jeder Klick schaltet einen Schritt weiter:
        frei -> Normaltarif (orange) -> Notstromer (rot) -> wieder frei.
+       Wochenende (hellgrau): frei -> Notstromer -> wieder frei (kein Normaltarif).
      Ziehen "malt": der Startklick bestimmt den Zielzustand (ein Schritt vom
      Anker-Tag aus); alle überfahrenen Tage bekommen denselben Zustand – jeder
      Tag nur einmal pro Zug (drag.painted).
      Touch: normales Tippen schaltet einen Schritt weiter; Wischen scrollt. */
-  var STEP = { free:"normal", normal:"notstromer", notstromer:null };
-  function nextState(cur){ return STEP[cur||"free"]; }   // fehlt -> "normal", ... , "notstromer" -> null
+  var STEP    = { free:"normal", normal:"notstromer", notstromer:null };
+  var STEP_WE = { free:"notstromer", notstromer:null };   // Wochenende kennt nur den Notstromer
+  function nextState(cur, we){ return (we?STEP_WE:STEP)[cur||"free"]; }
 
   function applyState(cell, state){
     var k = cell.dataset.iso;
+    if(state==="normal" && cell.dataset.we) return;   // Wochenende: Normaltarif nicht malbar
     cell.classList.remove("d-pick-normal","d-pick-notstromer");
     if(state==="normal"){ selection[k]="normal"; cell.classList.add("d-pick-normal"); }
     else if(state==="notstromer"){ selection[k]="notstromer"; cell.classList.add("d-pick-notstromer"); }
@@ -349,7 +361,7 @@
   var drag = { on:false, paint:null, type:null, anchor:null, moved:false, painted:null };
   function onDown(e){
     drag.on=true; drag.type=e.pointerType; drag.anchor=this; drag.moved=false; drag.painted={};
-    drag.paint = nextState(selection[this.dataset.iso]);   // ein Schritt weiter als der Anker-Tag
+    drag.paint = nextState(selection[this.dataset.iso], this.dataset.we);   // ein Schritt weiter als der Anker-Tag
     drag.painted[this.dataset.iso]=true;
     if(e.pointerType!=="touch"){          // Maus/Pen: sofort malen, Text-Markieren unterdrücken
       e.preventDefault();
@@ -364,7 +376,7 @@
     applyState(this, drag.paint); updateBar();
   }
   function onKey(e){
-    if(e.key===" "||e.key==="Enter"){ e.preventDefault(); applyState(this, nextState(selection[this.dataset.iso])); updateBar(); }
+    if(e.key===" "||e.key==="Enter"){ e.preventDefault(); applyState(this, nextState(selection[this.dataset.iso], this.dataset.we)); updateBar(); }
   }
   document.addEventListener("pointerup", function(){
     if(drag.on && drag.type==="touch" && !drag.moved && drag.anchor){
@@ -402,12 +414,13 @@
     if(sCount)           return s;
     return n;
   }
-  function makeBody(lines, nCount, sCount, total, chf){
+  function makeBody(lines, nCount, sCount, total, chf, weNote){
     return "Hallo Eric\n\n"+
       "ich möchte dich für folgende Tage anfragen:\n\n"+
       lines.join("\n")+"\n\n"+
       "Umfang: "+total+" Tag"+(total>1?"e":"")+" total · Richtwert ca. "+fmtH(HOURS)+" Std/Tag · "+tarifLine(nCount,sCount)+"\n"+
-      "Geschätzter Betrag: ca. CHF "+fmtChf(chf)+" (zzgl. MWST)\n\n"+
+      "Geschätzter Betrag: ca. CHF "+fmtChf(chf)+" (zzgl. MWST)\n"+
+      (weNote ? weNote+"\n" : "")+"\n"+
       "Firma:\nAnsprechperson:\nTelefon:\nGewünschte Arbeit / Bemerkung:\n\n"+
       "Freundliche Grüsse";
   }
@@ -427,13 +440,16 @@
     if(nCount) lines = lines.concat(groupLines("Normaltarif ("+fmtRate(curRateN())+"/Std):", rangesFor("normal")));
     if(nCount && sCount) lines.push("");
     if(sCount) lines = lines.concat(groupLines("Notstromer ("+fmtRate(curRateS())+"/Std):", rangesFor("notstromer")));
-    var body = makeBody(lines, nCount, sCount, total, chf);   // voller Text (Fallback-Feld, ohne Limit)
+    var weNote = "";
+    for(var k in selection){ var w=parseISO(k).getDay(); if(w===0||w===6){
+      weNote = "Hinweis: Wochenendstunden laufen mit GAV-Zuschlag als zusätzliche Zeit auf dem Rapport."; break; } }
+    var body = makeBody(lines, nCount, sCount, total, chf, weNote);   // voller Text (Fallback-Feld, ohne Limit)
     // mailto-Längenlimit (~2000): nur die URL notfalls kürzen, der Fallback-Text bleibt vollständig
     var urlLines = lines.slice(), url = makeURL(body);
     while(url.length>1900 && urlLines.length>2){
       urlLines.pop();
       var trimmed = urlLines.concat(["- … weitere Tage gekürzt — bitte im Text unten ergänzen"]);
-      url = makeURL(makeBody(trimmed, nCount, sCount, total, chf));
+      url = makeURL(makeBody(trimmed, nCount, sCount, total, chf, weNote));
     }
     return {url:url, body:body, total:total, nCount:nCount, sCount:sCount, chf:chf};
   }
