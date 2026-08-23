@@ -20,7 +20,6 @@ section{padding:14px 0 8px}
 .introbox strong{color:var(--red)}
 .introbox2{background:#F6F4EE;border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 14px;font-size:14px;color:var(--ink2);line-height:1.55;max-width:940px}
 .introbox2 strong{color:var(--ink)}
-.introp{color:var(--grey);font-size:14px;max-width:940px}
 .calc-section{padding-top:6px}
 .calc-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:34px;align-items:start;max-width:1180px;margin:0 auto;padding:0 clamp(20px,5vw,40px)}
 .calc-main{min-width:0}
@@ -115,9 +114,8 @@ button{max-width:100%;white-space:normal}
 <strong>Extreme Preistransparenz.</strong> Jeder andere zeigt nur den Endpreis. Ich zeige dir die komplette Zusammenstellung der Rechnung – damit du siehst, wofür du zahlst und dass mein Ansatz fair kalkuliert ist. Du erkennst sofort: Der grösste Teil sind echte Kosten (Lohn, Sozialabgaben, Betriebskosten), meine Marge ist überschaubar.
 </div>
 <div class="introbox2">
-Diesen Rechner habe ich selbst erstellt – bewusst <strong>berufsneutral</strong>, sodass ihn jede und jeder nutzen kann. <strong>Alle Felder sind frei editierbar:</strong> Trag deine eigenen Werte ein, um deine Preise zu berechnen. Bei korrekt eingetragenen Sätzen erstellt das Tool zudem auf Knopfdruck eine <strong>unterschriftsreife Vereinbarung als PDF</strong>, die vor Ort ausgedruckt und von beiden Parteien unterschrieben werden kann.
+<strong>Alle Felder sind frei editierbar</strong> – trag deine eigenen Werte ein; die hervorgehobenen Felder werden aus Kanton und Alter mit hinterlegten Richtwerten vorbefüllt. <strong>Der Rechner recherchiert nichts automatisch:</strong> GAV-Mindestlöhne, FAK-, BVG- und Feiertagswerte sind gespeicherte Richtwerte (Stand 2025/2026) – massgebende Sätze bitte selber nachschauen, die Quellen sind unter "Quellen &amp; Referenzen" verlinkt. Auf Knopfdruck entsteht eine Vereinbarung als PDF zum Ausdrucken und Unterschreiben.
 </div>
-<p class="introp">Für Ein-Personen-GmbH im Personalverleih – berufsneutral, für alle Branchen. Eidgenössische Werte sind fix, kantonale (FAK) und altersabhängige (BVG, Ferien) werden automatisch gesetzt – alle hervorgehobenen Felder bleiben anpassbar. Die Berufs-/GAV-Auswahl zeigt den GAV-Mindestlohn als Referenz.</p>
 
 </div>
 </section>
@@ -146,17 +144,17 @@ Diesen Rechner habe ich selbst erstellt – bewusst <strong>berufsneutral</stron
 <div class="row"><label>Essensspesen<sup class="fn"><a href="#r4">4</a></sup><small>steuer-/abgabenfrei, separat zum Lohn</small></label><input id="spesen" type="number" step="0.5" value="2"><span class="unit">CHF/h</span></div>
 
 <h2>C · Zuschläge temporär</h2>
-<div class="row"><label>Ferien<sup class="fn"><a href="#r5">5</a></sup><small>auto nach Alter: 20–49 J. = 8,33 % | unter 20 / ab 50 J. = 10,60 %</small></label><input id="ferien" class="auto" type="number" step="0.01" value="8.33"><span class="unit">%</span></div>
+<div class="row"><label>Ferien<sup class="fn"><a href="#r5">5</a></sup><small>nach Alter vorbefüllt: 20–49 J. = 8,33 % | unter 20 / ab 50 J. = 10,60 %</small></label><input id="ferien" class="auto" type="number" step="0.01" value="8.33"><span class="unit">%</span></div>
 <div class="row"><label>Feiertage<sup class="fn"><a href="#r6">6</a></sup><small>kantonal leicht unterschiedlich, GAV-Richtwert</small></label><input id="feier" type="number" step="0.01" value="3.20"><span class="unit">%</span></div>
 <div class="row"><label>13. Monatslohn<sup class="fn"><a href="#r7">7</a></sup></label><input id="ml13" type="number" step="0.01" value="8.33"><span class="unit">%</span></div>
 
 <h2>D · Arbeitgeberkosten GmbH</h2>
 <div class="row"><label>AHV/IV/EO (AG)<sup class="fn"><a href="#r8">8</a></sup><small>eidgenössisch</small></label><input id="ahv" type="number" step="0.01" value="5.30"><span class="unit">%</span></div>
 <div class="row"><label>ALV (AG)<sup class="fn"><a href="#r9">9</a></sup><small>eidgenössisch, bis CHF 148'200</small></label><input id="alv" type="number" step="0.01" value="1.10"><span class="unit">%</span></div>
-<div class="row"><label>FAK (Familienausgleichskasse)<sup class="fn"><a href="#r10">10</a></sup><small>kantonaler Richtwert (auto), exakt von der Kasse abhängig – auch ohne Kinder</small></label><input id="fak" class="auto" type="number" step="0.01" value="1.60"><span class="unit">%</span></div>
+<div class="row"><label>FAK (Familienausgleichskasse)<sup class="fn"><a href="#r10">10</a></sup><small>kantonaler Richtwert (vorbefüllt) – exakten Satz bei der Kasse nachschauen; auch ohne Kinder</small></label><input id="fak" class="auto" type="number" step="0.01" value="1.60"><span class="unit">%</span></div>
 <div class="row"><label>UVG Berufsunfall (BU)<sup class="fn"><a href="#r11">11</a></sup><small>AG zahlt; NBU via SUVA (Lohnabzug AN)</small></label><input id="uvg" type="number" step="0.01" value="0.50"><span class="unit">%</span></div>
 <div class="row"><label>Verwaltungskosten<sup class="fn"><a href="#r12">12</a></sup><small>max. 5 % der AHV-Beiträge</small></label><input id="vwk" type="number" step="0.01" value="0.30"><span class="unit">%</span></div>
-<div class="row"><label>BVG / Pensionskasse (AG)<sup class="fn"><a href="#r13">13</a></sup><small>nur AG-Anteil (mind. die Hälfte); auto nach Alter (Altersgutschrift-Stufe); Richtwert, exakt von Pensionskasse</small></label><input id="bvg" class="auto" type="number" step="0.01" value="4.00"><span class="unit">%</span></div>
+<div class="row"><label>BVG / Pensionskasse (AG)<sup class="fn"><a href="#r13">13</a></sup><small>nur AG-Anteil (mind. die Hälfte); Richtwert nach Alter vorbefüllt – exakten Satz bei der Pensionskasse nachschauen</small></label><input id="bvg" class="auto" type="number" step="0.01" value="4.00"><span class="unit">%</span></div>
 
 <h2>E · Betriebskosten (pro Jahr)</h2>
 <div class="row"><label>Werkzeug &amp; Messgeräte – Abschreibung<sup class="fn"><a href="#r14">14</a></sup></label><input id="wz_afa" type="number" value="2000"><span class="unit">CHF</span></div>
@@ -191,7 +189,7 @@ Diesen Rechner habe ich selbst erstellt – bewusst <strong>berufsneutral</stron
 <div class="out"><span>Betrag an den Endkunden / Std<sup class="fn"><a href="#r23">23</a></sup></span><span id="r_spanne"></span></div>
 
 <button id="pdfbtn" type="button">📄 Vereinbarung als PDF erstellen</button>
-<div class="disc">Die PDF ist eine Stundenansatz-Vereinbarung zwischen GmbH (Verleiher) und Einsatzbetrieb. Zweifach ausdrucken, beide unterschreiben – je ein Exemplar pro Partei. GAV-Mindestlöhne sind Referenzwerte (Stand 2025/2026); FAK-, BVG-, Feiertagswerte sind Richtwerte. Kein Rechts-/Steuerrat.</div>
+<div class="disc">Die PDF ist eine Stundenansatz-Vereinbarung zwischen GmbH (Verleiher) und Einsatzbetrieb. Zweifach ausdrucken, beide unterschreiben – je ein Exemplar pro Partei. GAV-Mindestlöhne, FAK-, BVG- und Feiertagswerte sind hinterlegte Richtwerte (Stand 2025/2026) – bitte selber nachprüfen. Kein Rechts-/Steuerrat.</div>
 
 </div><!-- /calc-main -->
 
@@ -220,7 +218,7 @@ Diesen Rechner habe ich selbst erstellt – bewusst <strong>berufsneutral</stron
 <p><b>Selbstkosten vs. Marge:</b> Selbstkosten = Bruttolohn (inkl. Temporär-Zuschläge) + Arbeitgeberkosten + anteilige Betriebskosten. Der <b>Deckungsbeitrag</b> ist der Aufschlag darauf – kein reiner Gewinn (davon gehen noch Gewinnsteuer, unternehmerisches Risiko und Reserven ab).</p>
 <p><b>MWST</b> kommt oben drauf und ist marge-neutral – der Einsatzbetrieb zieht sie als Vorsteuer wieder ab.</p>
 <p><b>GAV-Bezug:</b> Für eine bewilligungsfreie Ein-Personen-GmbH (Art. 28 Abs. 2 AVV) gilt der GAV Personalverleih vermutlich nicht; bei Verleih in einen Betrieb mit AVE-Branchen-GAV greift Equal-Pay. Die Berufs-/GAV-Auswahl zeigt den Mindestlohn nur als Referenz.</p>
-<p class="muted">Alle Werte sind Richtwerte – kein Rechts- oder Steuerrat.</p>
+<p class="muted">Alle hinterlegten Werte sind Richtwerte (Stand 2025/2026), nicht automatisch nachgeführt – kein Rechts- oder Steuerrat.</p>
 </div>
 
 <div class="side-box">
@@ -364,7 +362,7 @@ function currentGav(){return GAVDATA.filter(function(d){return d.b===selB.value&
 var BRANCHEXPL={"Personalverleih (Auffang-GAV)": "Mindestlohn nach Qualifikation (ungelernt < angelernt < gelernt EFZ) und Lohnregion (Hochlohngebiet höher als Normallohn, Tessin tiefer). Gilt nur, wenn kein allgemeinverbindlicher Branchen-GAV greift – sonst Equal-Pay.", "Elektro & Telekom (EIT.swiss)": "Gestaffelt nach Abschluss und Erfahrung nach der Lehre: der Grundlohn gilt direkt nach dem EFZ, „+1 Jahr Erfahrung“ nach einem Jahr Branchentätigkeit und liegt höher. Montage-Elektriker (3-jährige Lehre) liegt unter Elektroinstallateur (4-jährige Lehre); Teamleiter mit EIT-Zertifikat am höchsten.", "Gebäudetechnik (suissetec)": "Gestaffelt nach Jahren nach Lehrabschluss (ab Lehrabschluss / ab 3. / ab 5. Jahr). EBA und handwerkliche Lehren tiefer als EFZ; ohne Ausbildung am tiefsten.", "Bauhauptgewerbe (LMV)": "Lohnklassen C < B < A < Q < V nach Qualifikation, zusätzlich drei Lohnzonen (Rot = höchste, Blau, Grün) je nach Region/Kanton. Q = gelernt (EFZ), V = Vorarbeiter. Übernommen wird der höchste (Rot)-Wert.", "Holzbau / Zimmerei": "Drei Erfahrungsstufen (0 / 5 / 10 Jahre); Polier und Meister deutlich höher als Zimmermann EFZ.", "Schreinergewerbe": "Praktiker (EBA) < Berufsarbeiter (EFZ, nach Erfahrungsjahren steigend) < Monteur. Hilfskraft separat.", "Maler- & Gipsergewerbe": "Klassen D (branchenfremd) < C (angelernt) < A (gelernt EFZ) < V (Vorarbeiter). Gipser-Sätze leicht höher als Maler; keine Lohnzonen.", "Plattenleger": "C (Hilfskraft/EBA) < B (angelernt) < A (gelernt EFZ).", "Bodenbelagsbranche": "ungelernt < angelernt < EFZ < Chefbodenleger (Fachausweis). Werte ohne 13. Monatslohn – dieser kommt zusätzlich dazu.", "Gebäudehülle (Dachdecker/Spengler)": "Zwei Erfahrungsstufen (bis 12 Monate / über 60 Monate). EBA und EFZ höher als ungelernt.", "Gerüstbau": "C (Hilfskraft) < B2 (EBA) < B1 (EFZ) < A (Gruppenleiter) < Q (Objektleiter). Schweizweit, keine Zonen.", "Metallgewerbe / Metallbau": "Erfahrungsstufen (1.–2. Jahr / ab 5. Jahr); angelernt < EBA < EFZ. Umfasst auch Storen/Sonnenschutz (kein eigener GAV).", "Naturstein (Marmor/Granit)": "C (Hilfsarbeiter) < B (angelernt) < A (Berufsarbeiter EFZ) < V (Vorarbeiter).", "Isoliergewerbe": "Kat. A (EFZ) gestaffelt nach Jahren nach Lehrabschluss; Kat. B (ohne EFZ) altersabhängig (20. / 30. / ab 41. Altersjahr).", "Gastgewerbe (L-GAV)": "Kategorien nach Ausbildung: ohne Lehre (Ia) < EBA (II) < EFZ (IIIa) < mit Berufsprüfung (IV).", "Reinigung Deutschschweiz": "Unterhalts- vs. Spezialreinigung (Stundenlöhne); Reinigungsfachkraft EBA/EFZ als Monatslohn höher.", "Private Sicherheit (VSSU)": "Nach Dienstjahren gestaffelt (1. Dienstjahr bis ab 13. Dienstjahr); eidg. Fachausweis mit Zuschlag.", "Coiffeurgewerbe": "ungelernt < EBA < EFZ (nach Berufsjahren steigend); Fachausweis/Diplom mit Zuschlag.", "Bäckerei / Confiserie": "ungelernt < EBA < EFZ < Leiter (Berufsprüfung) < Kader.", "Carrosserie": "EBA < EFZ; innerhalb EFZ nach Jahren nach Lehrabschluss steigend; Hilfskräfte separat.", "MEM / Maschinenindustrie": "Nicht allgemeinverbindlich (gilt nur für Swissmem-Mitgliedsbetriebe). Regionale Mindestlöhne A/B/C; Qualifizierte +CHF 300.", "Garten- & Landschaftsbau": "Nicht allgemeinverbindlich (nur Verbandsmitglieder). ungelernt < EBA < EFZ (mit Erfahrung).", "Ohne verbindlichen GAV-Mindestlohn": "Für diese Branchen gibt es keinen allgemeinverbindlichen GAV-Mindestlohn – massgebend sind Firmen-GAV, kantonale Mindestlöhne oder der freie Markt. Bitte den Lohn selbst recherchieren."};
 function showGav(){var d=currentGav();var box=document.getElementById('gavbox');if(!d){box.style.display='none';return;}
  box.style.display='block';
- box.innerHTML=(BRANCHEXPL[d.b]?('<b>Stufen-Erklärung:</b> '+BRANCHEXPL[d.b]+'<br>'):'')+'<b>GAV-Mindestlohn (Referenz):</b> '+d.w+'<br><b>GAV:</b> '+d.g+' &nbsp;·&nbsp; <b>AVE:</b> '+(d.ave?'ja (allgemeinverbindlich)':'nein (nur Mitglieder/firmenspezifisch)')+' &nbsp;·&nbsp; <b>Stand:</b> '+d.y+(d.r?'<br><b>Region/Hinweis:</b> '+d.r:'')+'<br><a href="'+d.src+'" target="_blank">Quelle</a>';
+ box.innerHTML=(BRANCHEXPL[d.b]?('<b>Stufen-Erklärung:</b> '+BRANCHEXPL[d.b]+'<br>'):'')+'<b>GAV-Mindestlohn (Referenz):</b> '+d.w+'<br><b>GAV:</b> '+d.g+' &nbsp;·&nbsp; <b>AVE:</b> '+(d.ave?'ja (allgemeinverbindlich)':'nein (nur Mitglieder/firmenspezifisch)')+' &nbsp;·&nbsp; <b>Stand:</b> '+d.y+(d.r?'<br><b>Region/Hinweis:</b> '+d.r:'')+'<br><a href="'+d.src+'" target="_blank">Quelle</a> – hinterlegter Wert, bitte selber nachprüfen';
 }
 function v(id){return parseFloat(document.getElementById(id).value)||0;}
 function val(id){return document.getElementById(id).value;}
