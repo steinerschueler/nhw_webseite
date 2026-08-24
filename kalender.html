@@ -148,7 +148,7 @@
     <span class="lg"><span class="sw sw-grey"></span>nicht verfügbar</span>
   </div>
   <div class="cal-select">
-    <span class="cal-selsum" id="selsum">Grüne Tage antippen: 1× <span class="t-normal">Normal</span> · 2× <span class="t-notstromer">Notstromer</span> · 3× frei — Ziehen malt</span>
+    <span class="cal-selsum" id="selsum">Grüne Tage antippen: 1× <span class="t-normal">Normal</span> · 2× <span class="t-notstromer">Notstromer</span> · 3× frei · Ziehen malt</span>
     <span class="cal-rates" id="rates" hidden title="Netto-Ansätze als Mindestwert – mehr bieten ist erlaubt">
       <label id="rateNwrap" hidden><span class="t-normal">Normal</span>&nbsp;CHF <input id="rateN" type="number" min="68" step="0.50" value="68" inputmode="decimal" aria-label="Ansatz Normaltarif, CHF je Stunde – Mindestwert 68, mehr bieten erlaubt">/Std</label>
       <label id="rateSwrap" hidden><span class="t-notstromer">Notstromer</span>&nbsp;CHF <input id="rateS" type="number" min="76.5" step="0.50" value="76.50" inputmode="decimal" aria-label="Ansatz Notstromer, CHF je Stunde – Mindestwert 76.50, mehr bieten erlaubt">/Std</label>
@@ -195,7 +195,7 @@
                                            // Beides Mindestwerte: im Anfrage-Feld darf der Betrieb mehr bieten.
   var LBL_N = '<span class="t-normal">Normal</span>';         // orange unterstrichen
   var LBL_S = '<span class="t-notstromer">Notstromer</span>'; // rot unterstrichen
-  var HINT = 'Grüne Tage antippen: 1× '+LBL_N+' · 2× '+LBL_S+' · 3× frei — Ziehen malt';
+  var HINT = 'Grüne Tage antippen: 1× '+LBL_N+' · 2× '+LBL_S+' · 3× frei · Ziehen malt';
   var HOURS = 8;                           // Richtwert Std/Tag für die CHF-Schätzung:
                                            // normale Arbeitszeit = 40-Std-Woche = Ø 8 h/Tag
                                            // (GAV Art. 20.2). Die 10 h/Tag = 50-Std-Woche sind
@@ -280,16 +280,16 @@
     var k = iso(d);
     if(NOTST[k]) return {cls:"d-notstromer",cap:"Notstromer",title:"Notstromer-Einsatz",st:"notstromer"};
     if(NORM[k])  return {cls:"d-normal",cap:"Einsatz",title:"Einsatz · Normaltarif",st:"normal"};
-    if(AUSF[k])  return {cls:"d-grey",cap:"krank",title:"krank / Unfall — nicht verfügbar",st:"grey"};
-    if(FER[k])   return {cls:"d-grey",cap:"Ferien",title:"Ferien — nicht verfügbar",st:"grey"};
-    if(WEIT[k])  return {cls:"d-grey",cap:"Kurs/Messe",title:"Weiterbildung / Messe — nicht verfügbar",st:"grey"};
-    if(TERM[k])  return {cls:"d-grey",cap:"Termin",title:"Termin — nicht verfügbar",st:"grey"};
-    if(SPERR[k.slice(5)]) return {cls:"d-grey",cap:SPERR[k.slice(5)],title:"belegt — nicht verfügbar",st:"grey"};
+    if(AUSF[k])  return {cls:"d-grey",cap:"krank",title:"krank / Unfall, nicht verfügbar",st:"grey"};
+    if(FER[k])   return {cls:"d-grey",cap:"Ferien",title:"Ferien, nicht verfügbar",st:"grey"};
+    if(WEIT[k])  return {cls:"d-grey",cap:"Kurs/Messe",title:"Weiterbildung / Messe, nicht verfügbar",st:"grey"};
+    if(TERM[k])  return {cls:"d-grey",cap:"Termin",title:"Termin, nicht verfügbar",st:"grey"};
+    if(SPERR[k.slice(5)]) return {cls:"d-grey",cap:SPERR[k.slice(5)],title:"belegt, nicht verfügbar",st:"grey"};
     if(STARTISO && k < STARTISO) return {cls:"d-grey",cap:"",title:"Noch nicht verfügbar – buchbar ab "+STARTTXT,st:"grey"};
-    if(FEIER[k]) return {cls:"d-grey",cap:"Feiertag",title:"Feiertag: "+FEIER[k]+" — nicht verfügbar",st:"grey"};
+    if(FEIER[k]) return {cls:"d-grey",cap:"Feiertag",title:"Feiertag: "+FEIER[k]+", nicht verfügbar",st:"grey"};
     var wd = d.getDay();
-    if(wd===0||wd===6) return {cls:"d-muted d-we",cap:"",title:"Wochenende — nur Notstromer: antippen und anfragen",st:"wochenende"};
-    return {cls:"d-free",cap:"",title:"frei — antippen und anfragen",st:"free"};
+    if(wd===0||wd===6) return {cls:"d-muted d-we",cap:"",title:"Wochenende, nur Notstromer: antippen und anfragen",st:"wochenende"};
+    return {cls:"d-free",cap:"",title:"frei: antippen und anfragen",st:"free"};
   }
 
   /* ---- Auswahl ---- */
@@ -319,7 +319,7 @@
       cell.appendChild(el("span","dnum",String(day)));
       if(s.cap) cell.appendChild(el("span","dcap",s.cap));
       cell.title = (past?"vergangen · ":"")+s.title;
-      cell.setAttribute("aria-label", fmtDate(d)+" — "+(past?"vergangen, ":"")+s.title);
+      cell.setAttribute("aria-label", fmtDate(d)+", "+(past?"vergangen, ":"")+s.title);
       var selectable = (s.st==="free" || s.st==="wochenende") && !past;
       if(selectable){
         if(s.st==="wochenende") cell.dataset.we = "1";
@@ -449,7 +449,7 @@
     var urlLines = lines.slice(), url = makeURL(body);
     while(url.length>1900 && urlLines.length>2){
       urlLines.pop();
-      var trimmed = urlLines.concat(["- … weitere Tage gekürzt — bitte im Text unten ergänzen"]);
+      var trimmed = urlLines.concat(["- … weitere Tage gekürzt, bitte im Text unten ergänzen"]);
       url = makeURL(makeBody(trimmed, nCount, sCount, total, chf, weNote));
     }
     return {url:url, body:body, total:total, nCount:nCount, sCount:sCount, chf:chf};
