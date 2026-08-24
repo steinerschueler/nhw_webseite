@@ -20,7 +20,7 @@
    ---------------------------------------------------------------
    DIE FÜNF LISTEN — WAS WELCHE FARBE GIBT
    ---------------------------------------------------------------
-   normal        ORANGE  Einsatz zum Normaltarif 68.-
+   normal        ORANGE  Einsatz zum Normaltarif 67.-
    notstromer    ROT     Notstromer-Einsatz 76.50
                  (verdrängt: schlägt einen orangen/grünen Tag)
 
@@ -45,7 +45,7 @@
    ================================================================ */
 
 window.KALENDER = {
-  normal:     [],                 // ORANGE — Einsatz zu 68.-
+  normal:     [],                 // ORANGE — Einsatz zu 67.-
   notstromer: [],                 // ROT    — Einsatz zu 76.50
 
   ferien:        [],              // grau, „Ferien"
