@@ -120,7 +120,7 @@
 <section class="wrap phead">
   <div class="kick mono">Jahreskalender</div>
   <h1 class="disp">Wann ich frei bin</h1>
-  <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst: <b>einmal</b> für den Normaltarif (60.–), <b>zweimal</b> für den Notstromer (65.–), ein drittes Mal hebt die Wahl wieder auf. Samstage und Sonntage kannst du ebenfalls antippen; am Wochenende gilt nur der Notstromer. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail. Den Ansatz setzt du darin selbst: beim Normaltarif ab 56.–/Std, beim Notstromer ab 60.–/Std. Reserviert wird dabei nichts: Du fragst, ich sage zu oder ab.</p>
+  <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst: <b>einmal</b> für den Normaltarif (60.–), <b>zweimal</b> für den Notstromer (65.–), ein drittes Mal hebt die Wahl wieder auf. Samstage und Sonntage kannst du ebenfalls antippen; am Wochenende gilt nur der Notstromer. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail. Den Ansatz setzt du darin selbst: beim Normaltarif ab 55.–/Std, beim Notstromer ab 58.–/Std. Reserviert wird dabei nichts: Du fragst, ich sage zu oder ab.</p>
 </section>
 
 <section class="wrap">
@@ -131,7 +131,7 @@
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-red"></span>Zwei Tarife</h3>
-      <p>Normal 60.–/Std, Mo–Fr; ein üblicher Arbeitstag rund 8 Std (Zeitfenster 06:45–18:00). Notstromer 65.–/Std für kurzfristige Einsätze, auch nachts oder am Wochenende. Samstag und Sonntag kannst du direkt im Kalender anwählen (nur Notstromer); Nachteinsätze bleiben auf Anfrage. Nacht-, Sonntags- und Feiertagsstunden laufen zum höheren Notstromer-Ansatz; der GAV-Zuschlag kommt als zusätzliche Zeit auf den Rapport, nicht als eigener Tarif. Beides sind Netto-Ansätze der Aufbauphase (Listenpreise 80.–/90.–) und zugleich Richtwerte: In der Anfrage setzt du den Ansatz selbst — beim Normaltarif ab 56.–/Std, beim Notstromer ab 60.–/Std.</p>
+      <p>Normal 60.–/Std, Mo–Fr; ein üblicher Arbeitstag rund 8 Std (Zeitfenster 06:45–18:00). Notstromer 65.–/Std für kurzfristige Einsätze, auch nachts oder am Wochenende. Samstag und Sonntag kannst du direkt im Kalender anwählen (nur Notstromer); Nachteinsätze bleiben auf Anfrage. Nacht-, Sonntags- und Feiertagsstunden laufen zum höheren Notstromer-Ansatz; der GAV-Zuschlag kommt als zusätzliche Zeit auf den Rapport, nicht als eigener Tarif. Beides sind Netto-Ansätze der Aufbauphase (Listenpreise 80.–/90.–) und zugleich Richtwerte: In der Anfrage setzt du den Ansatz selbst — beim Normaltarif ab 55.–/Std, beim Notstromer ab 58.–/Std.</p>
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-grey"></span>Graue Tage</h3>
@@ -149,9 +149,9 @@
   </div>
   <div class="cal-select">
     <span class="cal-selsum" id="selsum">Grüne Tage antippen: 1× <span class="t-normal">Normal</span> · 2× <span class="t-notstromer">Notstromer</span> · 3× frei · Ziehen malt</span>
-    <span class="cal-rates" id="rates" hidden title="Netto-Ansätze als Richtwert, im Feld ab 56.– bzw. 60.–/Std frei wählbar">
-      <label id="rateNwrap" hidden><span class="t-normal">Normal</span>&nbsp;CHF <input id="rateN" type="number" min="56" step="0.50" value="60" inputmode="decimal" aria-label="Ansatz Normaltarif, CHF je Stunde, Mindestwert 56, nach oben frei">/Std</label>
-      <label id="rateSwrap" hidden><span class="t-notstromer">Notstromer</span>&nbsp;CHF <input id="rateS" type="number" min="60" step="0.50" value="65" inputmode="decimal" aria-label="Ansatz Notstromer, CHF je Stunde, Mindestwert 60, nach oben frei">/Std</label>
+    <span class="cal-rates" id="rates" hidden title="Netto-Ansätze als Richtwert, im Feld ab 55.– bzw. 58.–/Std frei wählbar">
+      <label id="rateNwrap" hidden><span class="t-normal">Normal</span>&nbsp;CHF <input id="rateN" type="number" min="55" step="0.50" value="60" inputmode="decimal" aria-label="Ansatz Normaltarif, CHF je Stunde, Mindestwert 55, nach oben frei">/Std</label>
+      <label id="rateSwrap" hidden><span class="t-notstromer">Notstromer</span>&nbsp;CHF <input id="rateS" type="number" min="58" step="0.50" value="65" inputmode="decimal" aria-label="Ansatz Notstromer, CHF je Stunde, Mindestwert 58, nach oben frei">/Std</label>
     </span>
     <a class="cal-btn is-disabled" id="anfrage" role="button" aria-disabled="true">Anfrage per E-Mail</a>
     <button class="cal-link" id="showtext" type="button" hidden>Text kopieren</button>
@@ -192,10 +192,10 @@
   var MAIL = "info@naville-handwerk.ch";
   var RATE_NORMAL   = 60;                  // Normaltarif, netto — Richtsatz der Aufbauphase (Liste 80.-)
   var RATE_NOTST    = 65;                  // Notstromer,  netto — Richtsatz der Aufbauphase (Liste 90.-)
-  var RATE_MIN_N    = 56;                  // Feld-Untergrenze Normaltarif (Eric 2026-08-26): so tief darf
-                                           // ein Betrieb bieten, der sonst etwas mitbringt — damit das
-                                           // Angebot überhaupt gemacht werden kann.
-  var RATE_MIN_S    = 60;                  // Feld-Untergrenze Notstromer.
+  var RATE_MIN_N    = 55;                  // Feld-Untergrenze Normaltarif (Eric 2026-08-26): so tief darf
+  var RATE_MIN_S    = 58;                  // Feld-Untergrenze Notstromer. Bewusst tief angesetzt — ein
+                                           // Betrieb, dem der Ansatz sonst zu hoch wäre, soll wenigstens
+                                           // anfragen können; über den Preis wird dann geredet.
                                            // Nach oben ist beides offen.
   var LBL_N = '<span class="t-normal">Normal</span>';         // orange unterstrichen
   var LBL_S = '<span class="t-notstromer">Notstromer</span>'; // rot unterstrichen
