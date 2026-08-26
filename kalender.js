@@ -20,8 +20,8 @@
    ---------------------------------------------------------------
    DIE FÜNF LISTEN — WAS WELCHE FARBE GIBT
    ---------------------------------------------------------------
-   normal        ORANGE  Einsatz zum Normaltarif 68.-
-   notstromer    ROT     Notstromer-Einsatz 76.50
+   normal        ORANGE  Einsatz zum Normaltarif 65.-
+   notstromer    ROT     Notstromer-Einsatz 68.-
                  (verdrängt: schlägt einen orangen/grünen Tag)
 
    Die restlichen drei werden alle GRAU ("nicht verfügbar"). Der
@@ -45,8 +45,8 @@
    ================================================================ */
 
 window.KALENDER = {
-  normal:     [],                 // ORANGE — Einsatz zu 68.-
-  notstromer: [],                 // ROT    — Einsatz zu 76.50
+  normal:     [],                 // ORANGE — Einsatz zu 65.-
+  notstromer: [],                 // ROT    — Einsatz zu 68.-
 
   ferien:        [],              // grau, „Ferien"
   weiterbildung: ["2026-09-09"],  // grau, „Weiterbildung / Messe" — Ineltec (Elektrikermesse)

@@ -120,7 +120,7 @@
 <section class="wrap phead">
   <div class="kick mono">Jahreskalender</div>
   <h1 class="disp">Wann ich frei bin</h1>
-  <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst: <b>einmal</b> für den Normaltarif (68.–), <b>zweimal</b> für den Notstromer (76.50), ein drittes Mal hebt die Wahl wieder auf. Samstage und Sonntage kannst du ebenfalls antippen; am Wochenende gilt nur der Notstromer. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail. Den Ansatz darfst du darin freiwillig erhöhen. Reserviert wird dabei nichts: Du fragst, ich sage zu oder ab.</p>
+  <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst: <b>einmal</b> für den Normaltarif (65.–), <b>zweimal</b> für den Notstromer (68.–), ein drittes Mal hebt die Wahl wieder auf. Samstage und Sonntage kannst du ebenfalls antippen; am Wochenende gilt nur der Notstromer. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail. Den Ansatz setzt du darin selbst, von 60.–/Std an aufwärts. Reserviert wird dabei nichts: Du fragst, ich sage zu oder ab.</p>
 </section>
 
 <section class="wrap">
@@ -131,7 +131,7 @@
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-red"></span>Zwei Tarife</h3>
-      <p>Normal 68.–/Std, Mo–Fr; ein üblicher Arbeitstag rund 8 Std (Zeitfenster 06:45–18:00). Notstromer 76.50/Std für kurzfristige Einsätze, auch nachts oder am Wochenende. Samstag und Sonntag kannst du direkt im Kalender anwählen (nur Notstromer); Nachteinsätze bleiben auf Anfrage. Nacht-, Sonntags- und Feiertagsstunden laufen zum höheren Notstromer-Ansatz; der GAV-Zuschlag kommt als zusätzliche Zeit auf den Rapport, nicht als eigener Tarif. Beides sind Netto-Ansätze mit 15 % Einführungsrabatt (Listenpreise 80.–/90.–) und zugleich Mindestwerte: In der Anfrage darfst du den Ansatz freiwillig erhöhen, wenn dir die Tage besonders wichtig sind.</p>
+      <p>Normal 65.–/Std, Mo–Fr; ein üblicher Arbeitstag rund 8 Std (Zeitfenster 06:45–18:00). Notstromer 68.–/Std für kurzfristige Einsätze, auch nachts oder am Wochenende. Samstag und Sonntag kannst du direkt im Kalender anwählen (nur Notstromer); Nachteinsätze bleiben auf Anfrage. Nacht-, Sonntags- und Feiertagsstunden laufen zum höheren Notstromer-Ansatz; der GAV-Zuschlag kommt als zusätzliche Zeit auf den Rapport, nicht als eigener Tarif. Beides sind Netto-Ansätze der Aufbauphase (Listenpreise 80.–/90.–) und zugleich Richtwerte: In der Anfrage setzt du den Ansatz selbst, von 60.–/Std an aufwärts.</p>
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-grey"></span>Graue Tage</h3>
@@ -149,9 +149,9 @@
   </div>
   <div class="cal-select">
     <span class="cal-selsum" id="selsum">Grüne Tage antippen: 1× <span class="t-normal">Normal</span> · 2× <span class="t-notstromer">Notstromer</span> · 3× frei · Ziehen malt</span>
-    <span class="cal-rates" id="rates" hidden title="Netto-Ansätze als Mindestwert, mehr bieten ist erlaubt">
-      <label id="rateNwrap" hidden><span class="t-normal">Normal</span>&nbsp;CHF <input id="rateN" type="number" min="67" step="0.50" value="68" inputmode="decimal" aria-label="Ansatz Normaltarif, CHF je Stunde, Mindestwert 67, mehr bieten erlaubt">/Std</label>
-      <label id="rateSwrap" hidden><span class="t-notstromer">Notstromer</span>&nbsp;CHF <input id="rateS" type="number" min="76.5" step="0.50" value="76.50" inputmode="decimal" aria-label="Ansatz Notstromer, CHF je Stunde, Mindestwert 76.50, mehr bieten erlaubt">/Std</label>
+    <span class="cal-rates" id="rates" hidden title="Netto-Ansätze als Richtwert, im Feld ab 60.–/Std frei wählbar">
+      <label id="rateNwrap" hidden><span class="t-normal">Normal</span>&nbsp;CHF <input id="rateN" type="number" min="60" step="0.50" value="65" inputmode="decimal" aria-label="Ansatz Normaltarif, CHF je Stunde, Mindestwert 60, nach oben frei">/Std</label>
+      <label id="rateSwrap" hidden><span class="t-notstromer">Notstromer</span>&nbsp;CHF <input id="rateS" type="number" min="60" step="0.50" value="68" inputmode="decimal" aria-label="Ansatz Notstromer, CHF je Stunde, Mindestwert 60, nach oben frei">/Std</label>
     </span>
     <a class="cal-btn is-disabled" id="anfrage" role="button" aria-disabled="true">Anfrage per E-Mail</a>
     <button class="cal-link" id="showtext" type="button" hidden>Text kopieren</button>
@@ -190,11 +190,11 @@
   "use strict";
   var K = window.KALENDER || {};
   var MAIL = "info@naville-handwerk.ch";
-  var RATE_NORMAL = 68;                    // Normaltarif, netto (Liste 80.- mit 15 % Einführungsrabatt)
-  var RATE_NORMAL_MIN = 67;                // Feld-Untergrenze: zwei 0.50-Klicks unter dem Richtsatz (Eric 2026-08-24)
-  var RATE_NOTST  = 76.5;                  // Notstromer,  netto (Liste 90.- mit 15 % Einführungsrabatt)
-                                           // Im Anfrage-Feld darf der Betrieb mehr bieten; beim Normaltarif
-                                           // auch bis RATE_NORMAL_MIN hinunter, der Notstromer nur aufwärts.
+  var RATE_NORMAL = 65;                    // Normaltarif, netto — Richtsatz der Aufbauphase (Liste 80.-)
+  var RATE_NOTST  = 68;                    // Notstromer,  netto — Richtsatz der Aufbauphase (Liste 90.-)
+  var RATE_MIN    = 60;                    // Feld-Untergrenze BEIDER Ansätze (Eric 2026-08-26):
+                                           // im Anfrage-Feld ist der Ansatz ab 60.- frei wählbar,
+                                           // nach unten wie nach oben, bei Normal wie Notstromer.
   var LBL_N = '<span class="t-normal">Normal</span>';         // orange unterstrichen
   var LBL_S = '<span class="t-notstromer">Notstromer</span>'; // rot unterstrichen
   var HINT = 'Grüne Tage antippen: 1× '+LBL_N+' · 2× '+LBL_S+' · 3× frei · Ziehen malt';
@@ -412,7 +412,7 @@
   var SUBJECT = "Einsatz-Anfrage über naville-handwerk.ch";
   function tarifLine(nCount,sCount){
     var n = "Normaltarif "+fmtRate(curRateN())+"/Std"+(curRateN()!==RATE_NORMAL ? " (dein Angebot; Richtsatz "+fmtRate(RATE_NORMAL)+")" : "");
-    var s = "Notstromer "+fmtRate(curRateS())+"/Std"+(curRateS()>RATE_NOTST ? " (dein Angebot; Richtsatz "+fmtRate(RATE_NOTST)+")" : "");
+    var s = "Notstromer "+fmtRate(curRateS())+"/Std"+(curRateS()!==RATE_NOTST ? " (dein Angebot; Richtsatz "+fmtRate(RATE_NOTST)+")" : "");
     if(nCount && sCount) return n+" / "+s;
     if(sCount)           return s;
     return n;
@@ -470,20 +470,22 @@
       rateSwrap=document.getElementById("rateSwrap"),
       clearsel=document.getElementById("clearsel");
 
-  /* Gebot lesen: mindestens die Feld-Untergrenze, auf 5 Rappen gerundet.
-     Der Betrieb darf freiwillig MEHR bieten (Eric 2026-08-23); beim Normaltarif
-     auch zwei Klicks unter den Richtsatz (RATE_NORMAL_MIN, Eric 2026-08-24). */
-  function rateVal(input, min){
+  /* Gebot lesen: leeres Feld = Richtsatz, sonst auf 5 Rappen gerundet und
+     nie unter RATE_MIN.
+     Der Betrieb setzt den Ansatz frei, ab RATE_MIN aufwärts — seit dem
+     2026-08-26 bei beiden Tarifen, auch unter den Richtsatz. */
+  function rateVal(input, richt){
     var v = parseFloat(String(input.value).replace(",","."));
-    if(!isFinite(v) || v < min) v = min;
+    if(!isFinite(v)) v = richt;              // leeres/unlesbares Feld: zurück auf den Richtsatz
+    else if(v < RATE_MIN) v = RATE_MIN;      // unter die Untergrenze geht es nicht
     return Math.round(v*20)/20;
   }
-  function curRateN(){ return rateVal(rateN, RATE_NORMAL_MIN); }
+  function curRateN(){ return rateVal(rateN, RATE_NORMAL); }
   function curRateS(){ return rateVal(rateS, RATE_NOTST); }
   [rateN, rateS].forEach(function(inp){
     inp.addEventListener("input", function(){ updateBar(); });
     inp.addEventListener("change", function(){          // beim Verlassen normalisieren
-      var v = rateVal(inp, inp===rateN ? RATE_NORMAL_MIN : RATE_NOTST);
+      var v = rateVal(inp, inp===rateN ? RATE_NORMAL : RATE_NOTST);
       inp.value = v%1 ? v.toFixed(2) : String(v);
       updateBar();
     });
