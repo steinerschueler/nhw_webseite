@@ -131,7 +131,7 @@
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-red"></span>Zwei Tarife</h3>
-      <p>Normal 60.–/Std, Mo–Fr; ein üblicher Arbeitstag rund 8 Std (Zeitfenster 06:45–18:00). Notstromer 65.–/Std für kurzfristige Einsätze, auch nachts oder am Wochenende. Samstag und Sonntag kannst du direkt im Kalender anwählen (nur Notstromer); Nachteinsätze bleiben auf Anfrage. Nacht-, Sonntags- und Feiertagsstunden laufen zum höheren Notstromer-Ansatz; der GAV-Zuschlag kommt als zusätzliche Zeit auf den Rapport, nicht als eigener Tarif. Beides sind Netto-Ansätze der Aufbauphase (Listenpreise 80.–/90.–) und zugleich Richtwerte: In der Anfrage setzt du den Ansatz selbst — beim Normaltarif ab 55.–/Std, beim Notstromer ab 58.–/Std.</p>
+      <p>Normal 60.–/Std, Mo–Fr; ein üblicher Arbeitstag rund 8 Std (Zeitfenster 06:45–18:00). Notstromer 65.–/Std für kurzfristige Einsätze, auch nachts oder am Wochenende. Samstag und Sonntag kannst du direkt im Kalender anwählen (nur Notstromer); Nachteinsätze bleiben auf Anfrage. Nacht-, Sonntags- und Feiertagsstunden laufen zum höheren Notstromer-Ansatz; der GAV-Zuschlag kommt als zusätzliche Zeit auf den Rapport, nicht als eigener Tarif. Beides sind die Ansätze der Aufbauphase und zugleich Richtwerte: In der Anfrage setzt du den Ansatz selbst — beim Normaltarif ab 55.–/Std, beim Notstromer ab 58.–/Std.</p>
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-grey"></span>Graue Tage</h3>
@@ -218,7 +218,7 @@
   function fmtDate(d){ return pad(d.getDate())+"."+pad(d.getMonth()+1)+"."+d.getFullYear(); }
   function fmtChf(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,"'"); }
   function fmtH(h){ return String(h).replace(".",","); }   // 8.5 -> "8,5"
-  function fmtRate(n){ return n%1 ? n.toFixed(2) : n+".–"; }   // 68 -> "68.–", 76.5 -> "76.50"
+  function fmtRate(n){ return n%1 ? n.toFixed(2) : n+".–"; }   // 60 -> "60.–", 57.5 -> "57.50"
 
   var today = new Date(); today.setHours(0,0,0,0);
   var todayISO = iso(today);
