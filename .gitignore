@@ -3,3 +3,7 @@ tmp/
 
 # Interne Arbeitsnotiz – gehört nicht ins öffentliche Repo
 CLAUDE.md
+
+# graphify-Wissensgraph (lokal, geraetegebunden; wird aus dem Code neu gebaut)
+graphify-out/
+.graphifyignore
