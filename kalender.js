@@ -18,11 +18,15 @@
        normal: ["2026-09-14/2026-09-18", "2026-10-01"],
 
    ---------------------------------------------------------------
-   DIE FÜNF LISTEN — WAS WELCHE FARBE GIBT
+   DIE LISTEN — WAS WELCHE FARBE GIBT
    ---------------------------------------------------------------
    normal        ORANGE  Einsatz zum Normaltarif 60.-
    notstromer    ROT     Notstromer-Einsatz 65.-
                  (verdrängt: schlägt einen orangen/grünen Tag)
+   extern        ORANGE/GRAU diagonal geteilt (oben links orange,
+                 unten rechts grau) - Einsatz, der NICHT über die
+                 NHW läuft (anderes Temporärbüro o. Ä.). Der Tag
+                 erscheint belegt und ist nicht anklickbar.
 
    Die restlichen drei werden alle GRAU ("nicht verfügbar"). Der
    Listenname bestimmt nur, welches Wort auf dem Tag steht:
@@ -47,6 +51,7 @@
 window.KALENDER = {
   normal:     [],                 // ORANGE — Einsatz zu 60.-
   notstromer: [],                 // ROT    — Einsatz zu 65.-
+  extern:     [],                 // ORANGE/GRAU — Einsatz über ein anderes Büro
 
   ferien:        [],              // grau, „Ferien"
   weiterbildung: ["2026-09-09"],  // grau, „Weiterbildung / Messe" — Ineltec (Elektrikermesse)

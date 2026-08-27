@@ -24,6 +24,7 @@
 .lg{display:inline-flex;align-items:center;font-size:13px;color:var(--ink2);white-space:nowrap}
 .sw{display:inline-block;width:13px;height:13px;border-radius:4px;margin-right:6px;flex:none}
 .sw-green{background:var(--green)}.sw-orange{background:var(--orange)}.sw-red{background:var(--red)}.sw-grey{background:var(--grey)}
+.sw-extern{background:linear-gradient(135deg,var(--orange) 0 50%,var(--grey) 50% 100%)}
 .cal-select{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:flex-start}
 .cal-selsum{font-size:13.5px;color:var(--ink)}
 .cal-selsum b{font-weight:700}
@@ -67,6 +68,11 @@
 .d-free:focus-visible{outline:2.5px solid var(--ink);outline-offset:1px}
 .d-normal{background:var(--orange);color:#22242A}
 .d-notstromer{background:var(--red);color:#fff}
+/* Einsatz extern (ueber ein anderes Buero): diagonal geteilt, oben links orange
+   (es ist ein Einsatz), unten rechts grau (nicht buchbar). 135deg legt die
+   Verlaufsachse von oben links nach unten rechts. Weisse Schrift mit Schatten,
+   weil weder Orange noch Grau allein genug Kontrast traegt. */
+.d-extern{background:linear-gradient(135deg,var(--orange) 0 50%,var(--grey) 50% 100%);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.55)}
 .d-grey{background:var(--grey);color:#fff}
 .d-muted{background:#ECEAE1;color:#AEA99D}
 .d-we{cursor:pointer}
@@ -145,6 +151,7 @@
     <span class="lg"><span class="sw sw-green"></span>frei</span>
     <span class="lg"><span class="sw sw-orange"></span>Einsatz Normaltarif</span>
     <span class="lg"><span class="sw sw-red"></span>Notstromer</span>
+    <span class="lg"><span class="sw sw-extern"></span>Einsatz extern</span>
     <span class="lg"><span class="sw sw-grey"></span>nicht verfügbar</span>
   </div>
   <div class="cal-select">
@@ -236,7 +243,7 @@
     });
     return set;
   }
-  var NOTST = toSet(K.notstromer), NORM = toSet(K.normal),
+  var NOTST = toSet(K.notstromer), NORM = toSet(K.normal), EXT = toSet(K.extern),
       FER = toSet(K.ferien), WEIT = toSet(K.weiterbildung),
       TERM = toSet(K.termin), AUSF = toSet(K.ausfall);
 
@@ -284,6 +291,7 @@
     var k = iso(d);
     if(NOTST[k]) return {cls:"d-notstromer",cap:"Notstromer",title:"Notstromer-Einsatz",st:"notstromer"};
     if(NORM[k])  return {cls:"d-normal",cap:"Einsatz",title:"Einsatz · Normaltarif",st:"normal"};
+    if(EXT[k])   return {cls:"d-extern",cap:"Extern",title:"Einsatz über ein anderes Büro, nicht verfügbar",st:"extern"};
     if(AUSF[k])  return {cls:"d-grey",cap:"krank",title:"krank / Unfall, nicht verfügbar",st:"grey"};
     if(FER[k])   return {cls:"d-grey",cap:"Ferien",title:"Ferien, nicht verfügbar",st:"grey"};
     if(WEIT[k])  return {cls:"d-grey",cap:"Kurs/Messe",title:"Weiterbildung / Messe, nicht verfügbar",st:"grey"};
