@@ -1,9 +1,27 @@
-/* Verfügbarkeits-Banner — rendert die Pille oben aus window.VERFUEGBAR_AB.
-   Nicht bearbeiten; das Datum steht in verfuegbarkeit.js. */
+/* Hinweisbalken oben — rendert, was window.HINWEIS verlangt (hinweis.js).
+   Nicht bearbeiten; gesteuert wird über hinweis.js bzw. verfuegbarkeit.js.
+
+   ""      -> gar kein Balken (Standard; das Element bleibt `hidden`)
+   "auto"  -> Verfügbarkeits-Pille aus VERFUEGBAR_AB, rot bzw. grün
+   <Text>  -> eigener Hinweis, rot hervorgehoben
+
+   Die Verfügbarkeits-Logik bleibt bewusst vollständig erhalten, auch
+   wenn sie im Standardfall nicht läuft: sie ist einen Handgriff in
+   hinweis.js entfernt. */
 (function () {
   var bar = document.getElementById("availbar");
   var txt = document.getElementById("availtext");
   if (!bar || !txt) return;
+
+  var hinweis = (window.HINWEIS || "").trim();
+  if (!hinweis) return;                       // nichts zu sagen — Balken bleibt weg
+
+  if (hinweis !== "auto") {                   // eigener Text
+    bar.className = "availbar av-off";
+    txt.textContent = hinweis;
+    bar.hidden = false;
+    return;
+  }
 
   var M = ["Januar","Februar","März","April","Mai","Juni","Juli","August",
            "September","Oktober","November","Dezember"];
