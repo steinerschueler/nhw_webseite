@@ -15,7 +15,7 @@
 
    "<Text>"  Dein eigener Hinweis, rot hervorgehoben. Zum Beispiel:
              "Betriebsferien vom 20. Dezember bis 4. Januar"
-             "Neu: Notstromer-Einsätze auch am Wochenende"
+             "Neu: Einsätze auch am Wochenende, auf Anfrage"
              Kurz halten, der Balken ist eine Zeile.
 
    ---------------------------------------------------------------
