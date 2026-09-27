@@ -407,7 +407,7 @@
   /* ---- Anfrage-Text + mailto bauen (mit Längen-Schutz) ---- */
   var SUBJECT = "Einsatz-Anfrage über naville-handwerk.ch";
   function tarifLine(){
-    return "Ansatz "+fmtRate(curRateN())+"/Std"+(curRateN()!==RATE_NORMAL ? " (dein Angebot; Richtsatz "+fmtRate(RATE_NORMAL)+")" : "");
+    return "Ansatz "+fmtRate(curRateN())+"/Std"+(curRateN()!==RATE_NORMAL ? " (dein Angebot; Richtwert "+fmtRate(RATE_NORMAL)+")" : "");
   }
   function makeBody(lines, total, chf, weNote){
     return "Hallo Eric\n\n"+
@@ -456,12 +456,12 @@
       rateN=document.getElementById("rateN"),
       clearsel=document.getElementById("clearsel");
 
-  /* Gebot lesen: leeres Feld = Richtsatz, sonst auf 5 Rappen gerundet und nie
+  /* Gebot lesen: leeres Feld = Richtwert, sonst auf 5 Rappen gerundet und nie
      unter die Untergrenze. Der Betrieb setzt den Ansatz
-     frei — auch unter den Richtsatz (Eric 2026-08-26). */
+     frei — auch unter den Richtwert (Eric 2026-08-26). */
   function rateVal(input, richt, min){
     var v = parseFloat(String(input.value).replace(",","."));
-    if(!isFinite(v)) v = richt;              // leeres/unlesbares Feld: zurück auf den Richtsatz
+    if(!isFinite(v)) v = richt;              // leeres/unlesbares Feld: zurück auf den Richtwert
     else if(v < min) v = min;                // unter die Untergrenze geht es nicht
     return Math.round(v*20)/20;
   }
