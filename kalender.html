@@ -123,7 +123,7 @@
 <section class="wrap phead">
   <div class="kick mono">Jahreskalender</div>
   <h1 class="disp">Wann ich frei bin</h1>
-  <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst; nochmals antippen hebt die Wahl wieder auf. Samstage und Sonntage kannst du ebenfalls antippen: Das Wochenende gibt es auf Anfrage, mit Zuschlag nach GAV. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail. Der Ansatz ist 60.–/Std; in der Anfrage setzt du ihn selbst, ab 55.–/Std. Reserviert wird dabei nichts: Du fragst, ich sage zu oder ab.</p>
+  <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst; nochmals antippen hebt die Wahl wieder auf. Samstage und Sonntage kannst du ebenfalls antippen: Das Wochenende gibt es auf Anfrage, mit Zuschlag nach GAV. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail. Der Richtwert ist 65.–/Std; in der Anfrage setzt du den Ansatz selbst, ab 55.–/Std. Reserviert wird dabei nichts: Du fragst, ich sage zu oder ab.</p>
 </section>
 
 <section class="wrap">
@@ -134,7 +134,7 @@
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-green"></span>Ein Tarif</h3>
-      <p>60.–/Std, Mo–Fr; ein üblicher Arbeitstag rund 8 Std im Zeitfenster 06:45–18:00. Arbeit ausserhalb des Fensters (Abend, Samstag, Sonntag, Feiertag) gibt es auf Anfrage, mit den Zuschlägen nach GAV; sie kommen als zusätzliche Zeit auf den Rapport. Samstag und Sonntag kannst du direkt im Kalender anwählen. Der Ansatz gilt für die Aufbauphase und ist zugleich ein Richtwert: In der Anfrage setzt du ihn selbst, ab 55.–/Std.</p>
+      <p>Richtwert 65.–/Std, Mo–Fr; ein üblicher Arbeitstag rund 8 Std im Zeitfenster 06:45–18:00. Arbeit ausserhalb des Fensters (Abend, Samstag, Sonntag, Feiertag) gibt es auf Anfrage, mit den Zuschlägen nach GAV; sie kommen als zusätzliche Zeit auf den Rapport. Samstag und Sonntag kannst du direkt im Kalender anwählen. Der Ansatz gilt für die Aufbauphase und ist zugleich ein Richtwert: In der Anfrage setzt du ihn selbst, ab 55.–/Std.</p>
     </div>
     <div class="cal-card">
       <h3><span class="cc-sw sw-grey"></span>Graue Tage</h3>
@@ -153,7 +153,7 @@
   <div class="cal-select">
     <span class="cal-selsum" id="selsum">Grüne Tage antippen: 1× <span class="t-normal">Einsatz</span> · 2× frei · Ziehen malt</span>
     <span class="cal-rates" id="rates" hidden title="Netto-Ansatz als Richtwert, im Feld ab 55.–/Std frei wählbar">
-      <label id="rateNwrap"><span class="t-normal">Ansatz</span>&nbsp;CHF <input id="rateN" type="number" min="55" step="0.50" value="60" inputmode="decimal" aria-label="Ansatz, CHF je Stunde, Mindestwert 55, nach oben frei">/Std</label>
+      <label id="rateNwrap"><span class="t-normal">Ansatz</span>&nbsp;CHF <input id="rateN" type="number" min="55" step="0.50" value="65" inputmode="decimal" aria-label="Ansatz, CHF je Stunde, Mindestwert 55, nach oben frei">/Std</label>
     </span>
     <a class="cal-btn is-disabled" id="anfrage" role="button" aria-disabled="true">Anfrage per E-Mail</a>
     <button class="cal-link" id="showtext" type="button" hidden>Text kopieren</button>
@@ -193,7 +193,7 @@
   "use strict";
   var K = window.KALENDER || {};
   var MAIL = "info@naville-handwerk.ch";
-  var RATE_NORMAL   = 60;                  // einziger Tarif, netto — Richtsatz der Aufbauphase (Eric 2026-09-27)
+  var RATE_NORMAL   = 65;                  // Richtwert, netto, nach unten verhandelbar (Eric 2026-09-27)
   var RATE_MIN_N    = 55;                  // Feld-Untergrenze (Eric 2026-08-26). Bewusst tief angesetzt:
                                            // ein Betrieb, dem der Ansatz sonst zu hoch wäre, soll wenigstens
                                            // anfragen können; über den Preis wird dann geredet.
