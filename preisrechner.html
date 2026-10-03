@@ -433,7 +433,7 @@ var PDFIMG={emblem:null,wort:null};
 (function(){
  function lade(pfad,ziel){var im=new Image();im.onload=function(){try{var c=document.createElement('canvas');c.width=im.naturalWidth;c.height=im.naturalHeight;c.getContext('2d').drawImage(im,0,0);PDFIMG[ziel]=c.toDataURL('image/png');}catch(e){}};im.src=pfad;}
  lade('bilder/emblem-2x.png','emblem');    // 250x80 px -> 31.3x10 mm
- lade('bilder/wortmarke-2x.png','wort');   // 495x46 px -> 49.5x4.6 mm
+ lade('bilder/wortmarke-2x.png','wort');   // 474x46 px -> 47.4x4.6 mm
 })();
 function makePDF(){
  calc();
@@ -454,7 +454,7 @@ function makePDF(){
   if(NHW){
     d.setFillColor(ROT[0],ROT[1],ROT[2]);d.rect(0,10,210,0.8,'F');
     if(PDFIMG.emblem){d.addImage(PDFIMG.emblem,'PNG',x,14,31.3,10);}
-    if(PDFIMG.wort){d.addImage(PDFIMG.wort,'PNG',right-49.5,17.4,49.5,4.6);}
+    if(PDFIMG.wort){d.addImage(PDFIMG.wort,'PNG',right-47.4,17.4,47.4,4.6);}
     else{d.setFont('helvetica','bold');d.setFontSize(12);d.setTextColor(ROT[0],ROT[1],ROT[2]);d.text('handwerk',right,21,{align:'right'});var hw=d.getTextWidth('handwerk ');d.setTextColor(0,0,0);d.text('naville',right-hw,21,{align:'right'});}
     d.setDrawColor(LINIE[0],LINIE[1],LINIE[2]);d.setLineWidth(0.3);d.line(x,27,right,27);
     y=37;
