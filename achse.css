@@ -1,0 +1,153 @@
+/* Gestaltung "Achse": weisser Grund, und auf jeder Seite führt eine dünne
+   senkrechte Linie von der Navigation bis zum Schluss der Seite. Die Abschnitte
+   hängen als Stationen daran (Nummer, Jahr oder Buchstabe links, rotes Quadrat
+   auf der Linie); achse.js setzt dazu die Sprungmarken.
+
+   Wird auf jeder Seite NACH dem seitenspezifischen <style> geladen und geht
+   darum basis.css und den Seiten-Styles vor. Ältere Regeln dort (Cremegrund,
+   Trennlinien, zentrierte Karten) bleiben stehen und werden hier übersteuert.
+
+   Aufbau: 1 Grund und Masse · 2 Achse · 3 Stationen · 4 Seiten · 5 schmale Fenster */
+
+/* ---------- 1 Grund und Masse (alle Seiten) ---------- */
+:root{--paper:#fff;--line:#DDDBD6;--rand:clamp(24px,5vw,52px);
+  --spalte:76px;                                   /* Platz links der Achse für Nummern */
+  --abstand:38px;                                  /* Achse bis Inhaltskante */
+  --achse-x:calc(var(--rand) + var(--spalte))}     /* Lage der Achse ab Seitenrand des Wraps */
+body{counter-reset:abschnitt}
+.wrap,.nav-in,.calc-layout{max-width:1160px;margin-inline:auto;padding-inline:var(--rand)}
+.nav{background:rgba(255,255,255,.93)}
+.fbrand{background:#F5F5F3;margin-top:0}
+.card,.callout,.photoph{border-radius:3px}
+.contact{border-radius:4px}
+.photoph{background:#F7F7F5}
+.cal-toolbar{background:rgba(255,255,255,.96)}
+.fb-card,.note,.introbox2,.gavbox,.disc,.side-box{background:#F5F5F3}
+:root{--edit:#F5F5F3;--editbd:#D8D6D0}                           /* Eingabefelder des Preisrechners ohne Cremeton */
+
+/* ---------- 2 Achse: Träger sind alle Abschnitte zwischen Navigation und Fuss ---------- */
+.hero,.phead,.sec,.cta,.achse,.cal-main,.cal-fallback,.cal-toolbar-in{position:relative;padding-left:calc(var(--achse-x) + var(--abstand))}
+.hero::before,.phead::before,.sec::before,.cta::before,.achse::before,.cal-main::before,.cal-fallback::before,.cal-toolbar-in::before{content:"";position:absolute;left:var(--achse-x);top:0;bottom:0;width:1px;background:var(--ink)}
+.sec{border-top:0}
+
+/* ---------- 3 Stationen ---------- */
+/* rotes Quadrat auf der Achse */
+.kick,.sec > .eyebrow,.tblock,.chap-block,.icard,.calc-main h2{position:relative}
+.kick::after,.sec > .eyebrow::after,.tblock::after,.chap-block::after,.icard::after,.calc-main h2::after,.cal-year::after{content:"";position:absolute;left:calc(-1 * var(--abstand) - 4px);top:var(--st-oben,4px);width:9px;height:9px;background:var(--red)}
+/* Nummer links der Achse */
+.sec > .eyebrow,.tblock,.chap-block,.icard{counter-increment:abschnitt}
+.sec > .eyebrow::before,.tblock::before,.chap-block::before,.icard::before,.calc-main h2 .st{position:absolute;right:calc(100% + var(--abstand) + 20px);top:calc(var(--st-oben,4px) - 8px);font-family:'Archivo',sans-serif;font-weight:600;font-size:24px;line-height:1;letter-spacing:0;color:var(--ink);white-space:nowrap;
+  width:40px;display:flex;justify-content:center}                /* alle Zahlen mittig in einer Spalte, 20px links der Achse */
+.sec > .eyebrow::before,.tblock::before,.chap-block::before,.icard::before{content:counter(abschnitt,decimal-leading-zero)}
+
+/* Sprungmarken (achse.js): über der Zahl nach oben, unter der Zahl nach unten.
+   .pf-reihe fasst beide Gruppen; breit erzeugt sie keinen eigenen Kasten. */
+.pf-reihe{display:contents}
+.pf{position:absolute;right:calc(100% + var(--abstand) + 20px);width:40px;display:flex;flex-direction:column;align-items:center}
+.pf-auf{bottom:calc(100% - var(--st-oben,4px) + 16px)}           /* Unterkante 8px über der Zahl */
+.pf-ab{top:calc(var(--st-oben,4px) + 24px)}                      /* 8px unter der Zahl */
+.pf-ohne .pf-auf{bottom:calc(100% - var(--st-oben,4px) + 6px)}   /* Station ohne Zahl: dicht am Quadrat */
+.pf-ohne .pf-ab{top:calc(var(--st-oben,4px) + 15px)}
+.kick .pf-ab{top:calc(var(--st-oben,4px) - 6px)}                 /* oberster Punkt: Marke auf Höhe des Quadrats */
+.pf a{display:flex;align-items:center;justify-content:center;width:30px;height:20px;color:#8E8B85}
+.pf a:hover,.pf a:focus-visible{color:var(--red)}
+.pf a:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+.pf svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+.pf a:hover .fl{fill:currentColor}                               /* hohles Dreieck füllt sich unter dem Zeiger */
+.tblock{--st-oben:34px}
+.tblock::after,.icard::after{margin-left:-1px}                  /* Kartenrand ausgleichen */
+.tblock.ja::after{background:var(--grn)}
+.chap-block{--st-oben:9px}
+.icard{--st-oben:37px}
+.calc-main h2{--st-oben:9px}
+.calc-main h2 .st-p{display:none}
+.chap-title .num{display:none}
+
+/* Schlussstation: die Achse endet an der Aufforderung zum Kontakt */
+.cta{text-align:left;padding-block:26px 60px}
+.cta::before{bottom:auto;height:36px}
+.cta p{position:relative;--st-oben:11px}
+.cta p::after{content:"";position:absolute;left:calc(-1 * var(--abstand) - 6px);top:9px;width:13px;height:13px;background:var(--red)}
+
+/* ---------- 4 Seiten ---------- */
+/* Lesebreite für Fliesstext */
+.sec .sub,.prose p,.callout,.phead .lead{max-width:660px}
+
+/* Startseite */
+.hero{padding-block:70px 96px}
+.hero ~ .sec{padding-block:0 96px}
+.quote{margin-left:calc(-1 * var(--abstand) - 2px);padding-left:calc(var(--abstand) - 1px)}   /* roter Balken liegt auf der Achse */
+@media(min-width:901px){                                          /* Lösungskarte einzeilig halten */
+  .probsol,.probsol-head{gap:24px}
+  .psarrow,.ph-arrow{width:40px}
+  .solcol,.ph-sol{flex:1.12}
+}
+
+/* Unterseiten: Kopf und Abschnitte */
+.phead{padding-block:64px 44px}
+.phead ~ .sec{padding-block:0 72px}
+
+/* Leistungen */
+.tsec,.foto{margin-inline:0}
+.tblock:first-child{margin-top:0}
+.tblock:last-child{margin-bottom:0}
+
+/* FAQ */
+.faq,.note{margin-inline:0}
+
+/* Impressum */
+.narrow{margin-inline:0}
+.icard:first-child{margin-top:0}
+
+/* Kalender: die Jahre sind die Stationen */
+.achse > .cal-cards{padding-block:0 40px}
+.cal-toolbar{margin-top:0}
+.cal-toolbar-in::before{top:-1px;bottom:-1px}
+.cal-main{padding-block:44px 64px}
+.cal-year{position:absolute;left:calc(var(--achse-x) - 60px);width:40px;display:flex;justify-content:center;white-space:nowrap;margin:0;padding:0;border:0;font-size:22px;line-height:1;--st-oben:6px}
+.cal-year .pf{right:0}
+.cal-year:first-child{margin:0}
+.cal-year::after{left:calc(100% + 16px)}
+.cal-months{margin-bottom:52px;row-gap:24px}                        /* Zeilenabstand 24 statt 16: Platz für die Marken über dem laufenden Monat */
+.cal-month.pf-hier{position:relative}
+.pf.pf-monat{position:absolute;right:-3px;top:-23px;bottom:auto;width:auto;flex-direction:row}   /* Reihe über der rechten oberen Ecke, breit wie schmal */
+.cal-months:last-child{margin-bottom:0}
+
+/* Preisrechner: die Buchstaben A bis F sind die Stationen */
+.intro,.calc-section{padding:0}
+.intro > .achse{display:flow-root;padding-block:0 22px}             /* flow-root: Randabstand der Kästen bleibt innen, die Achse reisst nicht ab */
+.calc-layout{grid-template-columns:minmax(0,1fr) 300px;gap:32px;padding-block:0 64px}
+.calc-main h2:first-child{margin-top:.4em}
+ol.refs a{overflow-wrap:anywhere}                               /* lange Adressen der Quellenliste ragten rechts aus der Spalte (schon im Ist) */
+
+/* ---------- 5 schmale Fenster ---------- */
+@media(max-width:1100px){
+  .calc-layout{grid-template-columns:1fr}
+  .calc-side{position:static}
+}
+@media(max-width:820px){
+  :root{--spalte:0px;--abstand:20px;--achse-x:12px}
+  .hero{padding-block:44px 64px}
+  .hero ~ .sec{padding-block:0 64px}
+  .phead{padding-block:40px 34px}
+  .phead ~ .sec{padding-block:0 52px}
+  /* Nummern: bei den Abschnittszeilen in die Zeile, sonst weg (die Karten tragen eigene Köpfe) */
+  .sec > .eyebrow::before{position:static;display:inline;width:auto;font-size:15px;margin-right:10px}
+  .tblock::before,.chap-block::before,.icard::before{display:none}
+  .chap-title .num{display:inline-flex}
+  .calc-main h2 .st{position:static;display:inline;width:auto;font:inherit}
+  .calc-main h2 .st-p{display:inline}
+  .cal-year{position:relative;display:block;left:auto;width:auto;margin:0 0 12px}
+  /* Sprungmarken: links der Achse ist kein Platz, darum als Reihe rechts.
+     Textzeilen (Abschnittszeile, Jahr, Überschrift): schwebt rechts auf der ersten Zeile.
+     Karten und FAQ-Kapitel: über der rechten oberen Ecke, im Abstand zur Karte davor. */
+  .pf-reihe{display:flex;float:right;margin:0 -5px 0 10px}
+  .pf{position:static;width:auto;flex-direction:row}
+  .pf a{position:relative;width:26px;height:19px}                 /* 19px: nicht höher als eine Textzeile */
+  .pf a::after{content:"";position:absolute;inset:-9px 0}         /* grössere Tippfläche */
+  .tblock > .pf-reihe,.chap-block > .pf-reihe,.icard > .pf-reihe{float:none;position:absolute;right:-5px;top:-30px;margin:0}
+  .tblock + .tblock,.icard + .icard{margin-top:44px}
+  .cal-year::after{left:calc(-1 * var(--abstand) - 4px)}
+  .cal-months{margin-bottom:38px}
+  .quote{margin-left:calc(-1 * var(--abstand) - 1px);padding-left:calc(var(--abstand) - 2px)}
+}

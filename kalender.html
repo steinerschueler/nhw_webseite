@@ -90,11 +90,12 @@
 .cal-select{justify-content:center}
 }
 </style>
+<link rel="stylesheet" href="achse.css">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="bilder/favicon-32.png">
 <link rel="apple-touch-icon" href="bilder/apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
-<meta name="theme-color" content="#EFEEE8">
+<meta name="theme-color" content="#FFFFFF">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Naville Handwerk GmbH">
 <meta property="og:locale" content="de_CH">
@@ -126,7 +127,7 @@
   <p class="lead">Grün ist frei. Tippe die Tage an, die du brauchst; nochmals antippen hebt die Wahl wieder auf. Samstage und Sonntage kannst du ebenfalls antippen: Das Wochenende gibt es auf Anfrage, mit Zuschlag nach GAV. Daraus schickst du mir mit einem Klick eine Anfrage per E-Mail. Der Richtwert ist 65.–/Std; in der Anfrage setzt du den Ansatz selbst, ab 55.–/Std. Reserviert wird dabei nichts: Du fragst, ich sage zu oder ab.</p>
 </section>
 
-<section class="wrap">
+<section class="wrap achse">
   <div class="cal-cards">
     <div class="cal-card">
       <h3><span class="cc-sw sw-orange"></span>Was Orange dir zusichert</h3>
@@ -542,7 +543,7 @@
     var t = document.getElementById("m-"+today.getFullYear()+"-"+today.getMonth());
     if(!t) return;
     var toolbar = document.querySelector(".cal-toolbar");
-    var off = (nav?nav.offsetHeight:0) + (toolbar?toolbar.offsetHeight:0) + 16;
+    var off = (nav?nav.offsetHeight:0) + (toolbar?toolbar.offsetHeight:0) + 34;   // Platz für die Sprungmarken über dem Monat
     var r = t.getBoundingClientRect();
     if(r.top < off || r.bottom > window.innerHeight){
       window.scrollTo({ top: window.pageYOffset + r.top - off, behavior: reduce()?"auto":"smooth" });
@@ -555,4 +556,5 @@
   updateBar();
 })();
 </script>
+<script src="achse.js"></script>
 </body></html>

@@ -5,7 +5,7 @@ Reines HTML/CSS/JS, kein Server nötig.
 
 > **Rolle in der `nhw_*`-Landschaft:** das **öffentliche** Repo (GitHub Pages) — nur
 > Website-Dateien, nie private oder Echtdaten. Die massgebliche Landkarte und das Doku-Register
-> aller fünf `nhw_*`-Verzeichnisse führt der Hub `nhw_tool/doku/landschaft.md`; hier steht nur
+> aller vier `nhw_*`-Verzeichnisse führt der Hub `nhw_tool/doku/landschaft.md`; hier steht nur
 > die eigene Rolle, keine zweite Landschafts-Tabelle.
 
 ## Inhalt
@@ -15,6 +15,17 @@ Reines HTML/CSS/JS, kein Server nötig.
   auf alle Seiten; das `<link>` steht auf jeder Seite **vor** dem `<style>`-Block, darum
   gewinnt bei gleicher Spezifität immer die seitenspezifische Inline-Regel (Overrides).
   Seitenspezifisches CSS bleibt bewusst im jeweiligen `<style>` — kein Build-System.
+- `achse.css` — **die Gestaltung «Achse»** (weisser Grund; auf jeder Seite führt eine dünne
+  senkrechte Linie von der Navigation bis zum Seitenschluss, die Abschnitte hängen als
+  Stationen mit Nummer, Jahr oder Buchstabe daran). Das `<link>` steht auf jeder Seite **nach**
+  dem `<style>`-Block und geht darum `basis.css` und den Seiten-Styles vor; ältere Regeln dort
+  (Cremegrund, Trennlinien, zentrierte Karten) werden hier übersteuert. Neue Abschnitte bekommen
+  ihre Station über die vorhandenen Klassen (`.sec > .eyebrow`, `.tblock`, `.chap-block`,
+  `.icard`, `.cal-year`, `.calc-main h2`); ein Abschnitt ohne solche Klasse trägt die Linie über
+  die Klasse `achse`.
+- `achse.js` — Sprungmarken an den Stationen (hohle Dreiecke: vorheriger und nächster Punkt,
+  ganz nach oben, ganz nach unten; im Kalender zusätzlich über dem laufenden Monat). Reines
+  Verhalten, die Lage regelt `achse.css`; ohne JavaScript fehlen nur die Marken.
 - `index.html` — Startseite
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
@@ -26,8 +37,8 @@ Reines HTML/CSS/JS, kein Server nötig.
   `banner.js` rendert die Anzeige
 - `kalender.js` — belegte Tage; **wird vom Admin-Toolkit generiert**; die Logik liegt in `kalender.html`
 - `bilder/` — die von der Seite **ausgelieferten** Bilder: Kopf-Emblem (`emblem.png`) + Favicon-Satz.
-  Die **Design-Quellen** (Logos, Merch, Visitenkarte) liegen privat in `nhw_privat/design/`
-  (Marken-Hub) — **nicht** in diesem öffentlichen Repo.
+  Die **Design-Quellen** (Logos, Merch, Visitenkarte) liegen privat im Marken-Hub des
+  Daten-Repos — **nicht** in diesem öffentlichen Repo.
 - `fonts/archivo-600.woff2` (+ `OFL.txt`) — Display-Schrift (self-hosted)
 - Icons: `favicon.svg` (Root) + `bilder/` (`favicon-32.png`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`); `site.webmanifest`
 - `404.html`, `robots.txt`, `sitemap.xml`, `CNAME`
