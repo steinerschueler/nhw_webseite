@@ -19,7 +19,7 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
   PDF-Vereinbarung; jsPDF lokal in `vendor/`)
-- `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Der Notstromer & Verfügbarkeit")
+- `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Verfügbarkeit")
 - `kalender.html` — Jahreskalender (Verfügbarkeit; freie Tage per E-Mail anfragen, kein Backend)
 - `impressum.html` — Impressum / Datenschutz
 - `verfuegbarkeit.js` — Verfügbarkeits-Datum; **wird vom Admin-Toolkit generiert** (siehe unten);
