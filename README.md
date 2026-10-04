@@ -33,8 +33,11 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Verfügbarkeit")
 - `kalender.html` — Jahreskalender (Verfügbarkeit; freie Tage per E-Mail anfragen, kein Backend)
 - `impressum.html` — Impressum / Datenschutz
-- `verfuegbarkeit.js` — Verfügbarkeits-Datum; **wird vom Admin-Toolkit generiert** (siehe unten);
-  `banner.js` rendert die Anzeige
+- `verfuegbarkeit.js` — Datum, ab dem wieder Tage buchbar sind; **wird vom Admin-Toolkit
+  generiert** (siehe unten). Im Kalender erscheinen alle Tage davor grau.
+- `hinweis.js` — der Hinweisbalken oben: leer = kein Balken (Normalfall), `"auto"` =
+  Verfügbarkeits-Anzeige aus `verfuegbarkeit.js`, eigener Text = roter Hinweis. Das Toolkit
+  fasst diese Datei nie an. `banner.js` rendert den Balken.
 - `kalender.js` — belegte Tage; **wird vom Admin-Toolkit generiert**; die Logik liegt in `kalender.html`
 - `bilder/` — die von der Seite **ausgelieferten** Bilder: Kopf-Emblem (`emblem.png`) + Favicon-Satz.
   Die **Design-Quellen** (Logos, Merch, Visitenkarte) liegen privat im Marken-Hub des
@@ -57,16 +60,19 @@ Notweg ohne Toolkit — in `verfuegbarkeit.js` die eine Zeile von Hand anpassen:
 window.VERFUEGBAR_AB = "2026-09-01";   // Format JJJJ-MM-TT;  "" = sofort verfügbar (grün)
 ```
 
-Bis zu diesem Datum zeigt die Seite oben einen roten Balken „nicht verfügbar · ab … buchbar", danach
-automatisch grün „jetzt verfügbar". Der **Jahreskalender** (`kalender.html`) liest dasselbe Datum:
-alle Tage **vor** `VERFUEGBAR_AB` erscheinen grau (noch nicht buchbar). Die belegten Einsatztage
+Der **Jahreskalender** (`kalender.html`) liest dieses Datum: alle Tage **vor** `VERFUEGBAR_AB`
+erscheinen grau (noch nicht buchbar). Ein Balken oben auf der Seite erscheint nur, wenn
+`hinweis.js` es verlangt (`"auto"`: rot "nicht verfügbar, ab … buchbar", danach grün "jetzt
+verfügbar"). Die belegten Einsatztage
 stehen in `kalender.js` (gleicher Notweg möglich; der nächste Toolkit-Export überschreibt
 Handeinträge).
 
 ## Deployment (GitHub Pages)
 
 1. Dieses Repo ist selbst die Pages-Quelle (Branch `main`, Root; `CNAME` liegt bei) —
-   **Push auf `main` = Publikation.**
+   **Push auf `main` = Publikation.** Gepusht wird nur auf ausdrücklichen Auftrag des
+   Inhabers. Vor der Arbeit und vor dem Push `git fetch` und `git status`: Ein Klon kann
+   hinterherhinken.
 2. In den Repo-Einstellungen unter *Pages* die Custom Domain `naville-handwerk.ch` setzen und die Domain
    **verifizieren** (TXT-Challenge), **bevor** die DNS-Records gesetzt werden (Schutz vor Takeover).
 3. **„Enforce HTTPS"** aktivieren.
@@ -77,6 +83,8 @@ Handeinträge).
 
 - **Nur Website-Dateien gehören in dieses öffentliche Repo.** Interne Notizen, Strategie- und
   Geschäftsdokumente liegen getrennt in den privaten Arbeitsrepos — nie hierher kopieren.
+  Das gilt auch für Kommentare im Quelltext: Sie werden mit ausgeliefert und tragen keine
+  internen Überlegungen (Preisstrategie, wer wann was entschied).
 - **Niemals Geheimnisse oder Personendaten committen:** keine API-Keys, Passwörter, SMTP-/DKIM-Schlüssel,
   keine Kundendaten, Wochenrapporte oder Rechnungen. Ein öffentliches Repo ist weltweit lesbar und bleibt
   **dauerhaft in der Git-History** (auch nach dem Löschen). `.gitignore` ist **keine** Sicherheitsschicht.
@@ -92,5 +100,9 @@ Handeinträge).
 
 Login, Wochenrapporte, Rechnungen und Automatisierung dürfen **nicht** auf GitHub Pages laufen (statisch,
 öffentlich). Sie gehören als **getrennte App mit Backend** (Auth + Datenbank) auf eine eigene Subdomain
-(z. B. `app.naville-handwerk.ch`). Details: Sicherheitskonzept `Sicherheit_Naville_Handwerk.md`
-im privaten Arbeitsrepo.
+(z. B. `app.naville-handwerk.ch`). Das Sicherheitskonzept dazu ist intern dokumentiert.
+
+## Lokale Arbeitsdateien
+
+`tmp/` (gitignoriert) hält Ansichten, Design-Versuche und Prüfwerkzeuge; es wird nie
+ausgeliefert. `graphify-out/` ist der lokale Wissensgraph des Codes.

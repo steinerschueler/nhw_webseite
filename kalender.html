@@ -194,11 +194,8 @@
   "use strict";
   var K = window.KALENDER || {};
   var MAIL = "info@naville-handwerk.ch";
-  var RATE_NORMAL   = 65;                  // Richtwert, netto, nach unten verhandelbar (Eric 2026-09-27)
-  var RATE_MIN_N    = 55;                  // Feld-Untergrenze (Eric 2026-08-26). Bewusst tief angesetzt:
-                                           // ein Betrieb, dem der Ansatz sonst zu hoch wäre, soll wenigstens
-                                           // anfragen können; über den Preis wird dann geredet.
-                                           // Nach oben ist er offen.
+  var RATE_NORMAL   = 65;                  // Richtwert, netto
+  var RATE_MIN_N    = 55;                  // Untergrenze des Felds; nach oben offen
   var LBL_N = '<span class="t-normal">Einsatz</span>';        // orange unterstrichen
   var HINT = 'Grüne Tage antippen: 1× '+LBL_N+' · 2× frei · Ziehen malt';
   var HOURS = 8;                           // Richtwert Std/Tag für die CHF-Schätzung:
@@ -277,7 +274,7 @@
   var STARTTXT = START ? (START.getDate()+". "+MONTHS[START.getMonth()]+" "+START.getFullYear()) : "";
 
   /* ---- Fix gesperrte Tage, jährlich wiederkehrend: "MM-TT" -> Wort auf dem Tag.
-     27.12. nicht reservierbar (Eric 2026-08-23). ---- */
+     27.12. nicht reservierbar. ---- */
   var SPERR = { "12-27": "belegt" };
 
   /* ---- Zustand eines Tages bestimmen (Reihenfolge = Vorrang) ---- */
@@ -459,7 +456,7 @@
 
   /* Gebot lesen: leeres Feld = Richtwert, sonst auf 5 Rappen gerundet und nie
      unter die Untergrenze. Der Betrieb setzt den Ansatz
-     frei — auch unter den Richtwert (Eric 2026-08-26). */
+     frei, auch unter den Richtwert. */
   function rateVal(input, richt, min){
     var v = parseFloat(String(input.value).replace(",","."));
     if(!isFinite(v)) v = richt;              // leeres/unlesbares Feld: zurück auf den Richtwert
