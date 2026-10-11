@@ -16,7 +16,7 @@
 (function () {
   "use strict";
 
-  var ESRI_KEY = "";
+  var ESRI_KEY = "AAPTaZIpFzPx1ke9B-O2-S88EoQ..4HEkLEWtu7oKOTlEoBQrWa2MZ64Bf_y2fIUyXJPyhsITvbO7lq8KrimYe0stCB4NOnBFjITvUjIKQUU0WJKILoTcrzyOxW8bEOOf8_Audpqa4Moml1QlrOcZHmnzJ3FXUmiqlvfa8uqZhSujMems8NVOO7KkIlFcKnhcMfw1bo6JMP0esOxwj1waafk4nLIqKsC4CUyLcA0_3g0JzW8QrCnU_16Pvtxe2jUb5UuOmhzdolvU_w..AT1_AmXggOTB";
   var RAYON_MIN = 15;
 
   var SUCHE = "https://api3.geo.admin.ch/rest/services/ech/SearchServer";
@@ -158,7 +158,7 @@
       impedanceAttributeName: "TravelTime",
       timeOfDay: String(esriMs), timeOfDayIsUTC: "false",
       travelDirection: "esriNATravelDirectionFromFacility",
-      outputPolygons: "esriNAOutputPolygonDetailed",
+      outputPolygons: "esriNAOutputPolygonSimplified",      /* die detaillierte Form besteht aus tausend Ringen entlang der Strassen */
       outSR: "4326"
     }).then(function (j) {
       var f = j.saPolygons && j.saPolygons.features && j.saPolygons.features[0];
@@ -213,7 +213,7 @@
       c.beginPath();
       ringe.forEach(function (ring) { ring.forEach(function (p, i) { var q = px(p); if (i === 0) c.moveTo(q.x, q.y); else c.lineTo(q.x, q.y); }); c.closePath(); });
       c.fillStyle = g[1]; c.fill("evenodd");
-      c.lineWidth = 5; c.strokeStyle = g[2]; c.lineJoin = "round"; c.stroke();
+      c.lineWidth = 3.5; c.strokeStyle = g[2]; c.lineJoin = "round"; c.stroke();
     });
 
     /* Marker mit Beschriftung */

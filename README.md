@@ -87,8 +87,11 @@ Datenschutzerklärung in `impressum.html` nennt beide Dienste; wer einen Dienst 
 sie im selben Zug an, ebenso die Content-Security-Policy der Seite (`connect-src`, `img-src`).
 
 **Der Esri-Schlüssel** ist ein Browser-Schlüssel: Er steht sichtbar in `rayon.js`, ist im
-Esri-Konto auf die Referrer `naville-handwerk.ch` beschränkt und auf das Privileg «Routing»,
-und er läuft nach höchstens einem Jahr ab. Das Konto hat kein Zahlungsmittel; wird das
+Esri-Konto (Element «Rayon-Rechner Webseite», Typ API-Schlüssel, öffentliche Anwendung) auf
+die Referrer `https://naville-handwerk.ch` und `https://www.naville-handwerk.ch` beschränkt
+und auf die zwei Berechtigungen «Einfaches Routing» und «Einzugsgebiet» unter
+Positionsservices, und er läuft nach höchstens einem Jahr ab. Esri prüft den Referrer
+serverseitig: Aufrufe ohne oder mit fremdem Referrer erhalten «Invalid Token». Das Konto hat kein Zahlungsmittel; wird das
 Freikontingent (Routen und Service areas je Monat) überschritten, sperrt Esri bis zum
 Monatsanfang, es entstehen keine Kosten. Erneuern oder ersetzen: im Esri-Dashboard einen neuen
 Schlüssel mit denselben Einstellungen anlegen, `ESRI_KEY` in `rayon.js` ersetzen, committen,
