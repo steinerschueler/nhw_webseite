@@ -200,7 +200,7 @@ button{max-width:100%;white-space:normal}
 <div class="out"><span>Jahres-Bruttolohn</span><span id="r_jahrlohn"></span></div>
 <div class="out"><span>Betrag an den Endkunden / Std<sup class="fn"><a href="#r23">23</a></sup></span><span id="r_spanne"></span></div>
 
-<label class="pdfopt"><input type="checkbox" id="nhwstyle"> PDF im Naville-Handwerk-Design (Emblem und Wortmarke im Kopf), sonst neutral</label>
+<label class="pdfopt"><input type="checkbox" id="neutral" checked> PDF neutral: ohne Logo und ohne Hinweis auf Naville Handwerk</label>
 <button id="pdfbtn" type="button">📄 Vereinbarung als PDF erstellen</button>
 <div class="pdfvorschau" id="pdfvorschau" hidden>
   <div class="disc">Vorschau des PDF. Stimmt alles, lädst du es mit dem Knopf darunter herunter. Änderst du einen Wert, verschwindet die Vorschau; dann das PDF neu erstellen.</div>
@@ -460,7 +460,7 @@ function makePDF(){
  try{
   var jsPDF=window.jspdf.jsPDF;var d=new jsPDF({unit:'mm',format:'a4'});
   var x=20,right=190,PH=297,y=0;
-  var NHW=document.getElementById('nhwstyle').checked;
+  var NHW=!document.getElementById('neutral').checked;   // Vorgabe neutral; Haken weg = Hausdesign (wie im Rayon-Rechner)
   var INK=[34,36,42],GRAU=[110,107,100],LINIE=[220,214,203],ROT=[193,18,28];
   function gap(mm){y+=(mm||3);}
   function sect(t){gap(5);d.setFont('helvetica','bold');d.setFontSize(11);d.setTextColor(INK[0],INK[1],INK[2]);d.text(t,x,y);y+=2.5;d.setDrawColor(LINIE[0],LINIE[1],LINIE[2]);d.setLineWidth(0.3);d.line(x,y,right,y);y+=6.5;d.setFont('helvetica','normal');d.setFontSize(10);d.setTextColor(INK[0],INK[1],INK[2]);}
@@ -500,7 +500,7 @@ function makePDF(){
   d.text('Vereinbarter Stundenansatz (netto):',x+2,y);d.text(chf(ansatz),right,y,{align:'right'});y+=6.5;
   d.text('inkl. MWST '+mwst.toLocaleString('de-CH')+' %:',x+2,y);d.text(chf(mwsth),right,y,{align:'right'});y+=7;
   d.setFont('helvetica','normal');gap(4);
-  var bem='Diese Vereinbarung hält den für den Einsatz vereinbarten Stundenansatz fest und ersetzt keinen Einsatz-/Rahmenvertrag. Die offene Kalkulation hinter dem Ansatz lässt sich jederzeit im Preisrechner auf naville-handwerk.ch nachvollziehen.';
+  var bem='Diese Vereinbarung hält den für den Einsatz vereinbarten Stundenansatz fest und ersetzt keinen Einsatz-/Rahmenvertrag.'+(NHW?' Die offene Kalkulation hinter dem Ansatz lässt sich jederzeit im Preisrechner auf naville-handwerk.ch nachvollziehen.':'');
   d.setFontSize(9.5);d.setTextColor(GRAU[0],GRAU[1],GRAU[2]);
   var bemZ=d.splitTextToSize(bem,170);d.text(bemZ,x,y);y+=bemZ.length*4.2+4;
   if(d2){d.setFontSize(8.5);d.text(d.splitTextToSize('GAV-Referenz: '+d2.b+', '+d2.e+': '+d2.w+' ('+(d2.ave?'allgemeinverbindlich':'nicht allgemeinverbindlich')+', Stand '+d2.y+')',170),x,y);}

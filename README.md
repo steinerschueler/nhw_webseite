@@ -38,7 +38,9 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `index.html` — Startseite
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
-  PDF-Vereinbarung, zuerst als Vorschau auf der Seite, dann Herunterladen; jsPDF lokal in `vendor/`)
+  PDF-Vereinbarung, zuerst als Vorschau auf der Seite, dann Herunterladen; Schalter «PDF neutral»
+  wie im Rayon-Rechner, Vorgabe an, ohne Haken Hausdesign und Verweis auf den Preisrechner;
+  jsPDF lokal in `vendor/`)
 - `rayon.html` + `rayon.js` — Rayon-Rechner nach GAV Elektro: Fahrzeit mit dem Auto vom Firmensitz
   des Arbeitgebers und vom Sitz des Einsatzbetriebs zur Baustelle, mit Verkehrsprognose zur
   gewählten Abfahrtszeit, getrennt ausgewertet für Wegzeit (Art. 27.4) und Verpflegung (Art. 33.1);
