@@ -41,7 +41,7 @@ Reines HTML/CSS/JS, kein Server nötig.
   PDF-Vereinbarung, zuerst als Vorschau auf der Seite, dann Herunterladen; Schalter «PDF neutral»
   wie im Rayon-Rechner, Vorgabe an, ohne Haken Hausdesign und Verweis auf den Preisrechner;
   jsPDF lokal in `vendor/`)
-- `rayon.html` + `rayon.js` — Rayon-Rechner nach GAV Elektro: Fahrzeit mit dem Auto vom Firmensitz
+- `rayon.html` + `rayon.js` — Rayon-Rechner nach GAV Elektro: Fahrzeit mit dem Auto vom Sitz
   des Arbeitgebers und vom Sitz des Einsatzbetriebs zur Baustelle, mit Verkehrsprognose zur
   gewählten Abfahrtszeit, getrennt ausgewertet für Wegzeit (Art. 27.4) und Verpflegung (Art. 33.1);
   die 15-Minuten-Gebiete auf einer swisstopo-Karte; PDF mit Schalter «neutral» (Abschnitt
@@ -86,16 +86,20 @@ Handeinträge).
 ## Rayon-Rechner (`rayon.html`, `rayon.js`)
 
 Die Seite misst die Fahrzeit mit dem Auto zur Baustelle und wertet sie getrennt nach den zwei
-15-Minuten-Regeln des GAV Elektro aus: Wegzeit (Art. 27.4, Rayon ab Firmensitz des Arbeitgebers)
-und Verpflegungsentschädigung (Art. 33.1, ab Firmendomizil, bei Personalverleih ab Sitz des
-Einsatzbetriebs). Firmensitz und Sitz des Einsatzbetriebs sind je optional, einer von beiden
-muss da sein: Ohne Einsatzbetrieb misst die Seite beide Regeln ab dem Firmensitz; ohne
-Firmensitz (Personalverleih, ein Verleiher kann keinen Rayon nach Art. 27.4 festlegen) entfällt
-die Messung nach Art. 27.4. Mit dem optionalen Wohnort des Arbeitnehmers rechnet sie dazu die
-Wegzeit ohne Rayon nach Art. 27.3 (Weg Wohnort zur Baustelle abzüglich Weg Wohnort zum Betrieb;
-Betrieb = Sitz des Einsatzbetriebs, sonst Firmensitz; der Wohnort erscheint nicht auf der
-Karte). Welcher Betrieb bei verliehenen Arbeitnehmenden für Art. 27 massgebend ist, ist eine
-offene Frage an die PLK; die Seite sagt das. Sie ist für jeden Betrieb der Branche gedacht und nennt keine
+15-Minuten-Regeln des GAV Elektro aus: Wegzeit (Art. 27.4, Rayon ab Sitz des Arbeitgebers)
+und Verpflegungsentschädigung (Art. 33.1, ab Sitz des Arbeitgebers, bei Personalverleih ab Sitz
+des Einsatzbetriebs). Begriffe wie im Verleihvertragswerk: «Sitz des Arbeitgebers» (bei
+Personalverleih der Verleiher), «Sitz des Einsatzbetriebs», «Wohnort des Arbeitnehmers»,
+«Baustelle»; die GAV-Wörter Firmensitz, Firmendomizil (vertraglicher Einstellungsort) und
+Einsatzfirma stehen nur als Übersetzungshilfe im Seitenkasten. Sitz des Arbeitgebers und Sitz
+des Einsatzbetriebs sind je optional, einer von beiden muss da sein: Ohne Einsatzbetrieb misst
+die Seite beide Regeln ab dem Sitz des Arbeitgebers; ohne Sitz des Arbeitgebers (Personalverleih,
+ein Verleiher kann keinen Rayon nach Art. 27.4 festlegen) entfällt die Messung nach Art. 27.4.
+Mit dem optionalen Wohnort des Arbeitnehmers rechnet sie dazu die Wegzeit ohne Rayon nach
+Art. 27.3 (Weg Wohnort zur Baustelle abzüglich Weg Wohnort zum Sitz des Einsatzbetriebs, ohne
+Personalverleih zum Sitz des Arbeitgebers; der Wohnort erscheint nicht auf der Karte). Welcher
+Sitz bei verliehenen Arbeitnehmenden für Art. 27 massgebend ist, ist eine offene Frage an die
+PLK; die Seite sagt das. Sie ist für jeden Betrieb der Branche gedacht und nennt keine
 Vertragsregel der GmbH; die Erläuterungen folgen GAV, PLK-Merkblättern und EIT.swiss, auf die
 die Seite verlinkt. Der Betrag der Verpflegungsentschädigung (CHF 18, GAV 2026 bis 2029) steht
 als `VERPFLEGUNG_CHF` in `rayon.js` und in den Erläuterungen der Seite; beim nächsten GAV
@@ -130,7 +134,7 @@ pushen auf Wort des Inhabers; den alten Schlüssel löschen. **Jede Änderung am
 generieren und eintragen, sonst meldet die Seite «Invalid Token». Ohne Schlüssel (leer) laufen Adressen
 und Karte weiter, nur die Fahrzeit nicht; die Seite sagt das dann.
 
-Vorbelegen lässt sich die Seite über die Adresse: `rayon.html?v=<Firmensitz Arbeitgeber>&e=<Sitz
+Vorbelegen lässt sich die Seite über die Adresse: `rayon.html?v=<Sitz Arbeitgeber>&e=<Sitz
 Einsatzbetrieb>&w=<Wohnort Arbeitnehmer>&b=<Baustelle>&zeit=07:00&neutral=0` (`v` oder `e` muss da
 sein, `w` darf fehlen; `neutral=0` schaltet den PDF-Schalter aus, der sonst an ist).
 
