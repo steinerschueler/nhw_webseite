@@ -457,7 +457,7 @@
 
     var pv = stand.punkte.v, pe = stand.punkte.e, pw = stand.punkte.w;
     abschnitt("Adressen");
-    zeile("Sitz des Arbeitgebers", pv ? pv.label : "keiner angegeben (Personalverleih)");
+    zeile("Sitz des Arbeitgebers (Verleiher)", pv ? pv.label : "keiner angegeben (Personalverleih)");
     zeile("Sitz des Einsatzbetriebs", pe ? pe.label : "keiner angegeben (Verpflegung ab Sitz des Arbeitgebers gemessen)");
     if (pw) zeile("Wohnort des Arbeitnehmers", pw.label);
     zeile("Baustelle", stand.punkte.b.label);
