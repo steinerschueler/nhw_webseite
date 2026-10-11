@@ -42,6 +42,7 @@ input[type=number]{width:96px;text-align:right}
 .big{background:var(--ink);color:#fff;border-color:var(--ink)}
 .big span:last-child{color:#fff}
 .hint{color:#7a4718;background:#FBF1E7;border:1px solid #E7C9A3;border-radius:8px;padding:8px 13px;font-size:.85em;margin:6px 0}
+.hint[hidden]{display:none}
 .note{color:var(--grey);font-size:.8em;margin-top:1.2em;border-top:1px solid var(--line);padding-top:10px}
 ol.refs{font-size:.8em;color:#444;padding-left:22px}
 ol.refs li{margin-bottom:6px}
@@ -202,6 +203,7 @@ button{max-width:100%;white-space:normal}
 
 <label class="pdfopt"><input type="checkbox" id="neutral" checked> PDF neutral: ohne Logo und ohne Hinweis auf Naville Handwerk</label>
 <button id="pdfbtn" type="button">📄 Vereinbarung als PDF erstellen</button>
+<div class="hint" id="pdffehler" hidden></div>
 <div class="pdfvorschau" id="pdfvorschau" hidden>
   <div class="disc">Vorschau des PDF. Stimmt alles, lädst du es mit dem Knopf darunter herunter. Änderst du einen Wert, verschwindet die Vorschau; dann das PDF neu erstellen.</div>
   <iframe id="pdfrahmen" title="Vorschau der Vereinbarung"></iframe>
@@ -451,8 +453,9 @@ var PDFIMG={emblem:null,wort:null};
  lade('bilder/emblem-2x.png','emblem');    // 250x80 px -> 31.3x10 mm
  lade('bilder/wortmarke-2x.png','wort');   // 474x46 px -> 47.4x4.6 mm
 })();
+function pdfFehler(s){var h=document.getElementById('pdffehler');h.textContent=s;h.hidden=!s;}   // Hinweiskasten statt alert()
 function makePDF(){
- calc();
+ calc();pdfFehler('');
  var gmbh=val('gmbh')||'________________';var owner=val('owner')||'________________';var einsatz=val('einsatz')||'________________';
  var kn=KANTONE[val('kanton')]?KANTONE[val('kanton')][0]:val('kanton');var gem=val('gemeinde')||'';
  var today=new Date().toLocaleDateString('de-CH');
@@ -525,7 +528,7 @@ function makePDF(){
    d.text('Stundenansatz-Vereinbarung'+(val('gmbh')?' · '+val('gmbh'):''),x,PH-9);
    d.text('Seite '+i+'/'+n,right,PH-9,{align:'right'});}
   pdfVorschau(d,(gmbh.replace(/[^A-Za-z0-9]/g,'_')||'Vereinbarung')+'_Stundenansatz_Vereinbarung.pdf');
- }catch(e){alert('PDF-Bibliothek nicht geladen (Internet nötig). Es öffnet sich die Druckansicht; dort "Als PDF speichern" wählen.');window.print();}
+ }catch(e){pdfVeraltet();pdfFehler('PDF konnte nicht erstellt werden ('+(e&&e.message?e.message:'PDF-Bibliothek nicht geladen')+'). Es öffnet sich die Druckansicht; dort "Als PDF speichern" wählen.');window.print();}
 }
 // Vorschau: das PDF erscheint zuerst in einem Rahmen auf der Seite; herunterladen erst danach, mit dem
 // richtigen Dateinamen (Blob-Link; der Betrachter im Rahmen hiesse die Datei sonst nach der Blob-Kennung)
