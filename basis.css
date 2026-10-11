@@ -66,3 +66,6 @@ a{color:inherit}
 #navtoggle:checked ~ .burger span:nth-child(2){opacity:0}
 #navtoggle:checked ~ .burger span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
 }
+/* Seitenspalte der Rechner (Preisrechner, Rayon-Rechner): klebt unter der Kopfzeile und scrollt in
+   sich, sobald sie hoeher als der Bildschirm ist; schmal setzen die Seiten sie auf static */
+.calc-side{position:sticky;top:78px;max-height:calc(100vh - 92px);overflow-y:auto;display:flex;flex-direction:column;gap:16px;padding:0 6px 2px 0;scrollbar-width:thin;scrollbar-color:#cfc9bd transparent}
