@@ -30,6 +30,10 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
   PDF-Vereinbarung; jsPDF lokal in `vendor/`)
+- `rayon.html` + `rayon.js` — Rayon-Rechner zu Ziff. 4 des Verleihvertrags: Wegzeit mit dem Auto
+  vom Sitz des Verleihers und vom Sitz des Einsatzbetriebs zur Baustelle, mit Verkehrsprognose
+  zur gewählten Abfahrtszeit; beide 15-Minuten-Gebiete auf einer swisstopo-Karte; PDF als Beilage
+  zum Einsatzblatt (Abschnitt «Rayon-Rechner» unten)
 - `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Verfügbarkeit")
 - `kalender.html` — Jahreskalender (Verfügbarkeit; freie Tage per E-Mail anfragen, kein Backend)
 - `impressum.html` — Impressum / Datenschutz
@@ -67,6 +71,33 @@ verfügbar"). Die belegten Einsatztage
 stehen in `kalender.js` (gleicher Notweg möglich; der nächste Toolkit-Export überschreibt
 Handeinträge).
 
+## Rayon-Rechner (`rayon.html`, `rayon.js`)
+
+Die Seite misst, ob eine Baustelle im Rayon liegt (höchstens 15 Minuten Fahrzeit mit dem Auto ab
+einem der beiden Sitze). Sie ist statisch und ruft zwei fremde Dienste direkt aus dem Browser
+auf, als reine Datenabfragen ohne Anbieter-Bibliothek, ohne Cookies und ohne Speicherung:
+
+| Dienst | Wofür | Schlüssel | Attribution |
+|---|---|---|---|
+| swisstopo, `api3.geo.admin.ch` (SearchServer) und `wms.geo.admin.ch` (GetMap) | Adressen zu Koordinaten; Kartenbild (Landeskarte grau, LV95) | keiner | «© swisstopo» |
+| Esri ArcGIS Location Platform, `route-api.arcgis.com` (Route, Service areas) | Fahrzeit mit Verkehrsprognose je Sitz; 15-Minuten-Gebiete | `ESRI_KEY` in `rayon.js` | «Powered by Esri», Strassen- und Verkehrsdaten TomTom |
+
+An Esri gehen nur Koordinaten und die Abfahrtszeit, keine Adresstexte. Die
+Datenschutzerklärung in `impressum.html` nennt beide Dienste; wer einen Dienst wechselt, passt
+sie im selben Zug an, ebenso die Content-Security-Policy der Seite (`connect-src`, `img-src`).
+
+**Der Esri-Schlüssel** ist ein Browser-Schlüssel: Er steht sichtbar in `rayon.js`, ist im
+Esri-Konto auf die Referrer `naville-handwerk.ch` beschränkt und auf das Privileg «Routing»,
+und er läuft nach höchstens einem Jahr ab. Das Konto hat kein Zahlungsmittel; wird das
+Freikontingent (Routen und Service areas je Monat) überschritten, sperrt Esri bis zum
+Monatsanfang, es entstehen keine Kosten. Erneuern oder ersetzen: im Esri-Dashboard einen neuen
+Schlüssel mit denselben Einstellungen anlegen, `ESRI_KEY` in `rayon.js` ersetzen, committen,
+pushen auf Wort des Inhabers; den alten Schlüssel löschen. Ohne Schlüssel (leer) laufen Adressen
+und Karte weiter, nur die Fahrzeit nicht; die Seite sagt das dann.
+
+Vorbelegen lässt sich die Seite über die Adresse: `rayon.html?v=<Sitz Verleiher>&e=<Sitz
+Einsatzbetrieb>&b=<Baustelle>&zeit=07:00`.
+
 ## Deployment (GitHub Pages)
 
 1. Dieses Repo ist selbst die Pages-Quelle (Branch `main`, Root; `CNAME` liegt bei) —
@@ -94,7 +125,12 @@ Handeinträge).
   das vermeidet Supply-Chain-Risiken. SRI-Hash zur Kontrolle:
   `sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==`
 - Jede Seite trägt eine Content-Security-Policy (per `<meta>`). Echte Header (HSTS, X-Frame-Options) kann
-  GitHub Pages nicht setzen — bei Bedarf Cloudflare (gratis) davorschalten.
+  GitHub Pages nicht setzen — bei Bedarf Cloudflare (gratis) davorschalten. `rayon.html` erlaubt
+  zusätzlich die Dienste von swisstopo und Esri (`connect-src`, `img-src`), sonst nichts Fremdes.
+- **Ausnahme vom Schlüssel-Verbot:** Der Esri-Schlüssel in `rayon.js` ist kein Geheimnis. Er steht
+  in der ausgelieferten Seite, ist auf die Referrer dieser Domain und das Privileg Routing
+  beschränkt, läuft nach höchstens einem Jahr ab, und das Konto hat kein Zahlungsmittel (Abschnitt
+  «Rayon-Rechner»). Jeder andere Schlüssel bleibt draussen.
 
 ## Geschützte Funktionen gehören NICHT hierher
 
