@@ -47,7 +47,12 @@
     wegAus: "Ausserhalb des 15-Minuten-Rayons ab Firmensitz: Die Wegzeit zur Baustelle ist bezahlte Arbeitszeit, auch mit einem Rayon nach Art. 27.4.",
     verpIm: "Höchstens 15 Minuten ab Firmendomizil: keine Verpflegungsentschädigung nach Art. 33.1.",
     verpAus: "Mehr als 15 Minuten ab Firmendomizil: Anspruch auf Verpflegungsentschädigung von mindestens CHF " + VERPFLEGUNG_CHF + " je Tag (Art. 33.1), wenn die Arbeit am Morgen beginnt und am Nachmittag fortgesetzt wird.",
-    offen: "Keine Fahrzeit gemessen."
+    offen: "Keine Fahrzeit gemessen.",
+    /* Kurzfassungen fuer die Kaesten im PDF (eine Zeile, damit alles auf eine Seite passt) */
+    pdfWegIm: "Wegzeit: innerhalb des Rayons ab Firmensitz (gilt nur mit Rayon nach Art. 27.4).",
+    pdfWegAus: "Wegzeit: ausserhalb des Rayons ab Firmensitz, die Wegzeit ist Arbeitszeit.",
+    pdfVerpIm: "Verpflegung: höchstens 15 Minuten ab Firmendomizil, kein Anspruch nach Art. 33.1.",
+    pdfVerpAus: "Verpflegung: mehr als 15 Minuten ab Firmendomizil, mindestens CHF " + VERPFLEGUNG_CHF + " je Tag (Art. 33.1)."
   };
   var marke = {emblem: null, wort: null};
 
@@ -386,7 +391,7 @@
     }
     function kasten(im, t) {
       var f = im ? GRN : ROT;
-      d.setFont("helvetica", "bold"); d.setFontSize(10.5);
+      d.setFont("helvetica", "bold"); d.setFontSize(10);
       var zl = d.splitTextToSize(t, rechts - x), h = 4.6 * zl.length + 5;
       d.setFillColor(f[0], f[1], f[2]); d.roundedRect(x - 3, y - 5, (rechts - x) + 6, h, 1.2, 1.2, "F");
       d.setTextColor(255, 255, 255); d.text(zl, x, y + 0.5);
@@ -419,16 +424,19 @@
     zeile("Wegzeit, Art. 27.4", "ab Firmensitz des Arbeitgebers: " + wert(zWeg), farbe(zWeg));
     zeile("Verpflegung, Art. 33.1", (stand.ohneE ? "ab Firmensitz des Arbeitgebers: " : "ab Sitz des Einsatzbetriebs: ") + wert(zVerp), farbe(zVerp));
     y += 3;
-    if (zWeg) kasten(zWeg.minuten <= RAYON_MIN, "Wegzeit: " + (zWeg.minuten <= RAYON_MIN ? TXT.wegIm : TXT.wegAus));
-    if (zVerp) kasten(zVerp.minuten <= RAYON_MIN, "Verpflegung: " + (zVerp.minuten <= RAYON_MIN ? TXT.verpIm : TXT.verpAus));
+    if (zWeg) kasten(zWeg.minuten <= RAYON_MIN, zWeg.minuten <= RAYON_MIN ? TXT.pdfWegIm : TXT.pdfWegAus);
+    if (zVerp) kasten(zVerp.minuten <= RAYON_MIN, zVerp.minuten <= RAYON_MIN ? TXT.pdfVerpIm : TXT.pdfVerpAus);
     d.setFont("helvetica", "normal"); d.setFontSize(9); d.setTextColor(GRAU[0], GRAU[1], GRAU[2]);
-    var hinweis = d.splitTextToSize("Richtwert: Die Fahrzeit hängt vom Verkehr ab und ändert sich von Tag zu Tag. Gemessen nach der Vorgabe der PLK Elektro: effektive Fahrzeit mit dem Auto zu den Arbeitszeiten, Abfahrt ab der Firma, unter den tatsächlichen Verkehrsbedingungen; der Wohnort des Arbeitnehmers spielt keine Rolle. Der Rayon nach Art. 27.4 gilt nur, wenn der Arbeitgeber ihn im Betriebsreglement oder im Arbeitsvertrag festgelegt hat (nach PLK nur Mitglieder von EIT.swiss). Art. 33.1 ist allgemeinverbindlich; bei Personalverleih zählt der Sitz des Einsatzbetriebs. Massgebend sind der GAV und der Arbeits- oder Verleihvertrag. Fahrzeiten und Fahrzeitgebiete: Powered by Esri, Strassen- und Verkehrsdaten TomTom.", rechts - x);
+    var hinweis = d.splitTextToSize("Richtwert: Die Fahrzeit hängt vom Verkehr ab und ändert sich von Tag zu Tag. Gemessen nach der Vorgabe der PLK Elektro: effektive Fahrzeit mit dem Auto zu den Arbeitszeiten, Abfahrt ab der Firma, mit Verkehrsprognose; der Wohnort des Arbeitnehmers spielt keine Rolle. Der Rayon nach Art. 27.4 gilt nur, wenn der Arbeitgeber ihn im Betriebsreglement oder im Arbeitsvertrag festgelegt hat (nach PLK nur Mitglieder von EIT.swiss). Art. 33.1 ist allgemeinverbindlich und setzt Arbeit am Morgen und am Nachmittag voraus; bei Personalverleih zählt der Sitz des Einsatzbetriebs. Massgebend sind der GAV und der Arbeits- oder Verleihvertrag. Fahrzeiten und Fahrzeitgebiete: Powered by Esri, Strassen- und Verkehrsdaten TomTom.", rechts - x);
     d.text(hinweis, x, y); y += hinweis.length * 4.2;
 
     if (stand.karteOk) {
-      if (PH - 18 - 14 - (y + 14) < 100) { d.addPage(); y = 12; }   /* Karte samt Titel auf die naechste Seite */
+      /* Die Karte nimmt den Rest der Seite (hoechstens die volle Breite); eine zweite Seite nur,
+         wenn weniger als 70 mm bleiben, was mit den einzeiligen Kaesten nicht vorkommt */
+      var RAND = 13 + 16;                                            /* Fusslinie plus Legende und Quelle */
+      if (PH - RAND - (y + 14) < 70) { d.addPage(); y = 12; }
       abschnitt(stand.gebiete.e ? "Karte: beide 15-Minuten-Gebiete und die Baustelle" : "Karte: 15-Minuten-Gebiet und Baustelle");
-      var seite = Math.min(rechts - x, PH - 18 - 14 - y);          /* bis zur Fusszeile, mit Legende */
+      var seite = Math.min(rechts - x, PH - RAND - y);
       try {
         d.addImage($("cv").toDataURL("image/jpeg", 0.86), "JPEG", x + ((rechts - x) - seite) / 2, y, seite, seite);
       } catch (e) {}
