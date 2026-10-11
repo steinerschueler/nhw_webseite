@@ -88,8 +88,14 @@ Handeinträge).
 Die Seite misst die Fahrzeit mit dem Auto zur Baustelle und wertet sie getrennt nach den zwei
 15-Minuten-Regeln des GAV Elektro aus: Wegzeit (Art. 27.4, Rayon ab Firmensitz des Arbeitgebers)
 und Verpflegungsentschädigung (Art. 33.1, ab Firmendomizil, bei Personalverleih ab Sitz des
-Einsatzbetriebs; der Sitz des Einsatzbetriebs ist darum optional, leer misst die Seite beide
-Regeln ab dem Firmensitz). Sie ist für jeden Betrieb der Branche gedacht und nennt keine
+Einsatzbetriebs). Firmensitz und Sitz des Einsatzbetriebs sind je optional, einer von beiden
+muss da sein: Ohne Einsatzbetrieb misst die Seite beide Regeln ab dem Firmensitz; ohne
+Firmensitz (Personalverleih, ein Verleiher kann keinen Rayon nach Art. 27.4 festlegen) entfällt
+die Messung nach Art. 27.4. Mit dem optionalen Wohnort des Arbeitnehmers rechnet sie dazu die
+Wegzeit ohne Rayon nach Art. 27.3 (Weg Wohnort zur Baustelle abzüglich Weg Wohnort zum Betrieb;
+Betrieb = Sitz des Einsatzbetriebs, sonst Firmensitz; der Wohnort erscheint nicht auf der
+Karte). Welcher Betrieb bei verliehenen Arbeitnehmenden für Art. 27 massgebend ist, ist eine
+offene Frage an die PLK; die Seite sagt das. Sie ist für jeden Betrieb der Branche gedacht und nennt keine
 Vertragsregel der GmbH; die Erläuterungen folgen GAV, PLK-Merkblättern und EIT.swiss, auf die
 die Seite verlinkt. Der Betrag der Verpflegungsentschädigung (CHF 18, GAV 2026 bis 2029) steht
 als `VERPFLEGUNG_CHF` in `rayon.js` und in den Erläuterungen der Seite; beim nächsten GAV
@@ -125,8 +131,8 @@ generieren und eintragen, sonst meldet die Seite «Invalid Token». Ohne Schlüs
 und Karte weiter, nur die Fahrzeit nicht; die Seite sagt das dann.
 
 Vorbelegen lässt sich die Seite über die Adresse: `rayon.html?v=<Firmensitz Arbeitgeber>&e=<Sitz
-Einsatzbetrieb>&b=<Baustelle>&zeit=07:00&neutral=0` (`e` darf fehlen; `neutral=0` schaltet den
-PDF-Schalter aus, der sonst an ist).
+Einsatzbetrieb>&w=<Wohnort Arbeitnehmer>&b=<Baustelle>&zeit=07:00&neutral=0` (`v` oder `e` muss da
+sein, `w` darf fehlen; `neutral=0` schaltet den PDF-Schalter aus, der sonst an ist).
 
 ## Deployment (GitHub Pages)
 

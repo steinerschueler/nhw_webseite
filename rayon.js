@@ -1,7 +1,9 @@
 /* Rayon-Rechner (rayon.html): misst die Fahrzeit mit dem Auto vom Firmensitz des Arbeitgebers und,
    bei Personalverleih, vom Sitz des Einsatzbetriebs zu einer Baustelle, wertet sie getrennt nach
-   GAV Elektro Art. 27.4 (Wegzeit) und Art. 33.1 (Verpflegung) aus und zeichnet die 15-Minuten-
-   Gebiete auf ein swisstopo-Kartenbild.
+   GAV Elektro Art. 27.4 (Wegzeit mit Rayon) und Art. 33.1 (Verpflegung) aus und zeichnet die
+   15-Minuten-Gebiete auf ein swisstopo-Kartenbild. Mit dem Wohnort des Arbeitnehmers (freiwillig,
+   nicht auf der Karte) rechnet er dazu die Wegzeit ohne Rayon nach Art. 27.3: Weg Wohnort zur
+   Baustelle abzueglich Weg Wohnort zum Betrieb (bei Personalverleih Sitz des Einsatzbetriebs).
 
    Dienste, alle als reine Datenabfragen (fetch, Bilder mit crossOrigin "anonymous"; keine
    Cookies, keine Anbieter-Bibliothek, nichts wird gespeichert):
@@ -35,11 +37,13 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var felder = {
-    v: {eingabe: $("adr-v"), status: $("st-v"), name: "Firmensitz des Arbeitgebers"},
+    v: {eingabe: $("adr-v"), status: $("st-v"), name: "Firmensitz des Arbeitgebers", optional: true},
     e: {eingabe: $("adr-e"), status: $("st-e"), name: "Sitz des Einsatzbetriebs", optional: true},
+    w: {eingabe: $("adr-w"), status: $("st-w"), name: "Wohnort des Arbeitnehmers", optional: true},
     b: {eingabe: $("adr-b"), status: $("st-b"), name: "Baustelle"}
   };
-  var stand = {punkte: {}, zeiten: {}, gebiete: {}, abfahrt: null, gemessen: null, karteOk: false, ohneE: false};
+  /* betrieb: "e" = Sitz des Einsatzbetriebs ist Firmendomizil (33.1) und Betrieb (27.3), sonst "v" */
+  var stand = {punkte: {}, zeiten: {}, gebiete: {}, abfahrt: null, gemessen: null, karteOk: false, betrieb: "v"};
   var VERPFLEGUNG_CHF = 18;                          /* GAV Art. 33.1, GAV 2026 bis 2029; beim naechsten GAV nachfuehren */
   /* Ergebnistexte, auf der Seite und im PDF gleich */
   var TXT = {
@@ -48,6 +52,9 @@
     verpIm: "Höchstens 15 Minuten ab Firmendomizil: keine Verpflegungsentschädigung nach Art. 33.1.",
     verpAus: "Mehr als 15 Minuten ab Firmendomizil: Anspruch auf Verpflegungsentschädigung von mindestens CHF " + VERPFLEGUNG_CHF + " je Tag (Art. 33.1), wenn die Arbeit am Morgen beginnt und am Nachmittag fortgesetzt wird.",
     offen: "Keine Fahrzeit gemessen.",
+    wegOhneSitz: "Kein Firmensitz angegeben: keine Messung nach Art. 27.4. Bei Personalverleih gilt in der Regel Art. 27.3 (nächster Abschnitt).",
+    w273Offen: "Wohnort des Arbeitnehmers nicht angegeben: keine Rechnung nach Art. 27.3.",
+    w273Null: "Keine Wegzeit als Arbeitszeit nach Art. 27.3: Der Weg zur Baustelle ist nicht länger als der gewöhnliche Arbeitsweg zum Betrieb.",
     /* Kurzfassungen fuer die Kaesten im PDF (eine Zeile, damit alles auf eine Seite passt) */
     pdfWegIm: "Wegzeit: innerhalb des Rayons ab Firmensitz (gilt nur mit Rayon nach Art. 27.4).",
     pdfWegAus: "Wegzeit: ausserhalb des Rayons ab Firmensitz, die Wegzeit ist Arbeitszeit.",
@@ -286,6 +293,7 @@
       zeichne(r[0], bbox, punkte, gebiete);
       stand.karteOk = true;
       zeige($("legende"), true);
+      zeige($("lg-v-zeile"), !!gebiete.v);
       zeige($("lg-e-zeile"), !!gebiete.e);
       $("png").disabled = false;
     });
@@ -306,13 +314,36 @@
     return im;
   }
 
+  /* neutrale Messzeile ohne Farbe (Art. 27.3: hier zaehlt die Differenz, nicht eine Grenze) */
+  function messzeile(prefix, z) {
+    var el = $("r-" + prefix), km = $("r-" + prefix + "-km");
+    if (!z) { el.className = "w offen"; text(el, "nicht gemessen"); text(km, ""); return; }
+    el.className = "w"; text(el, minutenText(z.minuten)); text(km, z.km != null ? "Strecke " + kmText(z.km) : "");
+  }
+  function betriebName() { return stand.betrieb === "e" ? "Sitz des Einsatzbetriebs" : "Firmensitz des Arbeitgebers"; }
+  function w273Text(diff) { return minutenText(diff) + " je Weg gelten als Arbeitszeit (Art. 27.3): So viel länger ist der Weg zur Baustelle als der gewöhnliche Arbeitsweg zum Betrieb."; }
+  function differenz273() {
+    var zb = stand.zeiten.wb, zt = stand.zeiten.wt;
+    return zb && zt ? Math.max(0, zb.minuten - zt.minuten) : null;
+  }
+
   function ergebnisZeigen() {
-    /* Wegzeit (27.4) immer ab Firmensitz; Verpflegung (33.1) ab Sitz des Einsatzbetriebs, ohne
-       Einsatzbetrieb ab Firmensitz (Firmendomizil = Einstellungsort) */
-    var zWeg = stand.zeiten.v, zVerp = stand.ohneE ? stand.zeiten.v : stand.zeiten.e;
-    $("r-verp-l").firstChild.nodeValue = stand.ohneE ? "Firmensitz des Arbeitgebers zur Baustelle (kein Einsatzbetrieb angegeben)" : "Sitz des Einsatzbetriebs zur Baustelle";
+    /* Wegzeit mit Rayon (27.4) nur ab Firmensitz; Verpflegung (33.1) ab Sitz des Einsatzbetriebs,
+       ohne Einsatzbetrieb ab Firmensitz (Firmendomizil = Einstellungsort); Wegzeit ohne Rayon (27.3)
+       ab Wohnort, Betrieb wie bei 33.1 */
+    var pv = stand.punkte.v, pe = stand.punkte.e, pw = stand.punkte.w;
+    var zWeg = pv ? stand.zeiten.v : null;
+    var zVerp = stand.betrieb === "e" ? stand.zeiten.e : stand.zeiten.v;
     regelZeigen("weg", zWeg, TXT.wegIm, TXT.wegAus);
+    if (!pv) { text($("r-weg-km"), "kein Firmensitz angegeben"); text($("u-weg-text"), TXT.wegOhneSitz); }
+    $("r-verp-l").firstChild.nodeValue = betriebName() + " zur Baustelle" + (!pe ? " (kein Einsatzbetrieb angegeben)" : "");
     regelZeigen("verp", zVerp, TXT.verpIm, TXT.verpAus);
+    $("r-wt-l").firstChild.nodeValue = "Wohnort des Arbeitnehmers zum Betrieb (" + betriebName() + ")";
+    messzeile("wb", stand.zeiten.wb); messzeile("wt", stand.zeiten.wt);
+    var box = $("u-273"), t = $("u-273-text"), diff = differenz273();
+    if (!pw) { box.className = "out big"; text(t, TXT.w273Offen); }
+    else if (diff === null) { box.className = "out big"; text(t, TXT.offen); }
+    else { box.className = "out big " + (diff > 0 ? "aus" : "im"); text(t, diff > 0 ? w273Text(diff) : TXT.w273Null); }
   }
 
   function messungZeile(fehlerText) {
@@ -337,12 +368,14 @@
     if (!abfahrt) { fehler("Bitte Datum und Uhrzeit der Abfahrt angeben."); knopf.disabled = false; text(knopf, "Wegzeit messen"); return; }
     stand.abfahrt = abfahrt;
 
-    Promise.all([punktHolen("v"), punktHolen("e"), punktHolen("b")]).then(function (p) {
-      var v = p[0], e = p[1], b = p[2];
-      var eLeer = !felder.e.eingabe.value.trim();              /* Einsatzbetrieb ist optional */
-      if (!v || !b || (!e && !eLeer)) throw new Error("Bitte die Adressen so eingeben, dass sie gefunden werden.");
-      stand.ohneE = eLeer;
-      if (eLeer) delete stand.punkte.e;
+    Promise.all([punktHolen("v"), punktHolen("e"), punktHolen("w"), punktHolen("b")]).then(function (p) {
+      var v = p[0], e = p[1], w = p[2], b = p[3];
+      function leer(k) { return !felder[k].eingabe.value.trim(); }
+      if (!b || (!v && !leer("v")) || (!e && !leer("e")) || (!w && !leer("w"))) throw new Error("Bitte die Adressen so eingeben, dass sie gefunden werden.");
+      if (!v && !e) throw new Error("Bitte den Firmensitz des Arbeitgebers oder den Sitz des Einsatzbetriebs eingeben.");
+      ["v", "e", "w"].forEach(function (k) { if (leer(k)) delete stand.punkte[k]; });
+      stand.betrieb = e ? "e" : "v";
+      var betrieb = e || v;
       stand.gemessen = new Date();
       if (!ESRI_KEY) {
         ergebnisZeigen();
@@ -353,17 +386,19 @@
       function sicher(pr, name) { return pr.catch(function (err) { meldungen.push(name + ": " + err.message); return null; }); }
       var keine = Promise.resolve(null);
       return Promise.all([
-        sicher(fahrzeit(v, b, abfahrt.esriMs), "Fahrzeit ab Firmensitz des Arbeitgebers"),
+        v ? sicher(fahrzeit(v, b, abfahrt.esriMs), "Fahrzeit ab Firmensitz des Arbeitgebers") : keine,
         e ? sicher(fahrzeit(e, b, abfahrt.esriMs), "Fahrzeit ab Sitz des Einsatzbetriebs") : keine,
-        sicher(fahrzeitgebiet(v, abfahrt.esriMs), "Fahrzeitgebiet Arbeitgeber"),
-        e ? sicher(fahrzeitgebiet(e, abfahrt.esriMs), "Fahrzeitgebiet Einsatzbetrieb") : keine
+        v ? sicher(fahrzeitgebiet(v, abfahrt.esriMs), "Fahrzeitgebiet Arbeitgeber") : keine,
+        e ? sicher(fahrzeitgebiet(e, abfahrt.esriMs), "Fahrzeitgebiet Einsatzbetrieb") : keine,
+        w ? sicher(fahrzeit(w, b, abfahrt.esriMs), "Fahrzeit Wohnort zur Baustelle") : keine,
+        w ? sicher(fahrzeit(w, betrieb, abfahrt.esriMs), "Fahrzeit Wohnort zum Betrieb") : keine
       ]).then(function (r) {
-        stand.zeiten = {v: r[0], e: r[1]};
+        stand.zeiten = {v: r[0], e: r[1], wb: r[4], wt: r[5]};
         if (r[2]) stand.gebiete.v = r[2];
         if (r[3]) stand.gebiete.e = r[3];
         ergebnisZeigen();
         messungZeile(meldungen.length ? "Nicht vollständig: " + meldungen.join("; ") + "." : "");
-        return karteZeichnen().then(function () { if (r[0]) $("pdf").disabled = false; });
+        return karteZeichnen().then(function () { if (r[0] || r[1]) $("pdf").disabled = false; });
       });
     }).catch(function (err) {
       fehler(err.message || String(err));
@@ -415,26 +450,34 @@
       y = 37;
     }
     d.setFont("helvetica", "bold"); d.setFontSize(16); d.setTextColor(INK[0], INK[1], INK[2]);
-    d.text("Rayon nach GAV Elektro, Art. 27.4 und 33.1", x, y); y += 6;
+    d.text("Wegzeit und Verpflegung nach GAV Elektro, Art. 27 und 33.1", x, y); y += 6;
     d.setFont("helvetica", "normal"); d.setFontSize(9.5); d.setTextColor(GRAU[0], GRAU[1], GRAU[2]);
     d.text((neutral ? "Gemessen" : "Rayon-Rechner naville-handwerk.ch  ·  gemessen") + " am " + datumCH(stand.gemessen) + " um " + zeitCH(stand.gemessen) + " Uhr  ·  Abfahrt " + stand.abfahrt.text, x, y); y += 3;
 
+    var pv = stand.punkte.v, pe = stand.punkte.e, pw = stand.punkte.w;
     abschnitt("Adressen");
-    zeile("Firmensitz des Arbeitgebers", stand.punkte.v.label);
-    zeile("Sitz des Einsatzbetriebs", stand.ohneE ? "keiner angegeben (Verpflegung ab Firmensitz gemessen)" : stand.punkte.e.label);
+    zeile("Firmensitz des Arbeitgebers", pv ? pv.label : "keiner angegeben (Personalverleih)");
+    zeile("Sitz des Einsatzbetriebs", pe ? pe.label : "keiner angegeben (Verpflegung ab Firmensitz gemessen)");
+    if (pw) zeile("Wohnort des Arbeitnehmers", pw.label);
     zeile("Baustelle", stand.punkte.b.label);
 
     abschnitt("Fahrzeit mit dem Auto, ein Weg, Verkehrsprognose zur Abfahrtszeit");
-    var zWeg = stand.zeiten.v, zVerp = stand.ohneE ? stand.zeiten.v : stand.zeiten.e;
+    var zWeg = pv ? stand.zeiten.v : null, zVerp = stand.betrieb === "e" ? stand.zeiten.e : stand.zeiten.v;
     function wert(z) { return z ? minutenText(z.minuten) + (z.km != null ? " (" + kmText(z.km) + ")" : "") : "nicht gemessen"; }
     function farbe(z) { return z ? (z.minuten <= RAYON_MIN ? GRN : ROT) : GRAU; }
-    zeile("Wegzeit, Art. 27.4", "ab Firmensitz des Arbeitgebers: " + wert(zWeg), farbe(zWeg));
-    zeile("Verpflegung, Art. 33.1", (stand.ohneE ? "ab Firmensitz des Arbeitgebers: " : "ab Sitz des Einsatzbetriebs: ") + wert(zVerp), farbe(zVerp));
+    zeile("Wegzeit, Art. 27.4", pv ? "ab Firmensitz des Arbeitgebers: " + wert(zWeg) : "kein Firmensitz angegeben, keine Messung", farbe(zWeg));
+    zeile("Verpflegung, Art. 33.1", "ab " + betriebName() + ": " + wert(zVerp), farbe(zVerp));
+    if (pw) {
+      var zb = stand.zeiten.wb, zt = stand.zeiten.wt, diff = differenz273();
+      zeile("Wegzeit, Art. 27.3", diff === null ? "nicht gemessen" :
+        "Wohnort zur Baustelle " + minutenText(zb.minuten) + ", zum Betrieb (" + betriebName() + ") " + minutenText(zt.minuten) + ": " +
+        (diff > 0 ? minutenText(diff) + " je Weg Arbeitszeit" : "keine Wegzeit als Arbeitszeit"), diff === null ? GRAU : (diff > 0 ? ROT : GRN));
+    }
     y += 3;
     if (zWeg) kasten(zWeg.minuten <= RAYON_MIN, zWeg.minuten <= RAYON_MIN ? TXT.pdfWegIm : TXT.pdfWegAus);
     if (zVerp) kasten(zVerp.minuten <= RAYON_MIN, zVerp.minuten <= RAYON_MIN ? TXT.pdfVerpIm : TXT.pdfVerpAus);
     d.setFont("helvetica", "normal"); d.setFontSize(9); d.setTextColor(GRAU[0], GRAU[1], GRAU[2]);
-    var hinweis = d.splitTextToSize("Richtwert: Die Fahrzeit hängt vom Verkehr ab und ändert sich von Tag zu Tag. Gemessen nach der Vorgabe der PLK Elektro: effektive Fahrzeit mit dem Auto zu den Arbeitszeiten, Abfahrt ab der Firma, mit Verkehrsprognose; der Wohnort des Arbeitnehmers spielt keine Rolle. Der Rayon nach Art. 27.4 gilt nur, wenn der Arbeitgeber ihn im Betriebsreglement oder im Arbeitsvertrag festgelegt hat (nach PLK nur Mitglieder von EIT.swiss). Art. 33.1 ist allgemeinverbindlich und setzt Arbeit am Morgen und am Nachmittag voraus; bei Personalverleih zählt der Sitz des Einsatzbetriebs. Massgebend sind der GAV und der Arbeits- oder Verleihvertrag. Fahrzeiten und Fahrzeitgebiete: Powered by Esri, Strassen- und Verkehrsdaten TomTom.", rechts - x);
+    var hinweis = d.splitTextToSize("Richtwert: Die Fahrzeit hängt vom Verkehr ab und ändert sich von Tag zu Tag. Gemessen nach der Vorgabe der PLK Elektro: effektive Fahrzeit mit dem Auto zu den Arbeitszeiten, Abfahrt ab der Firma, mit Verkehrsprognose. Der Rayon nach Art. 27.4 gilt nur mit Betriebsreglement oder Arbeitsvertrag (nach PLK nur Mitglieder von EIT.swiss); ohne Rayon gilt Art. 27.3: Weg zur Baustelle abzüglich gewöhnlicher Arbeitsweg vom Wohnort zum Betrieb, bei Personalverleih gerechnet ab Sitz des Einsatzbetriebs. Art. 33.1 ist allgemeinverbindlich und setzt Arbeit am Morgen und am Nachmittag voraus. Massgebend sind der GAV und der Arbeits- oder Verleihvertrag. Fahrzeiten und Fahrzeitgebiete: Powered by Esri, Strassen- und Verkehrsdaten TomTom.", rechts - x);
     d.text(hinweis, x, y); y += hinweis.length * 4.2;
 
     if (stand.karteOk) {
@@ -442,7 +485,7 @@
          wenn weniger als 70 mm bleiben, was mit den einzeiligen Kaesten nicht vorkommt */
       var RAND = 13 + 16;                                            /* Fusslinie plus Legende und Quelle */
       if (PH - RAND - (y + 14) < 70) { d.addPage(); y = 12; }
-      abschnitt(stand.gebiete.e ? "Karte: beide 15-Minuten-Gebiete und die Baustelle" : "Karte: 15-Minuten-Gebiet und Baustelle");
+      abschnitt(stand.gebiete.v && stand.gebiete.e ? "Karte: beide 15-Minuten-Gebiete und die Baustelle" : "Karte: 15-Minuten-Gebiet und Baustelle");
       var seite = Math.min(rechts - x, PH - RAND - y);
       try {
         d.addImage($("cv").toDataURL("image/jpeg", 0.86), "JPEG", x + ((rechts - x) - seite) / 2, y, seite, seite);
@@ -450,13 +493,13 @@
       y += seite + 5;
       d.setFont("helvetica", "normal"); d.setFontSize(8.5); d.setTextColor(GRAU[0], GRAU[1], GRAU[2]);
       var lx = x;
-      d.setFillColor(27, 42, 74); d.rect(lx, y - 3, 3.5, 3.5, "F"); d.text("15 Minuten ab Firmensitz des Arbeitgebers", lx + 5.5, y); lx += 72;
+      if (stand.gebiete.v) { d.setFillColor(27, 42, 74); d.rect(lx, y - 3, 3.5, 3.5, "F"); d.text("15 Minuten ab Firmensitz des Arbeitgebers", lx + 5.5, y); lx += 72; }
       if (stand.gebiete.e) { d.setFillColor(234, 140, 27); d.rect(lx, y - 3, 3.5, 3.5, "F"); d.text("15 Minuten ab Sitz des Einsatzbetriebs", lx + 5.5, y); lx += 68; }
       d.setFillColor(ROT[0], ROT[1], ROT[2]); d.circle(lx + 1.8, y - 1.3, 1.8, "F"); d.text("Baustelle", lx + 5.5, y);
       y += 4.5; d.text("Karte: © swisstopo", x, y);
     }
 
-    var fuss = (neutral ? "" : "Rayon-Rechner · naville-handwerk.ch/rayon.html · ") + "Fahrzeitmessung nach GAV Elektro Art. 27.4 und 33.1";
+    var fuss = (neutral ? "" : "Rayon-Rechner · naville-handwerk.ch/rayon.html · ") + "Fahrzeitmessung nach GAV Elektro Art. 27 und 33.1";
     var n = d.getNumberOfPages();
     for (var i = 1; i <= n; i++) {
       d.setPage(i); d.setFont("helvetica", "normal"); d.setFontSize(8); d.setTextColor(GRAU[0], GRAU[1], GRAU[2]);
@@ -505,7 +548,7 @@
 
   $("datum").value = isoDatum(naechsterWerktag());
   var q = new URLSearchParams(location.search);            /* Vorbelegung ueber die Adresse der Seite: ?v=…&e=…&b= */
-  ["v", "e", "b"].forEach(function (k) { if (q.get(k)) felder[k].eingabe.value = q.get(k); });
+  ["v", "e", "w", "b"].forEach(function (k) { if (q.get(k)) felder[k].eingabe.value = q.get(k); });
   if (q.get("zeit") && /^\d{2}:\d{2}$/.test(q.get("zeit"))) $("zeit").value = q.get("zeit");
   if (q.has("neutral")) $("neutral").checked = q.get("neutral") !== "0";   /* Vorgabe: neutral */
   zeige($("hinweis-key"), !ESRI_KEY);
@@ -516,7 +559,7 @@
   $("pdftab").addEventListener("click", pdfNeuerTab);
   $("neutral").addEventListener("change", vorschauWeg);
   $("png").addEventListener("click", pngSpeichern);
-  ["v", "e", "b"].forEach(function (k) {
+  ["v", "e", "w", "b"].forEach(function (k) {
     felder[k].eingabe.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); rechnen(); } });
     felder[k].eingabe.addEventListener("change", function () { if (!felder[k].eingabe.value.trim()) statusSetzen(k, "", ""); });
   });

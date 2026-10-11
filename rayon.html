@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://wms.geo.admin.ch; font-src 'self'; connect-src 'self' https://api3.geo.admin.ch https://route-api.arcgis.com; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Rayon-Rechner · Naville Handwerk GmbH</title>
-<meta name="description" content="Rayon nach GAV Elektro: Fahrzeit mit dem Auto vom Firmensitz und vom Sitz des Einsatzbetriebs zur Baustelle, mit Verkehrsprognose. Wegzeit (Art. 27.4) und Verpflegungsentschädigung (Art. 33.1) getrennt, beide 15-Minuten-Gebiete auf der Karte.">
+<meta name="description" content="Rayon nach GAV Elektro: Fahrzeit mit dem Auto zur Baustelle, mit Verkehrsprognose. Wegzeit mit Rayon (Art. 27.4), Wegzeit ohne Rayon ab Wohnort (Art. 27.3) und Verpflegungsentschädigung (Art. 33.1) getrennt, die 15-Minuten-Gebiete auf der Karte.">
 <link rel="stylesheet" href="basis.css">
 <style>
 :root{--blau:#1B2A4A;--edit:#F5F5F3;--editbd:#D8D6D0}
@@ -120,13 +120,13 @@ button{max-width:100%;white-space:normal}
 <section class="wrap phead">
   <div class="kick mono">Rayon-Rechner</div>
   <h1 class="disp">Liegt die Baustelle im Rayon?</h1>
-  <p class="lead">Der GAV der Schweizerischen Elektrobranche kennt zwei Rayons von je 15 Minuten Fahrzeit: einen für die Wegzeit (Art. 27.4, ab Firmensitz des Arbeitgebers) und einen für die Verpflegungsentschädigung (Art. 33.1, bei Personalverleih ab Sitz des Einsatzbetriebs). Hier misst du beide Fahrzeiten mit dem Auto und Verkehrsprognose, so wie es die Paritätische Landeskommission vorgibt, und siehst beide Gebiete auf der Karte.</p>
+  <p class="lead">Der GAV der Schweizerischen Elektrobranche kennt zwei Rayons von je 15 Minuten Fahrzeit: einen für die Wegzeit (Art. 27.4, ab Firmensitz des Arbeitgebers) und einen für die Verpflegungsentschädigung (Art. 33.1, bei Personalverleih ab Sitz des Einsatzbetriebs). Hier misst du beide Fahrzeiten mit dem Auto und Verkehrsprognose, so wie es die Paritätische Landeskommission vorgibt, und siehst beide Gebiete auf der Karte. Gibst du auch den Wohnort des Arbeitnehmers an, rechnet der Rechner die Wegzeit ohne Rayon (Art. 27.3): Weg zur Baustelle abzüglich gewöhnlicher Arbeitsweg.</p>
 </section>
 
 <section class="intro">
 <div class="wrap achse">
 <div class="introbox">
-<strong>So geht es.</strong> Du gibst die Adressen ein: den Firmensitz des Arbeitgebers (vertraglicher Einstellungsort), bei Personalverleih den Sitz des Einsatzbetriebs, und die Baustelle. Der Rechner holt die Koordinaten beim Bund (swisstopo) und lässt die Fahrzeit mit dem Auto für die gewählte Abfahrtszeit berechnen (Esri, mit Verkehrsprognose). Er sagt je Regel, ob die Baustelle innerhalb oder ausserhalb der 15 Minuten liegt.
+<strong>So geht es.</strong> Du gibst die Adressen ein: den Firmensitz des Arbeitgebers (bei eigenem Personal), bei Personalverleih den Sitz des Einsatzbetriebs, auf Wunsch den Wohnort des Arbeitnehmers, und die Baustelle. Der Rechner holt die Koordinaten beim Bund (swisstopo) und lässt die Fahrzeit mit dem Auto für die gewählte Abfahrtszeit berechnen (Esri, mit Verkehrsprognose). Er sagt je Regel, was die Fahrzeit bedeutet.
 </div>
 <div class="introbox2">
 <strong>Richtwert, kein Entscheid.</strong> Die Fahrzeit hängt vom Verkehr ab und ändert sich von Tag zu Tag. Darum stehen bei jedem Ergebnis das Datum und die Uhrzeit der Messung und die gewählte Abfahrtszeit. Massgebend sind der GAV und der Arbeits- oder Verleihvertrag; Fragen zur Anwendung beantwortet die Paritätische Landeskommission (PLK Elektro). Der Rechner speichert nichts und setzt keine Cookies.
@@ -140,8 +140,9 @@ button{max-width:100%;white-space:normal}
 
 <h2><span class="st">A</span><span class="st-p"> · </span>Adressen</h2>
 <div class="hint" id="hinweis-key" hidden>Der Routing-Dienst ist noch nicht freigeschaltet. Adressen und Karte funktionieren, die Fahrzeit und die Fahrzeitgebiete noch nicht.</div>
-<div class="row"><label for="adr-v">Firmensitz des Arbeitgebers<small>Vertraglicher Einstellungsort; bei Personalverleih der Sitz des Verleihers. Strasse Nr., PLZ Ort</small></label><input id="adr-v" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort"><span class="status" id="st-v" aria-live="polite"></span></div>
-<div class="row"><label for="adr-e">Sitz des Einsatzbetriebs<small>Nur bei Personalverleih. Leer lassen, wenn der Arbeitgeber selbst der Betrieb ist.</small></label><input id="adr-e" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort (oder leer)"><span class="status" id="st-e" aria-live="polite"></span></div>
+<div class="row"><label for="adr-v">Firmensitz des Arbeitgebers<small>Vertraglicher Einstellungsort, Messpunkt für den Rayon nach Art. 27.4. Bei Personalverleih kann das Feld leer bleiben: Der Rayon steht nur EIT.swiss-Mitgliedern offen.</small></label><input id="adr-v" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort"><span class="status" id="st-v" aria-live="polite"></span></div>
+<div class="row"><label for="adr-e">Sitz des Einsatzbetriebs<small>Nur bei Personalverleih; Messpunkt für die Verpflegung (Art. 33.1) und den Arbeitsweg (Art. 27.3).</small></label><input id="adr-e" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort (oder leer)"><span class="status" id="st-e" aria-live="polite"></span></div>
+<div class="row"><label for="adr-w">Wohnort des Arbeitnehmers<small>Nur für die Wegzeit ohne Rayon (Art. 27.3); kann leer bleiben. Erscheint nicht auf der Karte.</small></label><input id="adr-w" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort (oder leer)"><span class="status" id="st-w" aria-live="polite"></span></div>
 <div class="row"><label for="adr-b">Baustelle<small>Adresse der Baustelle; ohne Hausnummer genügt der Ort</small></label><input id="adr-b" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort"><span class="status" id="st-b" aria-live="polite"></span></div>
 
 <h2><span class="st">B</span><span class="st-p"> · </span>Abfahrtszeit</h2>
@@ -155,7 +156,14 @@ button{max-width:100%;white-space:normal}
     <h3>Wegzeit<small>GAV Art. 27.4, Rayon ab Firmensitz des Arbeitgebers</small></h3>
     <div class="out"><span class="l">Firmensitz des Arbeitgebers zur Baustelle<small id="r-weg-km"></small></span><span class="w offen" id="r-weg">noch nicht gemessen</span></div>
     <div class="out big" id="u-weg"><span class="w" id="u-weg-text">Noch keine Messung. Adressen eingeben und "Wegzeit messen" drücken.</span></div>
-    <p class="erkl">Ein Rayon nach Art. 27.4 muss im Betriebsreglement oder im Arbeitsvertrag stehen; nach PLK steht er nur Mitgliedern von EIT.swiss offen (Art. 27.4 ist nicht allgemeinverbindlich) und gilt nur, wenn die Arbeit direkt auf der Baustelle beginnt oder endet. Ausserhalb des Rayons ist die Wegzeit vom Firmensitz zur Baustelle bezahlte Arbeitszeit, nach der PLK-Weisung ab 1.1.2027 abzüglich 15 Minuten. Ohne Rayon gilt Art. 27.3: Als Arbeitszeit zählt die Zeit, um die der Weg zur Baustelle den gewöhnlichen Arbeitsweg vom Wohnort zum Betrieb übersteigt. Fahrten vom Betrieb zur Baustelle und zwischen Baustellen sind immer Arbeitszeit (Art. 27.2).</p>
+    <p class="erkl">Ein Rayon nach Art. 27.4 muss im Betriebsreglement oder im Arbeitsvertrag stehen; nach PLK steht er nur Mitgliedern von EIT.swiss offen (Art. 27.4 ist nicht allgemeinverbindlich) und gilt nur, wenn die Arbeit direkt auf der Baustelle beginnt oder endet. Ausserhalb des Rayons ist die Wegzeit vom Firmensitz zur Baustelle bezahlte Arbeitszeit, nach der PLK-Weisung ab 1.1.2027 abzüglich 15 Minuten. Ohne Rayon gilt Art. 27.3 (nächster Abschnitt).</p>
+  </div>
+  <div class="regel">
+    <h3>Wegzeit ohne Rayon<small>GAV Art. 27.3, Weg zur Baustelle abzüglich Arbeitsweg</small></h3>
+    <div class="out"><span class="l">Wohnort des Arbeitnehmers zur Baustelle<small id="r-wb-km"></small></span><span class="w offen" id="r-wb">noch nicht gemessen</span></div>
+    <div class="out"><span class="l" id="r-wt-l">Wohnort des Arbeitnehmers zum Betrieb<small id="r-wt-km"></small></span><span class="w offen" id="r-wt">noch nicht gemessen</span></div>
+    <div class="out big" id="u-273"><span class="w" id="u-273-text">Noch keine Messung. Für diese Rechnung den Wohnort des Arbeitnehmers eingeben.</span></div>
+    <p class="erkl">Art. 27.3 ist allgemeinverbindlich: Beginnt oder endet die Arbeit auf der Baustelle, gilt die Zeit, um die der Weg zur Baustelle den gewöhnlichen Arbeitsweg vom Wohnort zum Betrieb übersteigt, als Arbeitszeit (Beispiel der PLK: 42 Minuten vom Wohnort zur Baustelle abzüglich 29 Minuten Arbeitsweg = 13 Minuten). Bei Personalverleih rechnet der Rechner mit dem Sitz des Einsatzbetriebs als Betrieb, so wie die PLK das Firmendomizil für Temporärangestellte bestimmt; eine ausdrückliche Aussage der PLK zu Art. 27.3 bei verliehenen Arbeitnehmenden fehlt. Fahrten vom Betrieb zur Baustelle und zwischen Baustellen sind immer Arbeitszeit (Art. 27.2).</p>
   </div>
   <div class="regel">
     <h3>Verpflegung<small>GAV Art. 33.1, 15 Minuten ab Firmendomizil</small></h3>
@@ -171,7 +179,7 @@ button{max-width:100%;white-space:normal}
   <canvas id="cv" width="1500" height="1500" aria-label="Karte mit den 15-Minuten-Gebieten und der Baustelle"></canvas>
 </div>
 <div class="legende" id="legende" hidden>
-  <span><i class="lg v"></i>15 Minuten ab Firmensitz des Arbeitgebers</span>
+  <span id="lg-v-zeile"><i class="lg v"></i>15 Minuten ab Firmensitz des Arbeitgebers</span>
   <span id="lg-e-zeile"><i class="lg e"></i>15 Minuten ab Sitz des Einsatzbetriebs</span>
   <span><i class="lg b"></i>Baustelle</span>
 </div>
@@ -197,8 +205,9 @@ button{max-width:100%;white-space:normal}
 
 <aside class="calc-side">
   <div class="side-box">
-    <h3>Zwei Rayons im GAV Elektro</h3>
-    <p><strong>Wegzeit, Art. 27.4:</strong> Ein Betrieb kann mit seinen Arbeitnehmern einen Rayon von höchstens 15 Minuten effektiver Wegzeit für einen Weg festlegen, gerechnet ausschliesslich vom Firmensitz (vertraglicher Einstellungsort). Innerhalb gilt die Wegzeit nicht als Arbeitszeit, wenn die Arbeit auf der Baustelle beginnt. Nicht allgemeinverbindlich; nach PLK nur für Mitglieder von EIT.swiss.</p>
+    <h3>Wegzeit und Verpflegung im GAV Elektro</h3>
+    <p><strong>Wegzeit mit Rayon, Art. 27.4:</strong> Ein Betrieb kann mit seinen Arbeitnehmern einen Rayon von höchstens 15 Minuten effektiver Wegzeit für einen Weg festlegen, gerechnet ausschliesslich vom Firmensitz (vertraglicher Einstellungsort). Innerhalb gilt die Wegzeit nicht als Arbeitszeit, wenn die Arbeit auf der Baustelle beginnt. Nicht allgemeinverbindlich; nach PLK nur für Mitglieder von EIT.swiss.</p>
+    <p><strong>Wegzeit ohne Rayon, Art. 27.3:</strong> Beginnt oder endet die Arbeit auf der Baustelle, zählt als Arbeitszeit, was der Weg dorthin länger dauert als der gewöhnliche Arbeitsweg vom Wohnort zum Betrieb. Allgemeinverbindlich.</p>
     <p><strong>Verpflegung, Art. 33.1:</strong> Mindestens CHF 18 je Tag, wenn die Baustelle mehr als 15 Minuten effektive Fahrzeit vom Firmendomizil liegt, bei Personalverleih vom Sitz des Einsatzbetriebs. Allgemeinverbindlich, gilt für alle Betriebe der Branche.</p>
   </div>
   <div class="side-box">
@@ -209,7 +218,7 @@ button{max-width:100%;white-space:normal}
   </div>
   <div class="side-box">
     <h3>Deine Daten</h3>
-    <p>Die Adressen gehen an den Geodienst des Bundes (swisstopo), der die Koordinaten liefert und das Kartenbild. An Esri gehen nur die Koordinaten der zwei oder drei Punkte und die Abfahrtszeit, keine Adresstexte; Esri rechnet in den USA. Diese Seite speichert nichts, setzt keine Cookies und übermittelt nichts an mich. Einzelheiten: <a href="impressum.html">Impressum und Datenschutz</a>.</p>
+    <p>Die Adressen gehen an den Geodienst des Bundes (swisstopo), der die Koordinaten liefert und das Kartenbild. An Esri gehen nur die Koordinaten der zwei bis vier Punkte und die Abfahrtszeit, keine Adresstexte; Esri rechnet in den USA. Diese Seite speichert nichts, setzt keine Cookies und übermittelt nichts an mich. Einzelheiten: <a href="impressum.html">Impressum und Datenschutz</a>.</p>
   </div>
 </aside>
 </div>
