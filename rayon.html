@@ -1,6 +1,6 @@
 <!doctype html><html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://wms.geo.admin.ch; font-src 'self'; connect-src 'self' https://api3.geo.admin.ch https://route-api.arcgis.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://wms.geo.admin.ch; font-src 'self'; connect-src 'self' https://api3.geo.admin.ch https://route-api.arcgis.com; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Rayon-Rechner · Naville Handwerk GmbH</title>
 <meta name="description" content="Rayon nach GAV Elektro: Fahrzeit mit dem Auto vom Firmensitz und vom Sitz des Einsatzbetriebs zur Baustelle, mit Verkehrsprognose. Wegzeit (Art. 27.4) und Verpflegungsentschädigung (Art. 33.1) getrennt, beide 15-Minuten-Gebiete auf der Karte.">
 <link rel="stylesheet" href="basis.css">
@@ -64,6 +64,10 @@ button.zweit:hover{background:#F5F5F3}
 .quelle{color:var(--grey);font-size:.8em;margin:4px 0 0}
 .schalter{display:flex;gap:9px;align-items:flex-start;font-size:14.5px;color:var(--ink);margin:8px 0 2px;max-width:70ch}
 .schalter input{margin-top:4px;flex:none}
+.pdfvorschau{margin:12px 0 4px}
+.pdfvorschau[hidden]{display:none}
+.pdfvorschau iframe{width:100%;height:78vh;min-height:420px;border:1px solid var(--line);border-radius:3px;background:#fff;display:block}
+.pdfvorschau .knopfreihe button{margin-top:10px}
 .calc-side{position:sticky;top:78px;display:flex;flex-direction:column;gap:16px}
 .side-box{background:#F5F5F3;border:1px solid var(--line);border-radius:3px;padding:15px 17px}
 .side-box h3{margin:0 0 9px;font-family:'Archivo';font-weight:600;font-size:16px;color:var(--ink)}
@@ -174,11 +178,19 @@ button{max-width:100%;white-space:normal}
 <p class="quelle">Karte: © swisstopo · Fahrzeiten und Fahrzeitgebiete: <a href="https://www.esri.com/" rel="noopener" target="_blank">Powered by Esri</a>, Strassen- und Verkehrsdaten TomTom</p>
 
 <h2><span class="st">E</span><span class="st-p"> · </span>Drucken</h2>
-<p style="font-size:14.5px;color:var(--ink2);margin:6px 0">Das PDF hält Adressen, Fahrzeiten, das Ergebnis je Regel, den Zeitpunkt der Messung und die Karte fest. Das Bild der Karte kannst du auch einzeln speichern; es trägt nur die Quellenangaben.</p>
-<label class="schalter"><input type="checkbox" id="neutral"><span>PDF neutral: ohne Logo und ohne Hinweis auf Naville Handwerk</span></label>
+<p style="font-size:14.5px;color:var(--ink2);margin:6px 0">Das PDF hält Adressen, Fahrzeiten, das Ergebnis je Regel, den Zeitpunkt der Messung und die Karte fest. Es öffnet sich zuerst als Vorschau hier auf der Seite; herunterladen kannst du es danach. Das Bild der Karte kannst du auch einzeln speichern; es trägt nur die Quellenangaben.</p>
+<label class="schalter"><input type="checkbox" id="neutral" checked><span>PDF neutral: ohne Logo und ohne Hinweis auf Naville Handwerk</span></label>
 <div class="knopfreihe">
   <button id="pdf" type="button" disabled>PDF erstellen</button>
   <button id="png" type="button" class="zweit" disabled>Karte als Bild speichern</button>
+</div>
+<div class="pdfvorschau" id="pdfvorschau" hidden>
+  <p class="erkl">Vorschau des PDF. Stimmt alles, lädst du es mit dem Knopf darunter herunter.</p>
+  <iframe id="pdfrahmen" title="Vorschau des PDF"></iframe>
+  <div class="knopfreihe">
+    <button id="pdfdown" type="button">PDF herunterladen</button>
+    <button id="pdftab" type="button" class="zweit">In neuem Tab öffnen</button>
+  </div>
 </div>
 
 </div>

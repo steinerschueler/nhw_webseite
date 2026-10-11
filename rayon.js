@@ -319,7 +319,7 @@
   function rechnen() {
     fehler("");
     var knopf = $("rechnen"); knopf.disabled = true; text(knopf, "misst …");
-    $("pdf").disabled = true; $("png").disabled = true;
+    $("pdf").disabled = true; $("png").disabled = true; vorschauWeg();
     stand.zeiten = {}; stand.gebiete = {}; stand.karteOk = false;
     var abfahrt = abfahrtLesen();
     if (!abfahrt) { fehler("Bitte Datum und Uhrzeit der Abfahrt angeben."); knopf.disabled = false; text(knopf, "Wegzeit messen"); return; }
@@ -449,8 +449,31 @@
       d.text(fuss, x, PH - 9);
       d.text("Seite " + i + "/" + n, rechts, PH - 9, {align: "right"});
     }
-    d.save("rayon_" + isoDatum(stand.gemessen) + ".pdf");
+    pdfVorschau(d, "rayon_" + isoDatum(stand.gemessen) + ".pdf");
   }
+
+  /* Vorschau: das PDF erscheint zuerst in einem Rahmen auf der Seite; herunterladen erst danach,
+     mit dem richtigen Dateinamen (ein Blob-Link; der Betrachter im Rahmen hiesse die Datei sonst
+     nach der Blob-Kennung) */
+  var vorschau = {url: null, name: ""};
+  function pdfVorschau(d, name) {
+    if (vorschau.url) URL.revokeObjectURL(vorschau.url);
+    vorschau.url = URL.createObjectURL(d.output("blob")); vorschau.name = name;
+    $("pdfrahmen").src = vorschau.url;
+    zeige($("pdfvorschau"), true);
+    $("pdfvorschau").scrollIntoView({behavior: "smooth", block: "start"});
+  }
+  function vorschauWeg() {
+    if (!vorschau.url) return;
+    zeige($("pdfvorschau"), false); $("pdfrahmen").removeAttribute("src");
+    URL.revokeObjectURL(vorschau.url); vorschau.url = null;
+  }
+  function pdfHerunterladen() {
+    if (!vorschau.url) return;
+    var a = document.createElement("a"); a.href = vorschau.url; a.download = vorschau.name;
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+  function pdfNeuerTab() { if (vorschau.url) window.open(vorschau.url, "_blank"); }
 
   function pngSpeichern() {
     try {
@@ -469,11 +492,14 @@
   var q = new URLSearchParams(location.search);            /* Vorbelegung ueber die Adresse der Seite: ?v=…&e=…&b= */
   ["v", "e", "b"].forEach(function (k) { if (q.get(k)) felder[k].eingabe.value = q.get(k); });
   if (q.get("zeit") && /^\d{2}:\d{2}$/.test(q.get("zeit"))) $("zeit").value = q.get("zeit");
-  if (q.get("neutral") === "1") $("neutral").checked = true;
+  if (q.has("neutral")) $("neutral").checked = q.get("neutral") !== "0";   /* Vorgabe: neutral */
   zeige($("hinweis-key"), !ESRI_KEY);
 
   $("rechnen").addEventListener("click", rechnen);
   $("pdf").addEventListener("click", pdfErstellen);
+  $("pdfdown").addEventListener("click", pdfHerunterladen);
+  $("pdftab").addEventListener("click", pdfNeuerTab);
+  $("neutral").addEventListener("change", vorschauWeg);
   $("png").addEventListener("click", pngSpeichern);
   ["v", "e", "b"].forEach(function (k) {
     felder[k].eingabe.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); rechnen(); } });

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Stundenansatz-Rechner Personalverleih (Schweiz)</title>
 <link rel="stylesheet" href="basis.css">
 <style>
@@ -52,6 +52,13 @@ button:hover{background:#a50f18}
 .disc{background:#F6F4EE;border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:.82em;color:var(--ink2);margin:8px 0;line-height:1.5}
 .pdfopt{display:flex;align-items:center;gap:8px;margin:12px 0 6px;font-size:.9em;color:var(--ink2);cursor:pointer}
 .pdfopt input{width:auto;accent-color:var(--red)}
+button.zweit{background:#fff;color:var(--ink);border:1.5px solid #cfc9bd}
+button.zweit:hover{background:#F5F5F3}
+.pdfvorschau{margin:4px 0 10px}
+.pdfvorschau[hidden]{display:none}
+.pdfvorschau iframe{width:100%;height:78vh;min-height:420px;border:1px solid var(--line);border-radius:3px;background:#fff;display:block}
+.pdfvorschau .knopfreihe{display:flex;gap:12px;flex-wrap:wrap}
+.pdfvorschau .knopfreihe button{margin:10px 0 6px}
 .calc-side{position:sticky;top:78px;display:flex;flex-direction:column;gap:16px}
 .side-box{background:#F6F4EE;border:1px solid var(--line);border-radius:12px;padding:15px 17px}
 .side-box h3{margin:0 0 9px;font-family:'Archivo';font-weight:600;font-size:16px;color:var(--ink)}
@@ -195,7 +202,15 @@ button{max-width:100%;white-space:normal}
 
 <label class="pdfopt"><input type="checkbox" id="nhwstyle"> PDF im Naville-Handwerk-Design (Emblem und Wortmarke im Kopf), sonst neutral</label>
 <button id="pdfbtn" type="button">📄 Vereinbarung als PDF erstellen</button>
-<div class="disc">Die PDF ist eine einseitige Stundenansatz-Vereinbarung zwischen GmbH (Verleiher) und Einsatzbetrieb, ohne die Kostenaufstellung; die bleibt hier im Rechner. Zweifach ausdrucken, beide unterschreiben; je ein Exemplar pro Partei. Kein Rechts-/Steuerrat.</div>
+<div class="pdfvorschau" id="pdfvorschau" hidden>
+  <div class="disc">Vorschau des PDF. Stimmt alles, lädst du es mit dem Knopf darunter herunter. Änderst du einen Wert, verschwindet die Vorschau; dann das PDF neu erstellen.</div>
+  <iframe id="pdfrahmen" title="Vorschau der Vereinbarung"></iframe>
+  <div class="knopfreihe">
+    <button id="pdfdown" type="button">PDF herunterladen</button>
+    <button id="pdftab" type="button" class="zweit">In neuem Tab öffnen</button>
+  </div>
+</div>
+<div class="disc">Die PDF ist eine einseitige Stundenansatz-Vereinbarung zwischen GmbH (Verleiher) und Einsatzbetrieb, ohne die Kostenaufstellung; die bleibt hier im Rechner. Sie öffnet sich zuerst als Vorschau hier auf der Seite; herunterladen kannst du sie danach. Zweifach ausdrucken, beide unterschreiben; je ein Exemplar pro Partei. Kein Rechts-/Steuerrat.</div>
 
 </div><!-- /calc-main -->
 
@@ -509,11 +524,27 @@ function makePDF(){
    d.setDrawColor(LINIE[0],LINIE[1],LINIE[2]);d.setLineWidth(0.3);d.line(x,PH-13,right,PH-13);
    d.text('Stundenansatz-Vereinbarung'+(val('gmbh')?' · '+val('gmbh'):''),x,PH-9);
    d.text('Seite '+i+'/'+n,right,PH-9,{align:'right'});}
-  d.save((gmbh.replace(/[^A-Za-z0-9]/g,'_')||'Vereinbarung')+'_Stundenansatz_Vereinbarung.pdf');
+  pdfVorschau(d,(gmbh.replace(/[^A-Za-z0-9]/g,'_')||'Vereinbarung')+'_Stundenansatz_Vereinbarung.pdf');
  }catch(e){alert('PDF-Bibliothek nicht geladen (Internet nötig). Es öffnet sich die Druckansicht; dort "Als PDF speichern" wählen.');window.print();}
 }
+// Vorschau: das PDF erscheint zuerst in einem Rahmen auf der Seite; herunterladen erst danach, mit dem
+// richtigen Dateinamen (Blob-Link; der Betrachter im Rahmen hiesse die Datei sonst nach der Blob-Kennung)
+var PDFV={url:null,name:''};
+function pdfVorschau(d,name){
+ if(PDFV.url)URL.revokeObjectURL(PDFV.url);
+ PDFV.url=URL.createObjectURL(d.output('blob'));PDFV.name=name;
+ document.getElementById('pdfrahmen').src=PDFV.url;
+ var box=document.getElementById('pdfvorschau');box.hidden=false;box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function pdfVeraltet(){
+ if(!PDFV.url)return;
+ document.getElementById('pdfvorschau').hidden=true;document.getElementById('pdfrahmen').removeAttribute('src');
+ URL.revokeObjectURL(PDFV.url);PDFV.url=null;
+}
+document.getElementById('pdfdown').addEventListener('click',function(){if(!PDFV.url)return;var a=document.createElement('a');a.href=PDFV.url;a.download=PDFV.name;document.body.appendChild(a);a.click();a.remove();});
+document.getElementById('pdftab').addEventListener('click',function(){if(PDFV.url)window.open(PDFV.url,'_blank');});
 var PRICEF=['ansatz','db_chf','db_pct','rechnung'];
-document.querySelectorAll('input,select').forEach(function(e){if(PRICEF.indexOf(e.id)<0)e.addEventListener('input',calc);});
+document.querySelectorAll('input,select').forEach(function(e){if(PRICEF.indexOf(e.id)<0)e.addEventListener('input',calc);e.addEventListener('input',pdfVeraltet);e.addEventListener('change',pdfVeraltet);});
 PRICEF.forEach(function(id){document.getElementById(id).addEventListener('input',function(){priceDriver=id;calc();});});
 selK.addEventListener('change',function(){applyCanton();calc();});
 document.getElementById('alter').addEventListener('input',function(){applyAge();calc();});

@@ -38,7 +38,7 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `index.html` — Startseite
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
-  PDF-Vereinbarung; jsPDF lokal in `vendor/`)
+  PDF-Vereinbarung, zuerst als Vorschau auf der Seite, dann Herunterladen; jsPDF lokal in `vendor/`)
 - `rayon.html` + `rayon.js` — Rayon-Rechner nach GAV Elektro: Fahrzeit mit dem Auto vom Firmensitz
   des Arbeitgebers und vom Sitz des Einsatzbetriebs zur Baustelle, mit Verkehrsprognose zur
   gewählten Abfahrtszeit, getrennt ausgewertet für Wegzeit (Art. 27.4) und Verpflegung (Art. 33.1);
@@ -91,8 +91,11 @@ Regeln ab dem Firmensitz). Sie ist für jeden Betrieb der Branche gedacht und ne
 Vertragsregel der GmbH; die Erläuterungen folgen GAV, PLK-Merkblättern und EIT.swiss, auf die
 die Seite verlinkt. Der Betrag der Verpflegungsentschädigung (CHF 18, GAV 2026 bis 2029) steht
 als `VERPFLEGUNG_CHF` in `rayon.js` und in den Erläuterungen der Seite; beim nächsten GAV
-nachführen. Der Schalter «PDF neutral» lässt Logo und jeden Hinweis auf die GmbH im PDF weg; das
-Kartenbild trägt immer nur die Quellenangaben. Die Seite ist statisch und ruft zwei fremde
+nachführen. Der Schalter «PDF neutral» (Vorgabe: an) lässt Logo und jeden Hinweis auf die GmbH im
+PDF weg; das Kartenbild trägt immer nur die Quellenangaben. Das PDF erscheint zuerst als Vorschau
+in einem Rahmen auf der Seite (Blob-URL, darum `frame-src blob:` in der CSP); «PDF herunterladen»
+speichert es mit dem richtigen Dateinamen, «In neuem Tab öffnen» zeigt es gross. Gleiches Muster
+im Preisrechner. Die Seite ist statisch und ruft zwei fremde
 Dienste direkt aus dem Browser auf, als reine Datenabfragen ohne Anbieter-Bibliothek, ohne
 Cookies und ohne Speicherung:
 
@@ -120,8 +123,8 @@ generieren und eintragen, sonst meldet die Seite «Invalid Token». Ohne Schlüs
 und Karte weiter, nur die Fahrzeit nicht; die Seite sagt das dann.
 
 Vorbelegen lässt sich die Seite über die Adresse: `rayon.html?v=<Firmensitz Arbeitgeber>&e=<Sitz
-Einsatzbetrieb>&b=<Baustelle>&zeit=07:00&neutral=1` (`e` darf fehlen, `neutral=1` setzt den
-PDF-Schalter).
+Einsatzbetrieb>&b=<Baustelle>&zeit=07:00&neutral=0` (`e` darf fehlen; `neutral=0` schaltet den
+PDF-Schalter aus, der sonst an ist).
 
 ## Deployment (GitHub Pages)
 
