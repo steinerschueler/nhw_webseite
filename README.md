@@ -26,6 +26,15 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `achse.js` — Sprungmarken an den Stationen (hohle Dreiecke: vorheriger und nächster Punkt,
   ganz nach oben, ganz nach unten; im Kalender zusätzlich über dem laufenden Monat). Reines
   Verhalten, die Lage regelt `achse.css`; ohne JavaScript fehlen nur die Marken.
+- **Navigation** (Kopfzeile jeder Seite, `<nav class="nav-links">`): drei Gruppen mit ihren
+  Seiten, in jeder Seite derselbe HTML-Block. **Willkommen**: Startseite und ihre Abschnitte
+  (Wann ich einspringe, Zur Firma, Über mich, Wie ich arbeite, Kontakt) · **Infos**: Was du von
+  mir hast, FAQ (später Dokumente) · **Werkzeuge**: Kalender, Preisrechner, Rayon-Rechner.
+  Breit stehen die Gruppen in der Kopfzeile und klappen beim Schweben oder per Tastatur auf,
+  schmal öffnet der Burger drei Kacheln mit allen Seiten; Regeln in `basis.css`. `nav.js`
+  markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller sieben Seiten
+  (`index`, `leistungen`, `preisrechner`, `rayon`, `faq`, `kalender`, `impressum`), sonst
+  nirgends.
 - `index.html` — Startseite
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine

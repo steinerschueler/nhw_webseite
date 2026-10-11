@@ -19,9 +19,21 @@ a{color:inherit}
 .nav{position:sticky;top:0;z-index:20;background:rgba(239,238,232,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .nav-in{display:flex;justify-content:space-between;align-items:center;padding-block:18px;gap:20px;flex-wrap:wrap}
 .brand{font-family:'Archivo';font-weight:600;font-size:21px;letter-spacing:-.4px;text-transform:lowercase;text-decoration:none;color:#000}
-.nav-links a{margin-left:26px;color:var(--grey);text-decoration:none;font-size:14.5px}
-.nav-links a:hover{color:var(--red)}
-.nav-links a.on{color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:7px;text-decoration-thickness:2.5px}
+/* Navigation: drei Gruppen (Willkommen, Infos, Werkzeuge), in jeder Seite gleich im HTML.
+   Breit: Gruppen in der Kopfzeile, die Seiten klappen beim Schweben oder per Tastatur auf
+   (:focus-within). Schmal (unten): der Burger oeffnet drei Kacheln mit allen Seiten.
+   nav.js markiert die aktuelle Seite (.on); ohne JavaScript fehlt nur die Markierung. */
+.nav-links{display:flex;gap:28px}
+.ng{position:relative}
+.ng-t{display:inline-flex;align-items:center;gap:8px;color:var(--grey);font-size:14.5px;font-family:inherit;background:none;border:0;padding:8px 0;cursor:pointer;line-height:1.3}
+.ng-t::after{content:"";width:6px;height:6px;border:solid currentColor;border-width:0 1.5px 1.5px 0;transform:translateY(-2px) rotate(45deg)}
+.ng:hover .ng-t,.ng:focus-within .ng-t{color:var(--red)}
+.ng-t.on{color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:7px;text-decoration-thickness:2.5px}
+.ng-p{display:none;position:absolute;left:-16px;top:100%;min-width:230px;background:#fff;border:1px solid var(--line);border-radius:3px;box-shadow:0 10px 24px rgba(0,0,0,.08);padding:8px 0;z-index:30}
+.ng:hover .ng-p,.ng:focus-within .ng-p{display:block}
+.ng-p a{display:block;padding:9px 16px;color:var(--ink2);text-decoration:none;font-size:14.5px;white-space:nowrap}
+.ng-p a:hover,.ng-p a:focus-visible{color:var(--red);background:#F5F5F3}
+.ng-p a.on{color:var(--ink);font-weight:600;box-shadow:inset 3px 0 0 var(--red)}
 .availbar{background:var(--paper);padding:11px 16px 3px;text-align:center}
 .availbar[hidden]{display:none}
 .availpill{display:inline-flex;align-items:center;gap:9px;border-radius:999px;padding:8px 18px;font-size:14px;line-height:1.3;color:#fff;text-decoration:none;font-weight:500;max-width:100%}
@@ -39,9 +51,17 @@ a{color:inherit}
 @media(max-width:820px){
 .burger{display:flex;flex-direction:column;justify-content:center;gap:5px;width:38px;height:34px;padding:6px 4px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .burger span{display:block;height:2.5px;width:100%;background:var(--ink);border-radius:2px;transition:transform .2s,opacity .2s}
-.nav-links{display:none;width:100%;flex-direction:column;gap:0}
+.nav{max-height:100vh;overflow-y:auto}                       /* offenes Menue hoeher als der Bildschirm: in der Kopfzeile scrollen */
+.nav-links{display:none;width:100%;flex-direction:column;gap:12px;padding:4px 0 14px}
 #navtoggle:checked ~ .nav-links{display:flex}
-.nav-links a{margin-left:0;padding:12px 2px;border-top:1px solid var(--line);font-size:16px}
+.ng{border:1px solid var(--line);border-radius:3px;padding:10px 14px 4px;background:#fff}
+.ng-t{font-family:'Archivo',sans-serif;font-weight:600;font-size:16px;color:var(--ink);padding:0 0 6px;cursor:default}
+.ng-t::after{display:none}
+.ng:hover .ng-t,.ng:focus-within .ng-t,.ng-t.on{color:var(--ink);text-decoration:none}
+.ng-p{display:block;position:static;min-width:0;border:0;box-shadow:none;padding:0}
+.ng-p a{padding:10px 0;border-top:1px solid var(--line);white-space:normal;font-size:15.5px}
+.ng-p a:hover,.ng-p a:focus-visible{background:none}
+.ng-p a.on{box-shadow:none;text-decoration:underline;text-decoration-color:var(--red);text-underline-offset:5px;text-decoration-thickness:2px}
 #navtoggle:checked ~ .burger span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
 #navtoggle:checked ~ .burger span:nth-child(2){opacity:0}
 #navtoggle:checked ~ .burger span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
