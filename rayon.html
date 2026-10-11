@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://wms.geo.admin.ch; font-src 'self'; connect-src 'self' https://api3.geo.admin.ch https://route-api.arcgis.com; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Rayon-Rechner · Naville Handwerk GmbH</title>
-<meta name="description" content="Liegt die Baustelle im Rayon? Wegzeit mit dem Auto vom Sitz des Verleihers und vom Sitz des Einsatzbetriebs zur Baustelle, mit Verkehrsprognose, dazu beide 15-Minuten-Gebiete auf der Karte.">
+<meta name="description" content="Rayon nach GAV Elektro: Fahrzeit mit dem Auto vom Firmensitz und vom Sitz des Einsatzbetriebs zur Baustelle, mit Verkehrsprognose. Wegzeit (Art. 27.4) und Verpflegungsentschädigung (Art. 33.1) getrennt, beide 15-Minuten-Gebiete auf der Karte.">
 <link rel="stylesheet" href="basis.css">
 <style>
 :root{--blau:#1B2A4A;--edit:#F5F5F3;--editbd:#D8D6D0}
@@ -36,6 +36,9 @@ button.zweit:hover{background:#F5F5F3}
 .knopfreihe{display:flex;gap:12px;flex-wrap:wrap}
 .hint{color:#7a4718;background:#FBF1E7;border:1px solid #E7C9A3;border-radius:3px;padding:9px 13px;font-size:.88em;margin:8px 0}
 .hint[hidden]{display:none}
+.regel{margin:10px 0 22px}
+.regel h3{font-family:'Archivo',sans-serif;font-weight:600;font-size:15.5px;color:var(--ink);margin:0 0 6px}
+.regel h3 small{font-weight:400;color:var(--grey);font-size:.84em;margin-left:8px}
 .out{background:#fff;border:1px solid var(--line);border-radius:3px;padding:11px 15px;margin:6px 0;display:flex;justify-content:space-between;gap:12px;font-size:14.5px;flex-wrap:wrap}
 .out .l{flex:1 1 240px}
 .out .l small{display:block;color:var(--grey);font-size:.82em}
@@ -43,29 +46,31 @@ button.zweit:hover{background:#F5F5F3}
 .out .w.im{color:var(--grn)}
 .out .w.aus{color:var(--red)}
 .out .w.offen{color:var(--grey)}
-.big{background:var(--ink);color:#fff;border-color:var(--ink);font-size:16px;padding:14px 16px;display:block}
-.big .w{color:#fff}
+.big{background:var(--ink);color:#fff;border-color:var(--ink);font-size:15px;padding:12px 15px;display:block;line-height:1.5}
+.big .w{color:#fff;font-weight:600}
 .big.im{background:var(--grn);border-color:var(--grn)}
 .big.aus{background:var(--red);border-color:var(--red)}
+.erkl{color:var(--ink2);font-size:.86em;line-height:1.5;margin:6px 0 0}
 .messung{color:var(--grey);font-size:.84em;margin:8px 0 0;line-height:1.5}
-.zusatz{border:1px solid var(--line);border-left:4px solid var(--red);border-radius:3px;padding:11px 15px;margin:12px 0;font-size:14.5px;line-height:1.55}
-.zusatz[hidden]{display:none}
 .karte-rahmen{position:relative;margin:8px 0}
 #cv{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:3px;background:#F5F5F3}
 .legende{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.84em;color:var(--ink2);margin:10px 0 4px}
 .legende span{display:inline-flex;align-items:center;gap:6px}
+.legende span[hidden]{display:none}
 .lg{display:inline-block;width:14px;height:14px;border-radius:2px;flex:none}
 .lg.v{background:rgba(27,42,74,.22);border:2px solid var(--blau)}
 .lg.e{background:rgba(234,140,27,.28);border:2px solid var(--org)}
-.lg.b{border-radius:50%;background:var(--grey);width:12px;height:12px}
+.lg.b{border-radius:50%;background:var(--ink);width:12px;height:12px}
 .quelle{color:var(--grey);font-size:.8em;margin:4px 0 0}
+.schalter{display:flex;gap:9px;align-items:flex-start;font-size:14.5px;color:var(--ink);margin:8px 0 2px;max-width:70ch}
+.schalter input{margin-top:4px;flex:none}
 .calc-side{position:sticky;top:78px;display:flex;flex-direction:column;gap:16px}
 .side-box{background:#F5F5F3;border:1px solid var(--line);border-radius:3px;padding:15px 17px}
 .side-box h3{margin:0 0 9px;font-family:'Archivo';font-weight:600;font-size:16px;color:var(--ink)}
 .side-box p{margin:0 0 8px;font-size:.84em;color:var(--ink2);line-height:1.5}
 .side-box p:last-child{margin-bottom:0}
 .side-box a{color:var(--red);font-weight:600}
-.side-box blockquote{margin:0 0 8px;padding-left:10px;border-left:3px solid var(--line);font-size:.84em;color:var(--ink2);line-height:1.5}
+.side-box p.q a{font-weight:500}
 .fbrand{margin-top:34px}
 @media(max-width:1100px){.calc-layout{grid-template-columns:1fr}.calc-side{position:static}}
 @media(max-width:600px){
@@ -73,7 +78,7 @@ button.zweit:hover{background:#F5F5F3}
 .out{flex-direction:column;align-items:flex-start;gap:2px}
 .out .l,.out .w{flex:0 0 auto}
 .out .w{text-align:left}
-.hint,.introbox,.introbox2,.side-box,.zusatz{overflow-wrap:anywhere}
+.hint,.introbox,.introbox2,.side-box,.erkl{overflow-wrap:anywhere}
 button{max-width:100%;white-space:normal}
 }
 </style>
@@ -87,11 +92,11 @@ button{max-width:100%;white-space:normal}
 <meta property="og:site_name" content="Naville Handwerk GmbH">
 <meta property="og:locale" content="de_CH">
 <meta property="og:title" content="Rayon-Rechner · Naville Handwerk GmbH">
-<meta property="og:description" content="Liegt die Baustelle im Rayon? Wegzeit mit dem Auto von beiden Sitzen zur Baustelle, mit Verkehrsprognose und Karte.">
+<meta property="og:description" content="Rayon nach GAV Elektro: Fahrzeit mit dem Auto zur Baustelle, mit Verkehrsprognose. Wegzeit (Art. 27.4) und Verpflegung (Art. 33.1) getrennt, mit Karte.">
 <meta property="og:url" content="https://naville-handwerk.ch/rayon.html">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Rayon-Rechner · Naville Handwerk GmbH">
-<meta name="twitter:description" content="Liegt die Baustelle im Rayon? Wegzeit mit dem Auto von beiden Sitzen zur Baustelle, mit Verkehrsprognose und Karte.">
+<meta name="twitter:description" content="Rayon nach GAV Elektro: Fahrzeit mit dem Auto zur Baustelle, mit Verkehrsprognose. Wegzeit (Art. 27.4) und Verpflegung (Art. 33.1) getrennt, mit Karte.">
 </head>
 <body>
 <div class="availbar" id="availbar" hidden>
@@ -111,16 +116,16 @@ button{max-width:100%;white-space:normal}
 <section class="wrap phead">
   <div class="kick mono">Rayon-Rechner</div>
   <h1 class="disp">Liegt die Baustelle im Rayon?</h1>
-  <p class="lead">Im Rayon ist die Wegzeit zur Baustelle in meinem Ansatz enthalten. Rayon ist das Gebiet, das vom Sitz meiner GmbH oder vom Sitz deines Betriebs mit dem Auto in höchstens 15 Minuten erreichbar ist. Hier misst du die Wegzeit mit Verkehrsprognose und siehst beide Gebiete auf der Karte.</p>
+  <p class="lead">Der GAV der Schweizerischen Elektrobranche kennt zwei Rayons von je 15 Minuten Fahrzeit: einen für die Wegzeit (Art. 27.4, ab Firmensitz des Arbeitgebers) und einen für die Verpflegungsentschädigung (Art. 33.1, bei Personalverleih ab Sitz des Einsatzbetriebs). Hier misst du beide Fahrzeiten mit dem Auto und Verkehrsprognose, so wie es die Paritätische Landeskommission vorgibt, und siehst beide Gebiete auf der Karte.</p>
 </section>
 
 <section class="intro">
 <div class="wrap achse">
 <div class="introbox">
-<strong>So geht es.</strong> Du gibst drei Adressen ein: den Sitz meiner GmbH, den Sitz deines Betriebs und die Baustelle. Der Rechner holt die Koordinaten beim Bund (swisstopo) und lässt die Fahrzeit mit dem Auto für die gewählte Abfahrtszeit berechnen (Esri, mit Verkehrsprognose). Liegt die Baustelle von einem der beiden Sitze aus innerhalb von 15 Minuten, ist sie im Rayon. Sonst braucht es vor der Arbeit dort einen Zusatz zum Verleihvertrag.
+<strong>So geht es.</strong> Du gibst die Adressen ein: den Firmensitz des Arbeitgebers (vertraglicher Einstellungsort), bei Personalverleih den Sitz des Einsatzbetriebs, und die Baustelle. Der Rechner holt die Koordinaten beim Bund (swisstopo) und lässt die Fahrzeit mit dem Auto für die gewählte Abfahrtszeit berechnen (Esri, mit Verkehrsprognose). Er sagt je Regel, ob die Baustelle innerhalb oder ausserhalb der 15 Minuten liegt.
 </div>
 <div class="introbox2">
-<strong>Richtwert, kein Urteil.</strong> Die Fahrzeit hängt vom Verkehr ab und ändert sich von Tag zu Tag. Darum stehen bei jedem Ergebnis das Datum und die Uhrzeit der Messung und die gewählte Abfahrtszeit. Massgebend bleibt der Verleihvertrag (Ziff. 4 b: effektive Fahrzeit mit dem Auto zu den Arbeitszeiten, gemessen wie nach Art. 27.4 und 33.1 GAV Elektro). Der Rechner speichert nichts und setzt keine Cookies.
+<strong>Richtwert, kein Entscheid.</strong> Die Fahrzeit hängt vom Verkehr ab und ändert sich von Tag zu Tag. Darum stehen bei jedem Ergebnis das Datum und die Uhrzeit der Messung und die gewählte Abfahrtszeit. Massgebend sind der GAV und der Arbeits- oder Verleihvertrag; Fragen zur Anwendung beantwortet die Paritätische Landeskommission (PLK Elektro). Der Rechner speichert nichts und setzt keine Cookies.
 </div>
 </div>
 </section>
@@ -131,37 +136,46 @@ button{max-width:100%;white-space:normal}
 
 <h2><span class="st">A</span><span class="st-p"> · </span>Adressen</h2>
 <div class="hint" id="hinweis-key" hidden>Der Routing-Dienst ist noch nicht freigeschaltet. Adressen und Karte funktionieren, die Fahrzeit und die Fahrzeitgebiete noch nicht.</div>
-<div class="row"><label for="adr-v">Sitz des Verleihers<small>Naville Handwerk GmbH: Strasse Nr., PLZ Ort</small></label><input id="adr-v" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort"><span class="status" id="st-v" aria-live="polite"></span></div>
-<div class="row"><label for="adr-e">Sitz deines Betriebs<small>Einsatzbetrieb: Strasse Nr., PLZ Ort</small></label><input id="adr-e" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort"><span class="status" id="st-e" aria-live="polite"></span></div>
+<div class="row"><label for="adr-v">Firmensitz des Arbeitgebers<small>Vertraglicher Einstellungsort; bei Personalverleih der Sitz des Verleihers. Strasse Nr., PLZ Ort</small></label><input id="adr-v" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort"><span class="status" id="st-v" aria-live="polite"></span></div>
+<div class="row"><label for="adr-e">Sitz des Einsatzbetriebs<small>Nur bei Personalverleih. Leer lassen, wenn der Arbeitgeber selbst der Betrieb ist.</small></label><input id="adr-e" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort (oder leer)"><span class="status" id="st-e" aria-live="polite"></span></div>
 <div class="row"><label for="adr-b">Baustelle<small>Adresse der Baustelle; ohne Hausnummer genügt der Ort</small></label><input id="adr-b" type="text" autocomplete="off" placeholder="Strasse Nr., PLZ Ort"><span class="status" id="st-b" aria-live="polite"></span></div>
 
 <h2><span class="st">B</span><span class="st-p"> · </span>Abfahrtszeit</h2>
-<div class="row"><label for="datum">Abfahrt am<small>Vorgabe: nächster Werktag, 07:00 Uhr. Die Fahrzeit rechnet mit der Verkehrsprognose für diese Zeit.</small></label><input id="datum" type="date"><input id="zeit" type="time" value="07:00" step="300"></div>
+<div class="row"><label for="datum">Abfahrt am<small>Vorgabe: nächster Werktag, 07:00 Uhr. Nach PLK zählt die Fahrzeit zu den Arbeitszeiten des Projekts; die Verkehrsprognose rechnet für diese Zeit.</small></label><input id="datum" type="date"><input id="zeit" type="time" value="07:00" step="300"></div>
 <button id="rechnen" type="button">Wegzeit messen</button>
 <div class="hint" id="fehler" hidden></div>
 
 <h2><span class="st">C</span><span class="st-p"> · </span>Ergebnis</h2>
 <div id="ergebnis">
-  <div class="out"><span class="l">Sitz des Verleihers zur Baustelle<small id="r-v-km"></small></span><span class="w offen" id="r-v">noch nicht gemessen</span></div>
-  <div class="out"><span class="l">Sitz des Einsatzbetriebs zur Baustelle<small id="r-e-km"></small></span><span class="w offen" id="r-e">noch nicht gemessen</span></div>
-  <div class="out big" id="urteil"><span class="w" id="urteil-text">Noch keine Messung. Adressen eingeben und "Wegzeit messen" drücken.</span></div>
+  <div class="regel">
+    <h3>Wegzeit<small>GAV Art. 27.4, Rayon ab Firmensitz des Arbeitgebers</small></h3>
+    <div class="out"><span class="l">Firmensitz des Arbeitgebers zur Baustelle<small id="r-weg-km"></small></span><span class="w offen" id="r-weg">noch nicht gemessen</span></div>
+    <div class="out big" id="u-weg"><span class="w" id="u-weg-text">Noch keine Messung. Adressen eingeben und "Wegzeit messen" drücken.</span></div>
+    <p class="erkl">Ein Rayon nach Art. 27.4 muss im Betriebsreglement oder im Arbeitsvertrag stehen; nach PLK steht er nur Mitgliedern von EIT.swiss offen (Art. 27.4 ist nicht allgemeinverbindlich) und gilt nur, wenn die Arbeit direkt auf der Baustelle beginnt oder endet. Ausserhalb des Rayons ist die Wegzeit vom Firmensitz zur Baustelle bezahlte Arbeitszeit, nach der PLK-Weisung ab 1.1.2027 abzüglich 15 Minuten. Ohne Rayon gilt Art. 27.3: Als Arbeitszeit zählt die Zeit, um die der Weg zur Baustelle den gewöhnlichen Arbeitsweg vom Wohnort zum Betrieb übersteigt. Fahrten vom Betrieb zur Baustelle und zwischen Baustellen sind immer Arbeitszeit (Art. 27.2).</p>
+  </div>
+  <div class="regel">
+    <h3>Verpflegung<small>GAV Art. 33.1, 15 Minuten ab Firmendomizil</small></h3>
+    <div class="out"><span class="l" id="r-verp-l">Sitz des Einsatzbetriebs zur Baustelle<small id="r-verp-km"></small></span><span class="w offen" id="r-verp">noch nicht gemessen</span></div>
+    <div class="out big" id="u-verp"><span class="w" id="u-verp-text">Noch keine Messung.</span></div>
+    <p class="erkl">Art. 33.1 ist allgemeinverbindlich und gilt für alle Betriebe der Branche. Gemessen wird vom Firmendomizil: bei eigenem Personal vom Firmensitz (vertraglicher Einstellungsort), bei Personalverleih vom Sitz des Einsatzbetriebs. Der Wohnort des Arbeitnehmers spielt keine Rolle. Die Entschädigung ist nur geschuldet, wenn die Arbeit am Morgen beginnt und am Nachmittag fortgesetzt wird. Betrag nach GAV 2026 bis 2029; ohne tägliche Heimkehr gilt Art. 33.2 (Verpflegung und Unterkunft).</p>
+  </div>
   <p class="messung" id="messung"></p>
-  <div class="zusatz" id="zusatz" hidden><strong>Zusatz zum Verleihvertrag nötig.</strong> Für die Arbeit auf dieser Baustelle unterzeichnen wir vorher einen Zusatz mit dem Ort und der Wegzeit je Arbeitstag; die Wegzeit wird als Arbeitszeit zum Ansatz in Rechnung gestellt. Bei Arbeit ohne Heimkehr am Abend regelt der Zusatz auch die Übernachtung (Verleihvertrag Ziff. 4 c).</div>
 </div>
 
 <h2><span class="st">D</span><span class="st-p"> · </span>Karte</h2>
 <div class="karte-rahmen">
-  <canvas id="cv" width="1500" height="1500" aria-label="Karte mit beiden 15-Minuten-Gebieten und der Baustelle"></canvas>
+  <canvas id="cv" width="1500" height="1500" aria-label="Karte mit den 15-Minuten-Gebieten und der Baustelle"></canvas>
 </div>
 <div class="legende" id="legende" hidden>
-  <span><i class="lg v"></i>15 Minuten ab Sitz des Verleihers</span>
-  <span><i class="lg e"></i>15 Minuten ab Sitz des Einsatzbetriebs</span>
-  <span><i class="lg b" id="lg-b"></i>Baustelle</span>
+  <span><i class="lg v"></i>15 Minuten ab Firmensitz des Arbeitgebers</span>
+  <span id="lg-e-zeile"><i class="lg e"></i>15 Minuten ab Sitz des Einsatzbetriebs</span>
+  <span><i class="lg b"></i>Baustelle</span>
 </div>
 <p class="quelle">Karte: © swisstopo · Fahrzeiten und Fahrzeitgebiete: <a href="https://www.esri.com/" rel="noopener" target="_blank">Powered by Esri</a>, Strassen- und Verkehrsdaten TomTom</p>
 
 <h2><span class="st">E</span><span class="st-p"> · </span>Drucken</h2>
-<p style="font-size:14.5px;color:var(--ink2);margin:6px 0">Das PDF hält Adressen, Fahrzeiten, Zeitpunkt der Messung und die Karte fest. Es dient als Beilage zum Einsatzblatt. Das Bild der Karte kannst du auch einzeln speichern.</p>
+<p style="font-size:14.5px;color:var(--ink2);margin:6px 0">Das PDF hält Adressen, Fahrzeiten, das Ergebnis je Regel, den Zeitpunkt der Messung und die Karte fest. Das Bild der Karte kannst du auch einzeln speichern; es trägt nur die Quellenangaben.</p>
+<label class="schalter"><input type="checkbox" id="neutral"><span>PDF neutral: ohne Logo und ohne Hinweis auf Naville Handwerk</span></label>
 <div class="knopfreihe">
   <button id="pdf" type="button" disabled>PDF erstellen</button>
   <button id="png" type="button" class="zweit" disabled>Karte als Bild speichern</button>
@@ -171,18 +185,19 @@ button{max-width:100%;white-space:normal}
 
 <aside class="calc-side">
   <div class="side-box">
-    <h3>Rayon im Verleihvertrag</h3>
-    <blockquote>Rayon ist das Gebiet, das vom Sitz des Verleihers oder vom Sitz des Einsatzbetriebs mit dem Auto in höchstens 15 Minuten erreichbar ist (effektive Fahrzeit zu den Arbeitszeiten, gemessen wie nach Art. 27.4 und 33.1 GAV). Im Rayon ist die Wegzeit im Ansatz enthalten.</blockquote>
-    <p>Arbeit ausserhalb des Rayons braucht einen Zusatz zum Verleihvertrag, den wir beide vor der Arbeit dort unterzeichnen. Er nennt den Ort und die Wegzeit je Arbeitstag (Ziff. 4 b und c).</p>
+    <h3>Zwei Rayons im GAV Elektro</h3>
+    <p><strong>Wegzeit, Art. 27.4:</strong> Ein Betrieb kann mit seinen Arbeitnehmern einen Rayon von höchstens 15 Minuten effektiver Wegzeit für einen Weg festlegen, gerechnet ausschliesslich vom Firmensitz (vertraglicher Einstellungsort). Innerhalb gilt die Wegzeit nicht als Arbeitszeit, wenn die Arbeit auf der Baustelle beginnt. Nicht allgemeinverbindlich; nach PLK nur für Mitglieder von EIT.swiss.</p>
+    <p><strong>Verpflegung, Art. 33.1:</strong> Mindestens CHF 18 je Tag, wenn die Baustelle mehr als 15 Minuten effektive Fahrzeit vom Firmendomizil liegt, bei Personalverleih vom Sitz des Einsatzbetriebs. Allgemeinverbindlich, gilt für alle Betriebe der Branche.</p>
   </div>
   <div class="side-box">
     <h3>So wird gemessen</h3>
-    <p>Die Branche misst den Rayon als effektive Fahrzeit mit dem Auto zu den Arbeitszeiten, mit einem Routenplaner und der Abfahrtszeit vom Sitz (GAV Elektro Art. 27.4 und 33.1, Merkblätter der Paritätischen Landeskommission). Der Rechner macht genau das: Abfahrt zur gewählten Zeit, Fahrzeit mit Verkehrsprognose, je Sitz eine Messung.</p>
+    <p>Die PLK misst die 15 Minuten als effektive Fahrzeit mit dem Auto zu den Arbeitszeiten des Projekts, mit einem Routenplaner und der Abfahrtszeit ab der Firma, unter den tatsächlichen Verkehrsbedingungen. Der Wohnort des Arbeitnehmers hat keinen Einfluss. Der Rechner macht genau das: Abfahrt zur gewählten Zeit, Fahrzeit mit Verkehrsprognose, je Sitz eine Messung.</p>
     <p>Liegt die Abfahrt innerhalb der nächsten Stunden, fliesst der aktuelle Verkehr ein; sonst gilt der typische Verkehr für diesen Wochentag und diese Uhrzeit.</p>
+    <p class="q">Quellen: <a href="https://www.plk-elektro.ch/documents/875/2026-2029_FAQ_GAV_ELEKT_DE_P3Dd9zy.pdf" rel="noopener" target="_blank">PLK Elektro, FAQ GAV 2026 bis 2029</a> · <a href="https://www.plk-elektro.ch/documents/758/Anspruch_auf_Auslagenersatz_gem._Art._33.1.pdf" rel="noopener" target="_blank">PLK, Merkblatt Art. 33.1</a> · <a href="https://www.plk-elektro.ch/documents/829/Weisung_Bezahlung_der_Reisezeit_gem._Art._27_GAV_g%C3%BCltig_ab_01.01.2027.pdf" rel="noopener" target="_blank">PLK, Weisung Reisezeit Art. 27 (ab 1.1.2027)</a> · <a href="https://www.eit.swiss/fileadmin/user_upload/documents/Branche/GAV/_de/20251201_Rayon_fuer_GAV_2026_endversion.pdf" rel="noopener" target="_blank">EIT.swiss, Rayon für GAV 2026</a></p>
   </div>
   <div class="side-box">
     <h3>Deine Daten</h3>
-    <p>Die Adressen gehen an den Geodienst des Bundes (swisstopo), der die Koordinaten liefert und das Kartenbild. An Esri gehen nur die Koordinaten der drei Punkte und die Abfahrtszeit, keine Adresstexte; Esri rechnet in den USA. Diese Seite speichert nichts, setzt keine Cookies und übermittelt nichts an mich. Einzelheiten: <a href="impressum.html">Impressum und Datenschutz</a>.</p>
+    <p>Die Adressen gehen an den Geodienst des Bundes (swisstopo), der die Koordinaten liefert und das Kartenbild. An Esri gehen nur die Koordinaten der zwei oder drei Punkte und die Abfahrtszeit, keine Adresstexte; Esri rechnet in den USA. Diese Seite speichert nichts, setzt keine Cookies und übermittelt nichts an mich. Einzelheiten: <a href="impressum.html">Impressum und Datenschutz</a>.</p>
   </div>
 </aside>
 </div>

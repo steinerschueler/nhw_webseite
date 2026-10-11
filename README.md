@@ -39,10 +39,11 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
   PDF-Vereinbarung; jsPDF lokal in `vendor/`)
-- `rayon.html` + `rayon.js` — Rayon-Rechner zu Ziff. 4 des Verleihvertrags: Wegzeit mit dem Auto
-  vom Sitz des Verleihers und vom Sitz des Einsatzbetriebs zur Baustelle, mit Verkehrsprognose
-  zur gewählten Abfahrtszeit; beide 15-Minuten-Gebiete auf einer swisstopo-Karte; PDF als Beilage
-  zum Einsatzblatt (Abschnitt «Rayon-Rechner» unten)
+- `rayon.html` + `rayon.js` — Rayon-Rechner nach GAV Elektro: Fahrzeit mit dem Auto vom Firmensitz
+  des Arbeitgebers und vom Sitz des Einsatzbetriebs zur Baustelle, mit Verkehrsprognose zur
+  gewählten Abfahrtszeit, getrennt ausgewertet für Wegzeit (Art. 27.4) und Verpflegung (Art. 33.1);
+  die 15-Minuten-Gebiete auf einer swisstopo-Karte; PDF mit Schalter «neutral» (Abschnitt
+  «Rayon-Rechner» unten)
 - `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Verfügbarkeit")
 - `kalender.html` — Jahreskalender (Verfügbarkeit; freie Tage per E-Mail anfragen, kein Backend)
 - `impressum.html` — Impressum / Datenschutz
@@ -82,9 +83,18 @@ Handeinträge).
 
 ## Rayon-Rechner (`rayon.html`, `rayon.js`)
 
-Die Seite misst, ob eine Baustelle im Rayon liegt (höchstens 15 Minuten Fahrzeit mit dem Auto ab
-einem der beiden Sitze). Sie ist statisch und ruft zwei fremde Dienste direkt aus dem Browser
-auf, als reine Datenabfragen ohne Anbieter-Bibliothek, ohne Cookies und ohne Speicherung:
+Die Seite misst die Fahrzeit mit dem Auto zur Baustelle und wertet sie getrennt nach den zwei
+15-Minuten-Regeln des GAV Elektro aus: Wegzeit (Art. 27.4, Rayon ab Firmensitz des Arbeitgebers)
+und Verpflegungsentschädigung (Art. 33.1, ab Firmendomizil, bei Personalverleih ab Sitz des
+Einsatzbetriebs; der Sitz des Einsatzbetriebs ist darum optional, leer misst die Seite beide
+Regeln ab dem Firmensitz). Sie ist für jeden Betrieb der Branche gedacht und nennt keine
+Vertragsregel der GmbH; die Erläuterungen folgen GAV, PLK-Merkblättern und EIT.swiss, auf die
+die Seite verlinkt. Der Betrag der Verpflegungsentschädigung (CHF 18, GAV 2026 bis 2029) steht
+als `VERPFLEGUNG_CHF` in `rayon.js` und in den Erläuterungen der Seite; beim nächsten GAV
+nachführen. Der Schalter «PDF neutral» lässt Logo und jeden Hinweis auf die GmbH im PDF weg; das
+Kartenbild trägt immer nur die Quellenangaben. Die Seite ist statisch und ruft zwei fremde
+Dienste direkt aus dem Browser auf, als reine Datenabfragen ohne Anbieter-Bibliothek, ohne
+Cookies und ohne Speicherung:
 
 | Dienst | Wofür | Schlüssel | Attribution |
 |---|---|---|---|
@@ -109,8 +119,9 @@ pushen auf Wort des Inhabers; den alten Schlüssel löschen. **Jede Änderung am
 generieren und eintragen, sonst meldet die Seite «Invalid Token». Ohne Schlüssel (leer) laufen Adressen
 und Karte weiter, nur die Fahrzeit nicht; die Seite sagt das dann.
 
-Vorbelegen lässt sich die Seite über die Adresse: `rayon.html?v=<Sitz Verleiher>&e=<Sitz
-Einsatzbetrieb>&b=<Baustelle>&zeit=07:00`.
+Vorbelegen lässt sich die Seite über die Adresse: `rayon.html?v=<Firmensitz Arbeitgeber>&e=<Sitz
+Einsatzbetrieb>&b=<Baustelle>&zeit=07:00&neutral=1` (`e` darf fehlen, `neutral=1` setzt den
+PDF-Schalter).
 
 ## Deployment (GitHub Pages)
 
