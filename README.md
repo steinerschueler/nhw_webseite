@@ -24,7 +24,11 @@ Reines HTML/CSS/JS, kein Server nötig.
   `.icard`, `.cal-year`, `.calc-main h2`); ein Abschnitt ohne solche Klasse trägt die Linie über
   die Klasse `achse`.
 - `achse.js` — Sprungmarken an den Stationen (hohle Dreiecke: vorheriger und nächster Punkt,
-  ganz nach oben, ganz nach unten; im Kalender zusätzlich über dem laufenden Monat). Reines
+  ganz nach oben, ganz nach unten). Ein System für alle Seiten: Nach einem Sprung steht die
+  Markengruppe der Zielstation dort, wo die Gruppe der obersten Station bei Seitenanfang steht,
+  dieselbe Marke führt also Station für Station bis zum Schluss. Im Kalender sind die Jahre und
+  jede weitere Monatsreihe (erste Karte der Reihe) Stationen; weil die Reihen von der
+  Fensterbreite abhängen, werden die Marken nach einer Grössenänderung neu gesetzt. Reines
   Verhalten, die Lage regelt `achse.css`; ohne JavaScript fehlen nur die Marken.
 - **Navigation** (Kopfzeile jeder Seite, `<nav class="nav-links">`): drei Gruppen mit ihren
   Seiten, in jeder Seite derselbe HTML-Block. **Willkommen**: Startseite und ihre Abschnitte

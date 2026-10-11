@@ -41,7 +41,9 @@ body{counter-reset:abschnitt}
 .sec > .eyebrow::before,.tblock::before,.chap-block::before,.icard::before{content:counter(abschnitt,decimal-leading-zero)}
 
 /* Sprungmarken (achse.js): über der Zahl nach oben, unter der Zahl nach unten.
-   .pf-reihe fasst beide Gruppen; breit erzeugt sie keinen eigenen Kasten. */
+   .pf-reihe fasst beide Gruppen; breit erzeugt sie keinen eigenen Kasten. Nach einem Sprung
+   setzt achse.js die untere Gruppe der Zielstation dorthin, wo die untere Gruppe der obersten
+   Station bei Seitenanfang steht; dieselbe Marke führt so Station für Station weiter. */
 .pf-reihe{display:contents}
 .pf{position:absolute;right:calc(100% + var(--abstand) + 20px);width:40px;display:flex;flex-direction:column;align-items:center}
 .pf-auf{bottom:calc(100% - var(--st-oben,4px) + 16px)}           /* Unterkante 8px über der Zahl */
@@ -108,10 +110,14 @@ body{counter-reset:abschnitt}
 .cal-year .pf{right:0}
 .cal-year:first-child{margin:0}
 .cal-year::after{left:calc(100% + 16px)}
-.cal-months{margin-bottom:52px;row-gap:24px}                        /* Zeilenabstand 24 statt 16: Platz für die Marken über dem laufenden Monat */
-.cal-month.pf-hier{position:relative}
-.pf.pf-monat{position:absolute;right:-3px;top:-23px;bottom:auto;width:auto;flex-direction:row}   /* Reihe über der rechten oberen Ecke, breit wie schmal */
+.cal-months{margin-bottom:52px}
 .cal-months:last-child{margin-bottom:0}
+/* Monatsreihen als Stationen (achse.js setzt .pf-station auf die erste Karte jeder weiteren
+   Reihe): keine Zahl und kein Quadrat, die Marken stehen links der Achse an der Oberkante der
+   Karte, oben darüber, unten darunter */
+.cal-month.pf-station{position:relative}
+.cal-month .pf-auf{bottom:calc(100% - 2px)}
+.cal-month .pf-ab{top:2px}
 
 /* Preisrechner: die Buchstaben A bis F sind die Stationen */
 .intro,.calc-section{padding:0}
@@ -145,9 +151,9 @@ ol.refs a{overflow-wrap:anywhere}                               /* lange Adresse
   .pf{position:static;width:auto;flex-direction:row}
   .pf a{position:relative;width:26px;height:19px}                 /* 19px: nicht höher als eine Textzeile */
   .pf a::after{content:"";position:absolute;inset:-9px 0}         /* grössere Tippfläche */
-  .tblock > .pf-reihe,.chap-block > .pf-reihe,.icard > .pf-reihe{float:none;position:absolute;right:-5px;top:-30px;margin:0}
+  .tblock > .pf-reihe,.chap-block > .pf-reihe,.icard > .pf-reihe,.cal-month > .pf-reihe{float:none;position:absolute;right:-5px;top:-30px;margin:0}
   .tblock + .tblock,.icard + .icard{margin-top:44px}
   .cal-year::after{left:calc(-1 * var(--abstand) - 4px)}
-  .cal-months{margin-bottom:38px}
+  .cal-months{margin-bottom:38px;row-gap:36px}                      /* Platz für die Markenreihe über jeder Monatskarte */
   .quote{margin-left:calc(-1 * var(--abstand) - 1px);padding-left:calc(var(--abstand) - 2px)}
 }
