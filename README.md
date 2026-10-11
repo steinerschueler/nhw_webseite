@@ -95,7 +95,9 @@ serverseitig: Aufrufe ohne oder mit fremdem Referrer erhalten «Invalid Token».
 Freikontingent (Routen und Service areas je Monat) überschritten, sperrt Esri bis zum
 Monatsanfang, es entstehen keine Kosten. Erneuern oder ersetzen: im Esri-Dashboard einen neuen
 Schlüssel mit denselben Einstellungen anlegen, `ESRI_KEY` in `rayon.js` ersetzen, committen,
-pushen auf Wort des Inhabers; den alten Schlüssel löschen. Ohne Schlüssel (leer) laufen Adressen
+pushen auf Wort des Inhabers; den alten Schlüssel löschen. **Jede Änderung am Esri-Element**
+(Referrer, Berechtigungen) macht den bestehenden Schlüssel sofort ungültig; danach immer neu
+generieren und eintragen, sonst meldet die Seite «Invalid Token». Ohne Schlüssel (leer) laufen Adressen
 und Karte weiter, nur die Fahrzeit nicht; die Seite sagt das dann.
 
 Vorbelegen lässt sich die Seite über die Adresse: `rayon.html?v=<Sitz Verleiher>&e=<Sitz

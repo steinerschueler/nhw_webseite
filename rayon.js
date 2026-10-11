@@ -16,7 +16,7 @@
 (function () {
   "use strict";
 
-  var ESRI_KEY = "AAPTaZIpFzPx1ke9B-O2-S88EoQ..4HEkLEWtu7oKOTlEoBQrWa2MZ64Bf_y2fIUyXJPyhsITvbO7lq8KrimYe0stCB4NOnBFjITvUjIKQUU0WJKILoTcrzyOxW8bEOOf8_Audpqa4Moml1QlrOcZHmnzJ3FXUmiqlvfa8uqZhSujMems8NVOO7KkIlFcKnhcMfw1bo6JMP0esOxwj1waafk4nLIqKsC4CUyLcA0_3g0JzW8QrCnU_16Pvtxe2jUb5UuOmhzdolvU_w..AT1_AmXggOTB";
+  var ESRI_KEY = "AAPTaZh70gdMw1s1M3ytocFv0jA..WZ8oRYSDRJ27x0_UPtgWDkOWkEpy-cBw8w2Muj8xV0KAMvDGon1uy4pb-ZjtNRdw123-seV_vrnm55SlB7vd9kR__yK2QlbrtMX84EQOO_nym8grJB5hCVxGKoVCkn8TnbQKEG-Q6Ba6rskWM62JyG-4zpQNsy3x9C5iAmEmK65G6dSh5HeHz5UsewuPiYUVQa-tImtvkr_IhhPqyrvPfnqU9ofBE53cY2uKvSdb3blK1hncyw..AT1_AmXggOTB";
   var RAYON_MIN = 15;
 
   var SUCHE = "https://api3.geo.admin.ch/rest/services/ech/SearchServer";
