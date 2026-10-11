@@ -244,9 +244,16 @@
     if (punkte.v) { var qv = px(punkte.v); c.fillStyle = FARBE.blau; c.fillRect(qv.x - 15, qv.y - 15, 30, 30); c.lineWidth = 4; c.strokeStyle = "#fff"; c.strokeRect(qv.x - 15, qv.y - 15, 30, 30); etikett(qv, "Firmensitz Arbeitgeber", 0); }
     if (punkte.e) { var qe = px(punkte.e); c.fillStyle = FARBE.orange; c.fillRect(qe.x - 15, qe.y - 15, 30, 30); c.lineWidth = 4; c.strokeStyle = "#fff"; c.strokeRect(qe.x - 15, qe.y - 15, 30, 30); etikett(qe, "Sitz Einsatzbetrieb", 0); }
     if (punkte.b) {
+      /* leuchtend roter Punkt mit nach aussen schwaecher werdendem Halo, damit die Baustelle
+         auf der grauen Karte sofort ins Auge faellt */
       var qb = px(punkte.b);
+      var halo = c.createRadialGradient(qb.x, qb.y, 12, qb.x, qb.y, 75);
+      halo.addColorStop(0, "rgba(193,18,28,0.55)");
+      halo.addColorStop(0.5, "rgba(193,18,28,0.22)");
+      halo.addColorStop(1, "rgba(193,18,28,0)");
+      c.beginPath(); c.arc(qb.x, qb.y, 75, 0, Math.PI * 2); c.fillStyle = halo; c.fill();
       c.beginPath(); c.arc(qb.x, qb.y, 17, 0, Math.PI * 2);
-      c.fillStyle = FARBE.schwarz; c.fill();
+      c.fillStyle = FARBE.rot; c.fill();
       c.lineWidth = 4; c.strokeStyle = "#fff"; c.stroke();
       etikett(qb, "Baustelle", 0);
     }
@@ -445,7 +452,7 @@
       var lx = x;
       d.setFillColor(27, 42, 74); d.rect(lx, y - 3, 3.5, 3.5, "F"); d.text("15 Minuten ab Firmensitz des Arbeitgebers", lx + 5.5, y); lx += 72;
       if (stand.gebiete.e) { d.setFillColor(234, 140, 27); d.rect(lx, y - 3, 3.5, 3.5, "F"); d.text("15 Minuten ab Sitz des Einsatzbetriebs", lx + 5.5, y); lx += 68; }
-      d.setFillColor(INK[0], INK[1], INK[2]); d.circle(lx + 1.8, y - 1.3, 1.8, "F"); d.text("Baustelle", lx + 5.5, y);
+      d.setFillColor(ROT[0], ROT[1], ROT[2]); d.circle(lx + 1.8, y - 1.3, 1.8, "F"); d.text("Baustelle", lx + 5.5, y);
       y += 4.5; d.text("Karte: © swisstopo", x, y);
     }
 
