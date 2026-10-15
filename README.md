@@ -33,11 +33,11 @@ Reines HTML/CSS/JS, kein Server nötig.
 - **Navigation** (Kopfzeile jeder Seite, `<nav class="nav-links">`): drei Gruppen mit ihren
   Seiten, in jeder Seite derselbe HTML-Block. **Willkommen**: Startseite und ihre Abschnitte
   (Wann ich einspringe, Zur Firma, Über mich, Wie ich arbeite, Kontakt) · **Infos**: Was du von
-  mir hast, FAQ (später Dokumente) · **Werkzeuge**: Kalender, Preisrechner, Rayon-Rechner.
+  mir hast, FAQ (später Dokumente) · **Werkzeuge**: Kalender, Preisrechner, Rayon-Rechner, Vertragswerk.
   Breit stehen die Gruppen in der Kopfzeile und klappen beim Schweben oder per Tastatur auf,
   schmal öffnet der Burger drei Kacheln mit allen Seiten; Regeln in `basis.css`. `nav.js`
-  markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller sieben Seiten
-  (`index`, `leistungen`, `preisrechner`, `rayon`, `faq`, `kalender`, `impressum`), sonst
+  markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller acht Seiten
+  (`index`, `leistungen`, `preisrechner`, `rayon`, `vertragswerk`, `faq`, `kalender`, `impressum`), sonst
   nirgends.
 - `index.html` — Startseite
 - `leistungen.html` — Was du von mir hast (✓/✗)
@@ -50,6 +50,8 @@ Reines HTML/CSS/JS, kein Server nötig.
   gewählten Abfahrtszeit, getrennt ausgewertet für Wegzeit (Art. 27.4) und Verpflegung (Art. 33.1);
   die 15-Minuten-Gebiete auf einer swisstopo-Karte; PDF mit Schalter «neutral» (Abschnitt
   «Rayon-Rechner» unten)
+- `vertragswerk.html` + `vertragswerk.js` — Vertragswerk: Verleihvertrag für den Selbstverleih im
+  Elektrogewerbe (Abschnitt «Vertragswerk» unten)
 - `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Verfügbarkeit")
 - `kalender.html` — Jahreskalender (Verfügbarkeit; freie Tage per E-Mail anfragen, kein Backend)
 - `impressum.html` — Impressum / Datenschutz
@@ -141,6 +143,25 @@ und Karte weiter, nur die Fahrzeit nicht; die Seite sagt das dann.
 Vorbelegen lässt sich die Seite über die Adresse: `rayon.html?v=<Sitz Arbeitgeber>&e=<Sitz
 Einsatzbetrieb>&w=<Wohnort Arbeitnehmer>&b=<Baustelle>&zeit=07:00&neutral=0` (`v` oder `e` muss da
 sein, `w` darf fehlen; `neutral=0` schaltet den PDF-Schalter aus, der sonst an ist).
+
+## Vertragswerk (`vertragswerk.html`, `vertragswerk.js`)
+
+Neutrale Vorlage eines Verleihvertrags für Elektroinstallateure, die sich über ihre eigene Firma
+verleihen: Einsatzblatt und Vertragsbedingungen (19 Ziffern) mit Unterschriften. Die Seite nennt
+keinen Einsatzbetrieb und keine Werte der GmbH; das PDF ist immer neutral (kein Logo, kein Hinweis
+auf die Seite). Unter A wählt der Besucher Varianten (Fristen und Geld, Tag und Zeit, Rolle des
+Arbeitnehmers, Ort und Recht), unter B füllt er das Einsatzblatt aus (leere Felder bleiben im PDF
+als Linie), unter C liest er die Bedingungen; Absätze, die von der Grundfassung (`GRUND` in
+`vertragswerk.js`) abweichen, sind hinterlegt. Kein Speichern, keine Cookies, keine Abfragen;
+jsPDF lokal wie im Preisrechner.
+
+Der Vertragstext steht in `modell(o)` in `vertragswerk.js`: je Ziffer die Buchstaben, was eine
+Variante weglässt, fällt heraus. Ziffern und Buchstaben werden danach gezählt; Verweise im Text
+sind Marken (`{Z:ziffer}`, `{B:ziffer.buchstabe}`, `{R:ziffer.buchstabe}`), die beim Zählen
+aufgelöst werden, damit sie auch nach dem Wegfall eines Buchstabens stimmen. Wer den Text ändert,
+prüft die Varianten mit Node: `vertragswerk.js` exportiert ausserhalb des Browsers `modell`,
+`gezaehlt`, `GRUND` und `pdfBauen` (jsPDF aus `vendor/` lässt sich mit `require` laden); ein
+Verweis ohne Ziel erscheint als "?" und in `gezaehlt(...).fehlt`.
 
 ## Deployment (GitHub Pages)
 
