@@ -473,7 +473,7 @@
     /* Vertragsbedingungen, zweispaltig; Spaltenwechsel und Seitenumbruch über platz() */
     d.addPage(); y = 22;
     schrift("bold", 13); farbe(INK); d.text("Vertragsbedingungen zum Verleihvertrag", x, y); y += 7;
-    var GAP = 6, CB = (B - GAP) / 2, col = 0, oben = y, ZH = 3.5, EIN = 4.4, GR = 8.3;
+    var GAP = 6, CB = (B - GAP) / 2, col = 0, oben = y, ZH = 4.13, EIN = 5.2, GR = 9.8;
     function sx() { return x + col * (CB + GAP); }
     platz = function (h) {
       if (y + h <= UNTEN) return;
@@ -484,9 +484,9 @@
       schrift("normal", GR);
       var erste = z.abs[0].t[0];
       var ersteZeilen = Math.min(2, d.splitTextToSize(typeof erste === "string" ? erste : erste.liste[0], CB - EIN).length);
-      var tz = d.splitTextToSize(z.nr + ". " + z.titel, CB);
-      platz(tz.length * 4 + 1.2 + ersteZeilen * ZH);
-      schrift("bold", 9.2); farbe(INK); d.text(tz, sx(), y); y += tz.length * 4 + 0.6;
+      var tz = d.splitTextToSize(z.nr + ". " + z.titel, CB); schrift("bold", 9.8); tz = d.splitTextToSize(z.nr + ". " + z.titel, CB);
+      platz(tz.length * 4.2 + 1.4 + ersteZeilen * ZH);
+      schrift("bold", 9.8); farbe(INK); d.text(tz, sx(), y); y += tz.length * 4.2 + 0.8;
       z.abs.forEach(function (a) {
         var ein = a.bst ? EIN : 0, ersteZeile = true;
         function zeilen(liste, dx, marke) {
@@ -514,15 +514,15 @@
     platz(schluss.length * ZH + 4);
     y += 2; farbe(INK); d.text(schluss, sx(), y); y += schluss.length * ZH + 4;
     [["Verleiher", f["v-firma"]], ["Einsatzbetrieb", f["e-firma"]]].forEach(function (p) {
-      platz(44);
-      schrift("bold", 9.5); farbe(INK); d.text(p[0], sx(), y);
+      platz(38);
+      schrift("bold", 10.6); farbe(INK); d.text(p[0], sx(), y);
       if (p[1]) { schrift("normal", 8.5); farbe(GRAU); d.text(d.splitTextToSize(p[1], CB)[0], sx() + 26, y); }
       ["Ort, Datum", "Unterschrift", "Name in Druckschrift"].forEach(function (l, i) {
-        var ly = y + 10 + i * 11;
+        var ly = y + 9 + i * 10;
         d.setDrawColor(INK[0], INK[1], INK[2]); d.setLineWidth(0.3); d.line(sx(), ly, sx() + CB, ly);
-        schrift("normal", 7.5); farbe(GRAU); d.text(l, sx(), ly + 3.2);
+        schrift("normal", 8.5); farbe(GRAU); d.text(l, sx(), ly + 3.6);
       });
-      y += 10 + 2 * 11 + 12;
+      y += 9 + 2 * 10 + 10;
     });
 
     var n = d.getNumberOfPages();
