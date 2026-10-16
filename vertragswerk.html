@@ -15,6 +15,12 @@ section{padding:14px 0 8px}
 .introbox strong{color:var(--red)}
 .introbox2{border:1px solid var(--line);border-radius:3px;padding:12px 16px;margin:0 0 14px;font-size:14px;color:var(--ink2);line-height:1.55;max-width:940px}
 .introbox2 strong{color:var(--ink)}
+.absperrung{max-width:940px;margin:4px 0 6px;border:8px solid transparent;border-image:repeating-linear-gradient(-45deg,#111 0 10px,#FFD100 10px 20px) 8;background:#fff}
+.absperrung .band{background:#FFD100;border-block:2px solid #111;overflow:hidden;white-space:nowrap;padding:4px 0;font-family:'Archivo',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#111;line-height:1.2}
+.absperrung .band span{display:inline-block;padding:0 22px}
+.absp-text{padding:12px 16px;font-size:14.5px;color:var(--ink);line-height:1.55}
+.absp-text strong{color:#111}
+.datenschutz{max-width:940px;margin:0 0 14px;font-size:13px;color:var(--ink2)}
 .calc-section{padding-top:6px}
 .calc-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:34px;align-items:start}
 .calc-main{min-width:0}
@@ -174,9 +180,12 @@ button{max-width:100%;white-space:normal}
 <div class="introbox">
 <strong>So geht es.</strong> Unter A wählst du je Punkt eine Variante; vorgewählt ist jeweils die Grundfassung der Vorlage. Unter B füllst du das Einsatzblatt aus. Leere Felder bleiben im PDF als Linie stehen, du kannst sie also auch von Hand ausfüllen. Unter C liest du die Vertragsbedingungen so, wie sie ins PDF kommen; was deine Auswahl ändert, ist farbig hinterlegt.
 </div>
-<div class="introbox2">
-<strong>Vorlage ohne Gewähr.</strong> Die Vorlage ist sorgfältig nach AVG, AVV und dem GAV der Schweizerischen Elektrobranche erarbeitet. Sie ersetzt keine Rechtsberatung: Prüfe sie für deinen Fall, im Zweifel mit einer Fachperson oder bei der kantonalen Stelle für Personalverleih. Die Seite speichert nichts, setzt keine Cookies und übermittelt nichts; das PDF entsteht in deinem Browser.
+<div class="absperrung" role="note" aria-label="Keine Rechtsberatung">
+<div class="band" aria-hidden="true"><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span></div>
+<div class="absp-text"><strong>Keine Rechtsberatung.</strong> Vertragsvorlagen, Erläuterungen und Rechtsbegriffe sind sorgfältig nach AVG, AVV und dem GAV der Schweizerischen Elektrobranche erarbeitet, ohne Gewähr. Sie ersetzen keine Rechtsberatung: Prüfe sie für deinen Fall, im Zweifel mit einer Fachperson oder bei der kantonalen Stelle für Personalverleih.</div>
+<div class="band" aria-hidden="true"><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span><span>Keine Rechtsberatung</span></div>
 </div>
+<p class="datenschutz">Die Seite speichert nichts, setzt keine Cookies und übermittelt nichts; das PDF entsteht in deinem Browser.</p>
 </div>
 </section>
 
