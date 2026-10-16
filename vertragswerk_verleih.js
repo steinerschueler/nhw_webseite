@@ -27,7 +27,7 @@
     if (o.zu.ue > 0) zuTeile.push("Überzeit nach dem ArG " + o.zu.ue + " %");
     var zu = zuTeile.length > 0;
     var besondere = o.zu.sa > 0 || o.zu.na > 0 || o.zu.so > 0;
-    var stundenTag = tm ? "das Tagesminimum des Wochentags (Ziff. {R:tm.min})" : "die Stunden je Wochentag nach dem Einsatzblatt für diesen Tag";
+    var stundenTag = tm ? "das Tagesstundenminimum des Wochentags (Ziff. {R:tm.min})" : "die Stunden je Wochentag nach dem Einsatzblatt für diesen Tag";
 
     var Z = [];
     function ziffer(id, titel, abs, teil) { Z.push({id: id, titel: titel, teil: teil || "", abs: abs.filter(Boolean)}); }
@@ -76,10 +76,10 @@
     if (o.werkzeug) imAnsatz.push("das Werkzeug und die persönliche Grundausrüstung des Arbeitnehmers (Ziff. {R:sicher.grund}, {B:sicher.werkzeug})");
     imAnsatz.push("die Weiterbildungs- und Vollzugskosten nach dem GAV", "Verwaltungsaufwand und Gewinn des Verleihers");
     var dazu = ["die Wegzeit ausserhalb des Rayons und bei Arbeit ohne Heimkehr am Abend die Kosten für Unterkunft und Verpflegung (Ziff. {R:ort.rayon}, {B:ort.unterkunft})"];
-    if (zu && tm) dazu.push("die Zuschläge und die Aufrundung auf das Tagesminimum (Ziff. {R:tm.min}, {B:tm.zuschlag})");
-    else if (tm) dazu.push("die Aufrundung auf das Tagesminimum (Ziff. {R:tm.min})");
+    if (zu && tm) dazu.push("die Zuschläge und die Aufrundung auf das Tagesstundenminimum (Ziff. {R:tm.min}, {B:tm.zuschlag})");
+    else if (tm) dazu.push("die Aufrundung auf das Tagesstundenminimum (Ziff. {R:tm.min})");
     else if (zu) dazu.push("die Zuschläge (Ziff. {R:tm.zuschlag})");
-    dazu.push((tm ? "das Tagesminimum" : "die Stunden") + " später abgesagter Werktage und bei Arbeitsausfall (Ziff. {R:absage.absage}, {R:ausfall.ausfall})");
+    dazu.push((tm ? "das Tagesstundenminimum" : "die Stunden") + " später abgesagter Werktage und bei Arbeitsausfall (Ziff. {R:absage.absage}, {R:ausfall.ausfall})");
     dazu.push((o.mahn ? "die Konventionalstrafe für Mahnungen und die Kosten einer Betreibung" : "die Kosten einer Betreibung") + " (Ziff. {R:rechnung.mahnung})");
 
     ziffer("kosten", "Kosten des Verleihs", [
@@ -98,13 +98,13 @@
         zuSatz = "Für geleistete Arbeitszeit " + (besondere && o.zu.ue > 0 ? "zu besonderen Arbeitszeiten und für Überzeit" : besondere ? "zu besonderen Arbeitszeiten" : "für Überzeit") +
           " kommt ein Zuschlag auf den Ansatz dazu: " + zuTeile.join(", ") + ".";
         if (zuTeile.length > 1) zuSatz += " Trifft mehr als ein Zuschlag zu, gilt nur der höchste.";
-        if (tm) zuSatz += " Die Aufrundung auf das Tagesminimum erhält keinen Zuschlag.";
+        if (tm) zuSatz += " Die Aufrundung auf das Tagesstundenminimum erhält keinen Zuschlag.";
       }
-      ziffer("tm", tm && zu ? "Tagesminimum und Zuschläge" : tm ? "Tagesminimum" : "Zuschläge", [
-        tm && b("min", "An jedem Werktag, an dem der Arbeitnehmer arbeitet, stellt der Verleiher mindestens die Stunden je Wochentag nach dem Einsatzblatt für diesen Tag in Rechnung (Tagesminimum), auch wenn der Einsatzbetrieb den Arbeitnehmer früher heimschickt. Darüber gilt die geleistete Arbeitszeit."),
-        tm && b("frueh", "Geht der Arbeitnehmer aus Gründen in seiner Person früher oder bricht der Verleiher den Arbeitstag ab, wird nur die geleistete Arbeitszeit in Rechnung gestellt. An Tagen, die keine Werktage sind, gilt kein Tagesminimum."),
+      ziffer("tm", tm && zu ? "Tagesstundenminimum und Zuschläge" : tm ? "Tagesstundenminimum" : "Zuschläge", [
+        tm && b("min", "An jedem Werktag, an dem der Arbeitnehmer arbeitet, stellt der Verleiher mindestens die Stunden je Wochentag nach dem Einsatzblatt für diesen Tag in Rechnung (Tagesstundenminimum), auch wenn der Einsatzbetrieb den Arbeitnehmer früher heimschickt. Darüber gilt die geleistete Arbeitszeit."),
+        tm && b("frueh", "Geht der Arbeitnehmer aus Gründen in seiner Person früher oder bricht der Verleiher den Arbeitstag ab, wird nur die geleistete Arbeitszeit in Rechnung gestellt. An Tagen, die keine Werktage sind, gilt kein Tagesstundenminimum."),
         zu && b("zuschlag", zuSatz),
-        tm && b("vermerk", "Abweichungen vom Tagesminimum gelten nur mit einem Vermerk des Verleihers im Wochenrapport.")
+        tm && b("vermerk", "Abweichungen vom Tagesstundenminimum gelten nur mit einem Vermerk des Verleihers im Wochenrapport.")
       ]);
     }
 
