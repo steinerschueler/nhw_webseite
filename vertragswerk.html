@@ -350,8 +350,10 @@ button{max-width:100%;white-space:normal}
   <div class="wahl"><select id="av-kanton" class="kanton" data-g="kanton" aria-label="Kanton" style="padding:6px 8px;border:1px solid var(--editbd);border-radius:3px;background:var(--edit);font:inherit;font-size:14px"></select></div></div>
 
 <h3 class="gruppe">Lohn</h3>
-<div class="frage"><div class="f">Lohnform<small>Beim Stundenlohn sind Ferien, Feiertage und 13. Monatslohn als Zuschläge im Lohn enthalten (Art. 35.4 und Anhang 6 GAV).</small></div>
+<div class="frage"><div class="f">Lohnform<small>Beim Stundenlohn kommen Zuschläge für Ferien, Feiertage und 13. Monatslohn zum Stundengrundlohn (Art. 35.4 und Anhang 6 GAV).</small></div>
   <div class="wahl"><label><input type="radio" name="av-lohnform" value="monat" checked>Monatslohn</label><label><input type="radio" name="av-lohnform" value="stunde">Stundenlohn</label></div></div>
+<div class="frage" id="av-frage-ferienlohn" hidden><div class="f">Ferienzuschlag<small>Laufend ausbezahlt nur bei kurzen oder sehr unregelmässigen Einsätzen; bei voller Beschäftigung unzulässig (Art. 329d Abs. 2 OR, BGE 149 III 202).</small></div>
+  <div class="wahl"><label><input type="radio" name="av-ferienlohn" value="angespart" checked>angespart, beim Bezug der Ferien ausbezahlt</label><label><input type="radio" name="av-ferienlohn" value="laufend">mit jedem Lohn ausbezahlt</label></div></div>
 <div class="frage" id="av-frage-dreizehnter"><div class="f">13. Monatslohn<small>Der GAV schreibt ihn vor (Art. 18 GAV); monatlich ausbezahlt nur nach Absprache.</small></div>
   <div class="wahl"><label><input type="radio" name="av-dreizehnter" value="dezember" checked>mit dem Dezemberlohn</label><label><input type="radio" name="av-dreizehnter" value="monatlich">monatlich zu einem Zwölftel</label></div></div>
 <div class="frage"><div class="f">Prämie Krankentaggeld<small>Der GAV teilt sie je zur Hälfte (Art. 37.2 GAV).</small></div>

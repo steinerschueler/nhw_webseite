@@ -10,14 +10,15 @@
   VW.ERL = VW.ERL || {};
 
   /* Grundfassung: die Vorwahl der Seite */
-  var GRUND = {rechtsform: "gmbh", lohnform: "monat", dreizehnter: "dezember", wochenstunden: 40,
+  var GRUND = {rechtsform: "gmbh", lohnform: "monat", ferienlohn: "angespart", dreizehnter: "dezember", wochenstunden: 40,
     ferien: "gav", ferienTage: 30, werkzeug: "inventar", ktg: "haelftig", probezeit: 0,
-    kuendigung: "gesetz", kuendMonate: 3, kanton: "BE"};
+    kuendigung: "gesetz", kuendMonate: 3, kanton: "BE", jahr: new Date().getFullYear()};
 
-  /* Zuschläge beim Stundenlohn nach Anhang 6 GAV: Ferien je Anzahl Tage, neun Feiertage, 13. Monatslohn */
+  /* Zuschläge beim Stundenlohn nach Anhang 6 GAV: Ferien und Feiertage je Anzahl Tage, 13. Monatslohn */
   var FERIEN_PROZ = {27: 11.59, 28: 12.07, 29: 12.55, 30: 13.04, 31: 13.54, 32: 14.04, 33: 14.54, 34: 15.04,
     35: 15.56, 36: 16.07, 37: 16.59, 38: 17.12, 39: 17.65, 40: 18.18};
-  var FEIERTAGE_PROZ = 3.59, DREIZEHN_PROZ = 8.33;
+  var FEIERTAGE_PROZ = {1: 0.39, 2: 0.78, 3: 1.17, 4: 1.56, 5: 1.96, 6: 2.36, 7: 2.77, 8: 3.17, 9: 3.59};
+  var DREIZEHN_PROZ = 8.33;
   var MONATE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
 
   /* Zahl im Text: bis zwölf in Worten, sonst mit Dezimalkomma */
@@ -52,6 +53,20 @@
       ? "Feiertage nach Art. 2 Abs. 1 Bst. b und c des Gesetzes über die Ruhe an öffentlichen Feiertagen des Kantons Bern (FRG, BSG 555.1)"
       : "öffentlichen Feiertage des Kantons " + VW.kantonName(o.kanton) + " am Sitz der Arbeitgeberin";
   }
+  /* Feiertage nach Art. 30.2 GAV, die im Kalenderjahr auf Montag bis Freitag fallen (Art. 30.1 GAV);
+     nur für Bern bestimmt, sonst null. Karfreitag, Ostermontag, Auffahrt und Pfingstmontag fallen
+     immer auf einen Werktag; Neujahr, Berchtoldstag, Bundesfeiertag, Weihnachten und Stephanstag
+     je nach Jahr. */
+  function feiertageImJahr(o) {
+    if (o.kanton !== "BE") return null;
+    var n = 4;
+    [[0, 1], [0, 2], [7, 1], [11, 25], [11, 26]].forEach(function (md) {
+      var w = new Date(o.jahr, md[0], md[1]).getDay();
+      if (w >= 1 && w <= 5) n++;
+    });
+    return n;
+  }
+  function feiertagSatz(o) { var n = feiertageImJahr(o); return FEIERTAGE_PROZ[n === null ? 9 : n]; }
   function kuendMonate(o) { return Math.min(6, Math.max(1, Math.round(o.kuendMonate || 3))); }
 
   /* ---------- Vertragstext ---------- */
@@ -117,15 +132,17 @@
     ]);
 
     var dreizehn;
-    if (stunde) dreizehn = "Der Anteil 13. Monatslohn ist im Stundenlohn enthalten (Ziff. {R:lohn.a}); einen gesonderten 13. Monatslohn gibt es nicht.";
+    if (stunde) dreizehn = "Der Anteil 13. Monatslohn beträgt 8,33 % der Summe aus Stundengrundlohn, Ferienzuschlag und Feiertagszuschlag und wird mit dem Lohn jedes Monats ausbezahlt; dies ist die Absprache nach Art. 18.2 GAV. Einen gesonderten 13. Monatslohn gibt es nicht.";
     else if (o.dreizehnter === "monatlich") dreizehn = "Der 13. Monatslohn nach dem Vertragsblatt beträgt 100 % des durchschnittlichen Monatslohns des Kalenderjahres. Er wird nach Absprache monatlich mit je einem Zwölftel des Monatslohns ausgerichtet und auf der Lohnabrechnung ausgewiesen (Art. 18.1 und 18.2 GAV); bei Beginn oder Beendigung des Arbeitsverhältnisses im Lauf des Kalenderjahres ist er damit anteilsmässig ausgerichtet.";
     else dreizehn = "Der 13. Monatslohn nach dem Vertragsblatt beträgt 100 % des durchschnittlichen Monatslohns des Kalenderjahres und wird mit dem Dezemberlohn ausgerichtet (Art. 18.1 GAV). Bei Beginn oder Beendigung des Arbeitsverhältnisses im Lauf des Kalenderjahres wird er anteilsmässig ausgerichtet.";
     ziffer("lohn", "Lohn", [
       b("a", stunde
-        ? "Der Stundenlohn steht im Vertragsblatt. Er setzt sich nach Anhang 6 GAV zusammen aus dem Stundengrundlohn, den Zuschlägen für Ferien und Feiertage und dem Anteil 13. Monatslohn von 8,33 %; Vertragsblatt und Lohnabrechnung weisen die Anteile aus (Art. 35.4 GAV). Der Stundengrundlohn liegt nicht unter dem Mindestlohn des GAV für die Qualifikation des Arbeitnehmers, geteilt durch 174 Stunden (Art. 16.3, 17 und Anhang 5c GAV)."
+        ? "Der Arbeitnehmer erhält für jede geleistete Arbeitsstunde den Stundengrundlohn nach dem Vertragsblatt. Dazu kommen nach Art. 35.4 und Anhang 6 GAV der Ferienzuschlag (Ziff. {R:ferien.a}), der Feiertagszuschlag (Ziff. {R:ferien.feiertage}) und der Anteil 13. Monatslohn (Bst. {B:lohn.dreizehn}); die Sätze stehen im Vertragsblatt. Der Stundengrundlohn liegt nicht unter dem Mindestlohn des GAV für die Qualifikation des Arbeitnehmers, geteilt durch 174 Stunden (Art. 16.3, 17 und Anhang 5c GAV)."
         : "Der Monatslohn steht im Vertragsblatt. Er liegt nicht unter dem Mindestlohn des GAV für die Qualifikation des Arbeitnehmers (Art. 17 und Anhang 5c GAV)."),
       b("dreizehn", dreizehn),
-      b("c", "Die Arbeitgeberin zahlt den Lohn am Monatsende auf das Lohnkonto nach dem Vertragsblatt (Art. 323 Abs. 1 OR). Mit jeder Zahlung erhält der Arbeitnehmer eine Lohnabrechnung über Lohn, Arbeitszeit, Vorholzeit, Überstunden, Ferien, Spesen, Lohnzuschläge, Familienzulagen und Abzüge (Art. 323b Abs. 1 OR, Art. 35.3 GAV). Familienzulagen richten sich nach dem Familienzulagengesetz (FamZG) und werden mit dem Lohn ausbezahlt."),
+      b("c", "Die Arbeitgeberin zahlt den Lohn am Monatsende auf das Lohnkonto nach dem Vertragsblatt (Art. 323 Abs. 1 OR). Mit jeder Zahlung erhält der Arbeitnehmer eine Lohnabrechnung über Lohn, Arbeitszeit, Vorholzeit, Überstunden, Ferien, Spesen, Lohnzuschläge, Familienzulagen und Abzüge (Art. 323b Abs. 1 OR, Art. 35.3 GAV)." + (stunde
+        ? " Sie weist Stundengrundlohn, Ferienzuschlag, Feiertagszuschlag und Anteil 13. Monatslohn je mit Satz und Betrag aus" + (o.ferienlohn === "laufend" ? "." : ", dazu den Rückbehalt für das Ferienguthaben und dessen Stand.")
+        : "") + " Familienzulagen richten sich nach dem Familienzulagengesetz (FamZG) und werden mit dem Lohn ausbezahlt."),
       b("zuschlag", "Für besondere Arbeitszeiten erhält der Arbeitnehmer die Lohnzuschläge nach Art. 25 GAV in Geld: Samstag 13 bis 23 Uhr 25 %, Nacht 23 bis 6 Uhr 50 %, Sonntag und Feiertage 100 %; Grundlage ist der Stundenlohn " + (stunde ? "nach Ziff. {R:lohn.a}" : "nach Art. 16.3 GAV") + ". Überzeit: Ziff. {R:zeit.ueber}."),
       b("e", "Änderungen des " + (stunde ? "Lohns" : "Monatslohns") + " richten sich nach Ziff. {R:kuend.aenderung} und {R:schluss.nachtrag}; allgemeinverbindlich erklärte Lohnanpassungen nach dem GAV bleiben vorbehalten.")
     ], "Lohn, Abzüge und Leistungen");
@@ -153,12 +170,14 @@
         ? "Der Ferienanspruch je Kalenderjahr steht im Vertragsblatt; er liegt über dem Anspruch nach Art. 29.1 und 29.3 GAV."
         : "Der Ferienanspruch je Kalenderjahr steht im Vertragsblatt (Art. 29.1 und 29.3 GAV).") +
         " Bei Beginn oder Beendigung des Arbeitsverhältnisses im Lauf des Kalenderjahres besteht er anteilsmässig. Der Arbeitnehmer bezieht die Ferien nach Vereinbarung mit der Arbeitgeberin und mit Rücksicht auf die laufenden Einsätze, mindestens zwei Wochen zusammenhängend (Art. 329c Abs. 1 OR). Feiertage in den Ferien zählen nicht als Ferien (Art. 31.2 GAV); bei ärztlich bescheinigter Arbeitsunfähigkeit in den Ferien gilt Art. 29.4 GAV. " +
-        (stunde
-          ? "Der Ferienlohn ist als Zuschlag im Stundenlohn enthalten (Ziff. {R:lohn.a}); beim Bezug der Ferien wird kein weiterer Lohn bezahlt."
-          : "Während des Arbeitsverhältnisses werden die Ferien nicht in Geld abgegolten (Art. 329d Abs. 2 OR).")),
+        (!stunde
+          ? "Während des Arbeitsverhältnisses werden die Ferien nicht in Geld abgegolten (Art. 329d Abs. 2 OR)."
+          : o.ferienlohn === "laufend"
+            ? "Der Ferienlohn wird als Ferienzuschlag nach dem Vertragsblatt mit dem laufenden Lohn ausbezahlt und auf jeder Lohnabrechnung mit Satz und Betrag ausgewiesen; beim Bezug der Ferien wird kein weiterer Lohn bezahlt."
+            : "Der Ferienzuschlag nach dem Vertragsblatt gehört zum Bruttolohn des Monats, von dem die Abzüge nach Ziff. {R:abzuege.a} berechnet werden. Mit dem laufenden Lohn wird er nicht ausbezahlt (Art. 329d Abs. 2 OR): Die Arbeitgeberin behält ihn nach den Abzügen zurück und schreibt ihn einem Ferienguthaben gut. Bezieht der Arbeitnehmer Ferien, zahlt sie mit dem Lohn des Monats den Teil des Ferienguthabens aus, der den bezogenen Ferientagen im Verhältnis zu den noch offenen Ferientagen entspricht. Bei Ende des Arbeitsverhältnisses zahlt sie das restliche Ferienguthaben aus, soweit die Ferien bis dahin nicht bezogen werden können.")),
       b("b", "Ferien und andere geplante Absenzen teilt der Arbeitnehmer der Arbeitgeberin so früh mit, dass sie die Frist des jeweiligen Verleihvertrags gegenüber dem Einsatzbetrieb einhalten kann."),
       b("feiertage", (stunde
-        ? "Massgebend sind " + feiertage + "; die Feiertagsentschädigung ist als Zuschlag im Stundenlohn enthalten (Ziff. {R:lohn.a}, Art. 31.5 GAV)."
+        ? "Massgebend sind " + feiertage + ". Die Feiertagsentschädigung wird als Feiertagszuschlag nach Anhang 6 GAV für die Zahl dieser Feiertage im Kalenderjahr mit dem Lohn jedes Monats ausbezahlt (Art. 31.5 GAV); der Satz für das erste Jahr steht im Vertragsblatt, für jedes folgende Jahr gilt der Satz nach derselben Regel."
         : "Bezahlt sind " + feiertage + ".") +
         " Liegt der Einsatzbetrieb in einem anderen Kanton, sind dessen gesetzliche Feiertage mindestens nach dessen Recht bezahlt.")
     ]);
@@ -251,6 +270,8 @@
     var radio = VW.radio, z = VW.zahl;
     return {
       rechtsform: radio("av-rechtsform") || "gmbh", lohnform: radio("av-lohnform") || "monat",
+      ferienlohn: radio("av-ferienlohn") || "angespart",
+      jahr: parseInt(VW.wert("av-beginn").slice(0, 4), 10) || new Date().getFullYear(),
       dreizehnter: radio("av-dreizehnter") || "dezember",
       wochenstunden: radio("av-wochen") === "andere" ? Math.min(40, Math.max(1, Math.round(z("av-wochenstunden", 40) * 2) / 2)) : 40,
       ferien: radio("av-ferien") || "gav", ferienTage: Math.min(40, Math.max(28, Math.round(z("av-ferien-tage", 30)))),
@@ -270,7 +291,7 @@
   };
   V.ansichtFelder = function (o) {
     var stunde = o.lohnform === "stunde";
-    VW.zeige($("av-frage-dreizehnter"), !stunde);
+    VW.zeige($("av-frage-dreizehnter"), !stunde); VW.zeige($("av-frage-ferienlohn"), stunde);
     VW.zeige($("zeile-av-lohn"), !stunde); VW.zeige($("zeile-av-grundlohn"), stunde);
     VW.zeige($("zeile-av-wz"), o.werkzeug === "entsch");
     VW.zeige($("zeile-av-abz-ktg"), o.ktg !== "arbeitgeberin");
@@ -282,12 +303,25 @@
     var t = ferienTage(o);
     return t[0] + " Werktage je Kalenderjahr" + (t[1] > t[0] ? "; ab dem Kalenderjahr, in dem der Arbeitnehmer das 50. Altersjahr vollendet, " + t[1] : "");
   }
+  function rund(x) { return Math.round(x * 100) / 100; }
+  /* Stundenlohn nach Anhang 6 GAV: Beträge je Stunde, auf Rappen gerundet wie in der Lohnabrechnung */
   function stundenlohnRechnung(o, grund) {
-    var t = ferienTage(o), fp = FERIEN_PROZ[t[0]], fp50 = FERIEN_PROZ[t[1]];
-    var teile = "Ferien " + proz(fp) + (t[1] > t[0] ? " (ab dem 50. Altersjahr " + proz(fp50) + ")" : "") + " und Feiertage " + proz(FEIERTAGE_PROZ) + ", darauf 13. Monatslohn " + proz(DREIZEHN_PROZ);
-    if (grund === null) return {text: "Stundengrundlohn zuzüglich " + teile + " (Anhang 6 GAV)", total: null};
-    var tot = grund * (1 + fp / 100 + FEIERTAGE_PROZ / 100) * (1 + DREIZEHN_PROZ / 100);
-    return {text: chf(grund) + " zuzüglich " + teile + ": " + chf(Math.round(tot * 100) / 100) + " je Stunde (Anhang 6 GAV)", total: tot};
+    if (grund === null) return null;
+    var fe = rund(grund * FERIEN_PROZ[ferienTage(o)[0]] / 100), fei = rund(grund * feiertagSatz(o) / 100);
+    var dr = rund((grund + fe + fei) * DREIZEHN_PROZ / 100), tot = rund(grund + fe + fei + dr);
+    return {grund: grund, ferien: fe, feiertage: fei, dreizehn: dr, total: tot,
+      ausbezahlt: o.ferienlohn === "laufend" ? tot : rund(tot - fe)};
+  }
+  function ferienZuschlagText(o, sl) {
+    var t = ferienTage(o);
+    return proz(FERIEN_PROZ[t[0]]) + (sl ? " (" + chf(sl.ferien) + ")" : "") + (t[1] > t[0] ? ", ab 50. Altersjahr " + proz(FERIEN_PROZ[t[1]]) : "") +
+      (o.ferienlohn === "laufend" ? "; laufend ausbezahlt" : "; ins Ferienguthaben");
+  }
+  function feiertagText(o) {
+    var n = feiertageImJahr(o);
+    return n === null
+      ? "nach Anhang 6 GAV je Feiertag auf einem Werktag (neun: " + proz(FEIERTAGE_PROZ[9]) + ")"
+      : proz(FEIERTAGE_PROZ[n]) + " im Jahr " + o.jahr + " (" + VW.zahlwort(n) + " Feiertage auf Werktagen)";
   }
   function kuendText(o) {
     var km = kuendMonate(o);
@@ -351,15 +385,18 @@
 
     abschnitt("Lohn");
     if (stunde) {
-      zeile("Stundengrundlohn", betrag(f["av-grundlohn"]) !== null ? chf(f["av-grundlohn"]) : f["av-grundlohn"], ref("lohn", "a"));
-      zeile("Stundenlohn", stundenlohnRechnung(o, betrag(f["av-grundlohn"])).text, ref("lohn", "a"));
+      var sl = stundenlohnRechnung(o, betrag(f["av-grundlohn"]));
+      zeile("Stundengrundlohn", sl ? chf(sl.grund) + " je Stunde; mit den Zuschlägen " + chf(sl.total) : f["av-grundlohn"], ref("lohn", "a"));
+      zeile("Ferienzuschlag", ferienZuschlagText(o, sl), ref("ferien", "a"));
+      zeile("Feiertagszuschlag", feiertagText(o), ref("ferien", "feiertage"));
+      zeile("13. Monatslohn", proz(DREIZEHN_PROZ) + " auf Grundlohn und Zuschläge", ref("lohn", "dreizehn"));
     } else {
       zeile("Monatslohn brutto", betrag(f["av-lohn"]) !== null ? chf(f["av-lohn"]) : f["av-lohn"], ref("lohn", "a"));
       zeile("13. Monatslohn", o.dreizehnter === "monatlich" ? "100 % des durchschnittlichen Monatslohns, monatlich zu einem Zwölftel" : "100 % des durchschnittlichen Monatslohns, mit dem Dezemberlohn", ref("lohn", "dreizehn"));
     }
     zeile("Zahltag", "am Monatsende", ref("lohn", "c"));
     zeile("Lohnkonto (IBAN)", f["av-iban"]);
-    zeile("Spesen", "Verpflegung " + oder(f["av-spesen"]) + " je Arbeitstag (" + ref("spesen", "a") + ", Art. 33.1 GAV); Auto " + oder(f["av-km"]) + " je Kilometer (" + ref("spesen", "b") + ", Art. 34.1 GAV)");
+    zeile("Spesen", "Verpflegung " + oder(f["av-spesen"]) + " je Arbeitstag (" + ref("spesen", "a") + "); Auto " + oder(f["av-km"]) + " je Kilometer (" + ref("spesen", "b") + ")");
     if (o.werkzeug === "entsch") zeile("Werkzeugentschädigung", f["av-wz-entsch"] ? oder(f["av-wz-entsch"]) + " je Monat" : "", ref("mittel", "werkzeug"));
 
     abschnitt("Abzüge vom Bruttolohn", "Arbeitnehmeranteile, Stand 2026; provisorische Abzüge ersetzt ein Nachtrag (" + ref("abzuege", "c") + ")");
@@ -396,6 +433,10 @@
   /* Quelle mit fedlex-Verweis; art wie "335_c" für Art. 335c */
   function q(t, g, art) { return {t: t, url: "https://www.fedlex.admin.ch/eli/cc/" + FL[g] + "/de" + (art ? "#art_" + art : "")}; }
   function gav(t) { return {t: t}; }
+  function bge(ref) {
+    return {t: "BGE " + ref, url: "https://www.bger.ch/ext/eurospider/live/de/php/clir/http/index.php?highlight_docid=atf%3A%2F%2F" +
+      ref.replace(/ /g, "-") + "%3Ade&lang=de&type=show_document"};
+  }
 
   var E = VW.ERL.av = VW.ERL.av || {};
 
@@ -473,14 +514,17 @@
     f = f || {};
     var aus = [];
     if (o.lohnform === "stunde") {
-      var g = betrag(f["av-grundlohn"]), bsp = g === null ? 30 : g, r = stundenlohnRechnung(o, bsp), t = ferienTage(o)[0];
-      aus.push("Gewählt ist der Stundenlohn. Der GAV sieht ihn für Einzelfälle vor; dann sind Ferien, Feiertage und 13. Monatslohn als Zuschläge im Stundenlohn enthalten und in Vertrag und Lohnabrechnung auszuweisen (Art. 35.4 und Anhang 6 GAV). Der Ferienzuschlag hängt vom Ferienanspruch ab (Ziff. {R:ferien.a}).");
-      aus.push({tabelle: {kopf: ["Bestandteil", "Satz"], zeilen: [
-        ["Stundengrundlohn", g === null ? "nach dem Vertragsblatt" : chf(g)],
-        ["Ferien (" + t + " Werktage)", proz(FERIEN_PROZ[t])],
-        ["Feiertage (neun)", proz(FEIERTAGE_PROZ)],
-        ["13. Monatslohn, auf das Zwischentotal", proz(DREIZEHN_PROZ)]]}});
-      aus.push({beispiel: "Bei einem Stundengrundlohn von " + chf(bsp) + " beträgt der Stundenlohn " + chf(Math.round(r.total * 100) / 100) + "."});
+      var g = betrag(f["av-grundlohn"]), bsp = g === null ? 40 : g, r = stundenlohnRechnung(o, bsp), t = ferienTage(o)[0];
+      var nf = feiertageImJahr(o), ang = o.ferienlohn !== "laufend";
+      aus.push("Gewählt ist der Stundenlohn. Der GAV sieht ihn für Einzelfälle vor (Art. 35.4 GAV); im Personalverleih ist er üblich. Zum Stundengrundlohn kommen drei Zuschläge nach Anhang 6 GAV: für die Ferien, für die Feiertage und der Anteil 13. Monatslohn. Vertrag und jede Lohnabrechnung weisen sie mit Satz und Betrag aus.");
+      aus.push({tabelle: {kopf: ["Bestandteil", "Satz", "Auszahlung"], zeilen: [
+        ["Stundengrundlohn", g === null ? "nach dem Vertragsblatt" : chf(g), "monatlich"],
+        ["Ferienzuschlag (" + t + " Werktage)", proz(FERIEN_PROZ[t]), ang ? "beim Bezug der Ferien" : "monatlich"],
+        ["Feiertagszuschlag (" + (nf === null ? "Feiertage auf Werktagen" : zahl(nf) + " Feiertage auf Werktagen " + o.jahr) + ")", proz(feiertagSatz(o)), "monatlich"],
+        ["13. Monatslohn, auf Grundlohn und beide Zuschläge", proz(DREIZEHN_PROZ), "monatlich"]]}});
+      aus.push("Der Feiertagszuschlag wechselt mit dem Kalender. Der GAV bezahlt neun Feiertage, aber nur, wenn sie auf einen Arbeitstag fallen (Art. 30.1 GAV); fallen der Bundesfeiertag oder der Stephanstag auf einen Samstag, sinkt der Satz nach der Tabelle in Anhang 6 GAV. 2026 sind es im Kanton Bern sieben Tage und 2,77 %.");
+      aus.push({beispiel: "Stundengrundlohn " + chf(bsp) + ": Ferienzuschlag " + chf(r.ferien) + ", Feiertagszuschlag " + chf(r.feiertage) + ", Anteil 13. Monatslohn " + chf(r.dreizehn) + ", zusammen " + chf(r.total) + " je Stunde. " +
+        (ang ? "Davon gehen " + chf(r.ferien) + " ins Ferienguthaben, " + chf(r.ausbezahlt) + " werden mit dem Monatslohn ausbezahlt, jeweils vor den Abzügen." : "Alles wird mit dem Monatslohn ausbezahlt.")});
     } else {
       aus.push("Gewählt ist der Monatslohn. Er bleibt gleich, auch wenn die Stunden je Woche schwanken (Art. 35.2 GAV). Der Mindestlohn richtet sich nach der Qualifikation; für Elektroinstallateure EFZ nennt Anhang 5c GAV für 2026 CHF 4'500 je Monat nach dem EFZ und CHF 5'000 nach einem vollen Jahr Branchenerfahrung.");
       aus.push(o.dreizehnter === "monatlich"
@@ -523,12 +567,14 @@
       o.ferien === "mehr"
         ? "Gewählt sind " + t[0] + " Werktage Ferien je Kalenderjahr" + (t[1] > t[0] ? ", ab dem 50. Altersjahr " + t[1] : "") + ", mehr als der GAV verlangt (27 Werktage, ab dem 50. Altersjahr 30; Art. 29.1 GAV)."
         : "Der GAV gibt 27 Werktage Ferien je Kalenderjahr, ab dem 50. Altersjahr 30 (Art. 29.1 GAV). Die höhere Stufe gilt ab dem Kalenderjahr, in dem das Altersjahr erfüllt wird (Art. 29.3 GAV).",
-      o.lohnform === "stunde"
-        ? "Beim Stundenlohn ist der Ferienlohn als Zuschlag von " + proz(FERIEN_PROZ[t[0]]) + " im Lohn enthalten (Anhang 6 GAV); beim Bezug der Ferien wird kein weiterer Lohn bezahlt."
-        : "Während des Arbeitsverhältnisses dürfen Ferien nicht in Geld abgegolten werden (Art. 329d Abs. 2 OR).",
-      "Bezahlt sind neun Feiertage nach dem Recht am Sitz der Arbeitgeberin" + (o.kanton === "BE" ? " im Kanton Bern" : ", hier im Kanton " + VW.kantonName(o.kanton)) + " (Art. 30 GAV). Ferien meldet der Arbeitnehmer früh genug, denn der Verleihvertrag verlangt eine Frist gegenüber dem Einsatzbetrieb (Ziff. {R@vv:verh.c}).",
+      o.lohnform !== "stunde"
+        ? "Während des Arbeitsverhältnisses dürfen Ferien nicht in Geld abgegolten werden (Art. 329d Abs. 2 OR)."
+        : o.ferienlohn === "laufend"
+          ? "Gewählt ist, den Ferienzuschlag von " + proz(FERIEN_PROZ[t[0]]) + " mit jedem Lohn auszuzahlen; in den Ferien selbst fliesst dann kein Lohn. Das Gesetz verbietet, Ferien während des Arbeitsverhältnisses in Geld abzugelten (Art. 329d Abs. 2 OR). Das Bundesgericht lässt die laufende Auszahlung nur ausnahmsweise zu: bei unregelmässiger Beschäftigung, mit dem Satz im schriftlichen Vertrag und mit dem Betrag auf jeder Lohnabrechnung (BGE 129 III 493 E. 3.2 und 3.3). Bei voller Beschäftigung bei derselben Arbeitgeberin ist die Ausnahme ausgeschlossen (BGE 149 III 202 E. 2.2.3). Fehlt eine Voraussetzung, ist der Ferienlohn ein zweites Mal geschuldet. Die Wahl passt darum nur zu kurzen oder sehr unregelmässigen Einsätzen."
+          : "Beim Stundenlohn wird der Ferienzuschlag von " + proz(FERIEN_PROZ[t[0]]) + " jeden Monat einem Ferienguthaben gutgeschrieben und erst beim Bezug der Ferien ausbezahlt. So halten es auch die Temporärfirmen bei längeren Einsätzen: Der Zuschlag zählt zum Bruttolohn, auf dem AHV und die übrigen Abzüge berechnet werden; danach wird er als Rückbehalt abgezogen. Das Ferienguthaben ist also ein Nettobetrag, beim Bezug fallen keine Abzüge mehr an. Den Ferienzuschlag mit jedem Lohn auszuzahlen, wäre bei voller Beschäftigung bei derselben Arbeitgeberin unzulässig (Art. 329d Abs. 2 OR; BGE 149 III 202 E. 2.2.3).",
+      "Bezahlt sind neun Feiertage nach dem Recht am Sitz der Arbeitgeberin" + (o.kanton === "BE" ? " im Kanton Bern" : ", hier im Kanton " + VW.kantonName(o.kanton)) + ", soweit sie auf einen Arbeitstag fallen (Art. 30 GAV). Ferien meldet der Arbeitnehmer früh genug, denn der Verleihvertrag verlangt eine Frist gegenüber dem Einsatzbetrieb (Ziff. {R@vv:verh.c}).",
       {beispiel: "Wer im März 50 wird, hat schon im ganzen Kalenderjahr Anspruch auf " + t[1] + " Werktage."},
-      {quellen: [q("Art. 329c OR", "OR", "329_c"), q("Art. 329d OR", "OR", "329_d"), gav("Art. 29 bis 31 GAV, Anhang 6")]}
+      {quellen: [q("Art. 329c OR", "OR", "329_c"), q("Art. 329d OR", "OR", "329_d"), gav("Art. 29 bis 31 GAV, Anhang 6")].concat(o.lohnform === "stunde" ? [bge("129 III 493"), bge("149 III 202")] : [])}
     ];
   };
 
