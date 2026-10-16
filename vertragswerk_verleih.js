@@ -59,7 +59,7 @@
 
     ziffer("ort", "Arbeitsort, Rayon und Wegzeit", [
       b("a", "Arbeitsort sind der Sitz des Einsatzbetriebs und seine Baustellen. Ausserhalb des Rayons braucht es die Zustimmung des Verleihers (E-Mail genügt)."),
-      b("rayon", "Der Rayon umfasst die Orte, die " + RAYON_AB[o.rayon] + " mit dem Auto in höchstens " + VW.zahlwort(o.rayonMin) + " Minuten Fahrzeit erreichbar sind" +
+      b("rayon", "Der Rayon umfasst die Orte, die " + RAYON_AB[o.rayon] + " in höchstens " + VW.zahlwort(o.rayonMin) + " Minuten mit dem Auto erreichbar sind" +
         (o.rayonKarte ? "; massgebend ist die Karte im Einsatzblatt." : ".") +
         " Im Rayon ist die Wegzeit im Ansatz enthalten; ausserhalb wird sie als Arbeitszeit in Rechnung gestellt."),
       b("unterkunft", "Bei Arbeit ohne Heimkehr am Abend kommen die Kosten für Unterkunft und Verpflegung dazu.")
@@ -237,12 +237,14 @@
     VW.zeige($("zeile-bewilligung"), o.bewilligung === "vorhanden");
     VW.zeige($("zeile-rabatt"), o.rabatt); VW.zeige($("zeile-rabatt-bis"), o.rabatt);
     VW.zeige($("zeile-entsch"), o.uebertritt === "entsch");
+    VW.zeige($("rayon-block"), o.rayonKarte);
+    if (VW.rayon) VW.zeige($("rayon-bild"), VW.rayon.gilt(o, V.felder()));
   };
   V.dateiname = function (f) { return "verleihvertrag" + (f["e-firma"] ? "_" + VW.dateiteil(f["e-firma"]) : "") + ".pdf"; };
 
   /* ---------- PDF ---------- */
 
-  V.pdf = function (JsPDF, o, f, gez, zahlen) {
+  V.pdf = function (JsPDF, o, f, gez, zahlen, mitErl) {
     var P = VW.pdfNeu(JsPDF), d = P.d;
     function zif(id) { for (var i = 0; i < gez.length; i++) if (gez[i].id === id) return gez[i]; return null; }
     function ref(zid, pid) { var z = zif(zid); if (!z) return ""; for (var i = 0; i < z.abs.length; i++) if (z.abs[i].id === pid) return z.nr + (z.abs[i].bst ? " " + z.abs[i].bst : ""); return String(z.nr); }
@@ -274,7 +276,7 @@
     P.feld("Beginn des Einsatzes", datum(f["a-beginn"]));
     P.feld("Ende des Einsatzes", datum(f["a-ende"]), "leer: ohne Ende, kündbar nach Ziff. " + ref("kuend", "frist"));
     P.raster("Stunden je Wochentag", "Ziff. " + ref("zeit", "a"), ["Mo", "Di", "Mi", "Do", "Fr"], [f["h-mo"], f["h-di"], f["h-mi"], f["h-do"], f["h-fr"]]);
-    P.feld("Rayon", "Orte bis " + o.rayonMin + " Minuten Fahrzeit mit dem Auto " + RAYON_AB[o.rayon] + (o.rayonKarte ? "; Karte auf der nächsten Seite" : ""), "Ziff. " + ref("ort", "rayon"));
+    P.feld("Rayon", "Orte, die in höchstens " + o.rayonMin + " Minuten mit dem Auto erreichbar sind, " + RAYON_AB[o.rayon] + (o.rayonKarte ? "; Karte auf der nächsten Seite" : ""), "Ziff. " + ref("ort", "rayon"));
 
     P.abschnitt("Kosten des Verleihs");
     P.feld("Ansatz je Stunde", f["k-ansatz"] ? "CHF " + f["k-ansatz"] : "", (o.mwst ? "zuzüglich MWST" : "ohne MWST, nicht mehrwertsteuerpflichtig") + " (Ziff. " + ref("kosten", "a") + ", " + ref("kosten", "mwst").split(" ")[1] + ")");
@@ -293,14 +295,26 @@
       P.seite();
       P.schrift("bold", 13); P.farbe(P.INK); d.text("Einsatzblatt: Rayon", P.x, P.y); P.y += 6;
       P.schrift("normal", 9); P.farbe(P.GRAU);
-      var rz = d.splitTextToSize("Karte des Rayons einfügen oder einzeichnen: " + (o.rayon === "beide" ? "beide Sitze und die Grenzen ihrer Gebiete" : o.rayon === "einsatz" ? "Sitz des Einsatzbetriebs und Grenze des Rayons" : "Sitz des Verleihers und Grenze des Rayons") + " (Ziff. " + ref("ort", "rayon") + "). Im Rayon ist die Wegzeit im Ansatz enthalten, ausserhalb wird sie als Arbeitszeit in Rechnung gestellt.", P.B);
+      var rz = d.splitTextToSize((VW.rayon && VW.rayon.gilt && VW.rayon.gilt(o, f) ? "Gemessene Karte des Rayons: " : "Karte des Rayons einfügen oder einzeichnen: ") + (o.rayon === "beide" ? "beide Sitze und die Grenzen ihrer Gebiete" : o.rayon === "einsatz" ? "Sitz des Einsatzbetriebs und Grenze des Rayons" : "Sitz des Verleihers und Grenze des Rayons") + " (Ziff. " + ref("ort", "rayon") + "). Im Rayon ist die Wegzeit im Ansatz enthalten, ausserhalb wird sie als Arbeitszeit in Rechnung gestellt.", P.B);
       d.text(rz, P.x, P.y); P.y += rz.length * 4 + 3;
-      d.setDrawColor(P.LINIE[0], P.LINIE[1], P.LINIE[2]); d.setLineWidth(0.3); d.rect(P.x, P.y, P.B, Math.min(P.B, P.UNTEN - P.y - 4), "S");
+      var kh = Math.min(P.B, P.UNTEN - P.y - 16);
+      var gemessen = VW.rayon && VW.rayon.gilt && VW.rayon.gilt(o, f) ? VW.rayon.karte : null;
+      if (gemessen) {
+        d.addImage(gemessen.bild, "JPEG", P.x + (P.B - kh) / 2, P.y, kh, kh);
+        P.y += kh + 5;
+        P.schrift("normal", 8.5); P.farbe(P.GRAU);
+        var leg = gemessen.legende.map(function (k) { return k === "v" ? "blau: Gebiet ab Sitz des Verleihers" : "orange: Gebiet ab Sitz des Einsatzbetriebs"; }).join(" · ");
+        d.text(d.splitTextToSize(leg + ". " + gemessen.zeilen.join(". ") + ".", P.B), P.x, P.y);
+      } else {
+        d.setDrawColor(P.LINIE[0], P.LINIE[1], P.LINIE[2]); d.setLineWidth(0.3); d.rect(P.x, P.y, P.B, kh, "S");
+      }
     }
 
     P.spalten(gez, {titel: "Vertragsbedingungen zum Verleihvertrag",
       schluss: "Mit ihrer Unterschrift bestätigen die Parteien das Einsatzblatt und diese Vertragsbedingungen. Jede Partei erhält ein unterzeichnetes Exemplar.",
       parteien: [["Verleiher", f["v-firma"]], ["Einsatzbetrieb", f["e-firma"]]]});
+
+    if (mitErl) P.spalten(VW.erlaeutert("vv", o, f, gez, zahlen), {titel: "Erläuterungen zum Verleihvertrag", erl: true});
 
     P.fuss("Verleihvertrag" + (f["e-firma"] ? " · " + f["e-firma"] : ""));
     return d;

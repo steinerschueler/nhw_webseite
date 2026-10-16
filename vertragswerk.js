@@ -132,7 +132,7 @@
     var bst = "A-Za-zÄÖÜäöüàéèêëïôç";
     muster = formen.length ? new RegExp("(^|[^" + bst + "])(" + formen.map(function (s) {
       return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    }).join("|") + ")(?=$|[^" + bst + "])", "g") : null;
+    }).join("|") + ")(?=$|[^" + bst + "])", "gi") : null;
     return muster;
   }
   VW.begriff = function (id) {
@@ -270,6 +270,11 @@
             zeilen(d.splitTextToSize(s, CB - ein - 3.4), ein, 3.4, "-", bst, erste);
           });
         }
+      }
+      if (opts.erl && gez.vorspann && gez.vorspann.length) {
+        var erste0 = {ja: true};
+        gez.vorspann.forEach(function (teil) { teilText(teil, 0, "", erste0); P.y += 1; });
+        P.y += 2.2;
       }
       gez.forEach(function (z) {
         var abs = opts.erl ? [{bst: "", t: z.bloecke}] : z.abs;
@@ -515,7 +520,11 @@
     document.dispatchEvent(new Event("achse-neu"));
     if (/^begriff-/.test(h)) {
       var el = $("b-" + h.slice(8));
-      if (el) { el.classList.add("ziel"); setTimeout(function () { el.classList.remove("ziel"); }, 1600); el.scrollIntoView({block: "center"}); }
+      if (el) {
+        el.classList.add("ziel"); setTimeout(function () { el.classList.remove("ziel"); }, 1600);
+        /* erst nach dem Aufbau des Reiters und der Sprungmarken rollen */
+        setTimeout(function () { el.scrollIntoView({block: "center"}); }, 60);
+      }
     } else if (h) {
       var tb = $("reiter"); if (tb && tb.getBoundingClientRect().top < 0) tb.scrollIntoView({block: "start"});
     }
@@ -571,7 +580,8 @@
     }
     VW.ansicht();
     var V = VW.vertraege[art], s = VW.stand[art];
-    var d = V.pdf(window.jspdf.jsPDF, s.o, s.f, s.gez, VW.zahlen);
+    var mit = $("erl-beilage-" + art);
+    var d = V.pdf(window.jspdf.jsPDF, s.o, s.f, s.gez, VW.zahlen, !!(mit && mit.checked));
     VW.vorschauWeg();
     vorschau.url = URL.createObjectURL(d.output("blob")); vorschau.name = V.dateiname(s.f); vorschau.art = art;
     $("pdfrahmen-" + art).src = vorschau.url;

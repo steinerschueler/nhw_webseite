@@ -1,6 +1,6 @@
 <!doctype html><html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://wms.geo.admin.ch; font-src 'self'; connect-src 'self' https://api3.geo.admin.ch https://route-api.arcgis.com; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
 <title>Vertragswerk · Naville Handwerk GmbH</title>
 <meta name="description" content="Verleihvertrag für den Selbstverleih im Elektrogewerbe: Varianten auswählen, Einsatzblatt ausfüllen, Einsatzblatt und Vertragsbedingungen als PDF erstellen. Neutrale Vorlage nach AVG und GAV Elektro.">
 <link rel="stylesheet" href="basis.css">
@@ -75,6 +75,11 @@ button.zweit:hover{background:#F5F5F3}
 .reiter a:hover{color:var(--ink)}
 .reiter a.on{color:var(--ink);border-bottom-color:var(--red)}
 .panel[hidden]{display:none}
+.rstatus{font-size:.88em;color:var(--ink2);margin:4px 0}
+.rstatus.fehler{color:#7a4718}
+.rayonbild canvas{width:100%;max-width:520px;height:auto;border:1px solid var(--line);border-radius:3px;display:block}
+.beilage{display:flex;align-items:center;gap:8px;font-size:14.5px;color:var(--ink);margin:8px 0 0}
+.beilage input{accent-color:var(--red)}
 .vertrag .teil,.erl .teil{font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--grey);margin:22px 0 2px}
 .vertrag .teil:first-child{margin-top:0}
 .bg{text-decoration:underline dotted #9c968b;text-underline-offset:3px;text-decoration-thickness:1px;cursor:help}
@@ -253,6 +258,13 @@ button{max-width:100%;white-space:normal}
 <div class="row"><label for="a-beginn">Beginn des Einsatzes</label><input id="a-beginn" type="date"></div>
 <div class="row"><label for="a-ende">Ende des Einsatzes<small>Leer lassen für einen Einsatz ohne Ende (dann gilt die Kündigungsfrist)</small></label><input id="a-ende" type="date"></div>
 <div class="row"><label>Stunden je Wochentag<small>Leer lassen für einen Tag ohne Arbeit</small></label><div class="tage"><label>Mo<input id="h-mo" type="text" inputmode="decimal"></label><label>Di<input id="h-di" type="text" inputmode="decimal"></label><label>Mi<input id="h-mi" type="text" inputmode="decimal"></label><label>Do<input id="h-do" type="text" inputmode="decimal"></label><label>Fr<input id="h-fr" type="text" inputmode="decimal"></label></div></div>
+<div id="rayon-block">
+<h3 class="gruppe">Rayon-Karte</h3>
+<p class="erkl">Die Karte zeigt das Gebiet, das in der gewählten Zeit ab dem gewählten Sitz mit dem Auto erreichbar ist, gemessen mit Verkehrsprognose für den Beginn des Einsatzes um 7 Uhr. Dafür braucht es oben die Adresse des Verleihers und, je nach Wahl unter A, des Einsatzbetriebs. Ohne Messung bleibt im PDF ein Rahmen zum Einzeichnen.</p>
+<div class="knopfreihe"><button id="rayon-messen" type="button" class="zweit">Rayon messen</button></div>
+<p class="rstatus" id="rayon-st" aria-live="polite"></p>
+<div class="rayonbild" id="rayon-bild" hidden><canvas id="rayon-cv" width="1200" height="1200"></canvas></div>
+</div>
 <h3 class="gruppe">Kosten des Verleihs</h3>
 <div class="row"><label for="k-ansatz">Ansatz je Stunde in CHF</label><input id="k-ansatz" type="text" inputmode="decimal"></div>
 <div class="row" id="zeile-rabatt" hidden><label for="k-rabatt">Rabatt in Prozent</label><input id="k-rabatt" type="text" inputmode="decimal"></div>
@@ -266,6 +278,7 @@ button{max-width:100%;white-space:normal}
 <h2><span class="st">D</span><span class="st-p"> · </span>PDF</h2>
 <p style="font-size:14.5px;color:var(--ink2);margin:6px 0">Das PDF enthält das Einsatzblatt, die Vertragsbedingungen und die Unterschriften. Es ist neutral gestaltet, ohne Logo und ohne Hinweis auf diese Seite. Es öffnet sich zuerst als Vorschau; herunterladen kannst du es danach. Drucke es zweimal aus: Jede Partei unterschreibt beide Exemplare und behält eines.</p>
 <div class="hint" id="fehler-vv" hidden></div>
+<label class="beilage"><input type="checkbox" id="erl-beilage-vv" checked> Erläuterungen als Beilage anhängen</label>
 <div class="knopfreihe"><button id="pdf-vv" type="button">PDF erstellen</button></div>
 <div class="pdfvorschau" id="pdfvorschau-vv" hidden>
   <p class="erkl">Vorschau des PDF. Stimmt alles, lädst du es mit dem Knopf darunter herunter.</p>
@@ -324,10 +337,102 @@ button{max-width:100%;white-space:normal}
 <section class="calc-section panel" id="p-arbeitsvertrag" role="tabpanel" aria-labelledby="t-arbeitsvertrag" hidden>
 <div class="calc-layout achse">
 <div class="calc-main" id="av-main">
-<!--AV-->
+<h2><span class="st">A</span><span class="st-p"> · </span>Auswahl</h2>
+
+<h3 class="gruppe">Firma</h3>
+<div class="frage"><div class="f">Rechtsform der Arbeitgeberin<small>Bei der GmbH setzt die Gesellschafterversammlung die Entschädigung des Geschäftsführers fest (Art. 804 Abs. 2 Ziff. 6 OR).</small></div>
+  <div class="wahl"><label><input type="radio" name="av-rechtsform" value="gmbh" checked>GmbH</label><label><input type="radio" name="av-rechtsform" value="ag">AG</label></div></div>
+<div class="frage"><div class="f">Kanton<small>Sitz der Arbeitgeberin. Seine Feiertage gelten nicht als Werktage und bestimmen die bezahlten Feiertage.</small></div>
+  <div class="wahl"><select id="av-kanton" class="kanton" data-g="kanton" aria-label="Kanton" style="padding:6px 8px;border:1px solid var(--editbd);border-radius:3px;background:var(--edit);font:inherit;font-size:14px"></select></div></div>
+
+<h3 class="gruppe">Lohn</h3>
+<div class="frage"><div class="f">Lohnform<small>Beim Stundenlohn sind Ferien, Feiertage und 13. Monatslohn als Zuschläge im Lohn enthalten (Art. 35.4 und Anhang 6 GAV).</small></div>
+  <div class="wahl"><label><input type="radio" name="av-lohnform" value="monat" checked>Monatslohn</label><label><input type="radio" name="av-lohnform" value="stunde">Stundenlohn</label></div></div>
+<div class="frage" id="av-frage-dreizehnter"><div class="f">13. Monatslohn<small>Der GAV schreibt ihn vor (Art. 18 GAV); monatlich ausbezahlt nur nach Absprache.</small></div>
+  <div class="wahl"><label><input type="radio" name="av-dreizehnter" value="dezember" checked>mit dem Dezemberlohn</label><label><input type="radio" name="av-dreizehnter" value="monatlich">monatlich zu einem Zwölftel</label></div></div>
+<div class="frage"><div class="f">Prämie Krankentaggeld<small>Der GAV teilt sie je zur Hälfte (Art. 37.2 GAV).</small></div>
+  <div class="wahl"><label><input type="radio" name="av-ktg" value="haelftig" checked>je zur Hälfte</label><label><input type="radio" name="av-ktg" value="arbeitgeberin">ganz die Arbeitgeberin</label></div></div>
+
+<h3 class="gruppe">Zeit und Ferien</h3>
+<div class="frage"><div class="f">Arbeitszeit je Woche<small>Die normale Arbeitszeit nach GAV ist 40 Stunden (Art. 20.2 GAV).</small></div>
+  <div class="wahl"><label><input type="radio" name="av-wochen" value="40" checked>40 Stunden</label><label><input type="radio" name="av-wochen" value="andere">weniger</label><span class="zs"><input type="number" id="av-wochenstunden" min="1" max="40" step="0.5" value="32" aria-label="Stunden je Woche"> Stunden</span></div></div>
+<div class="frage"><div class="f">Ferien<small>Nach GAV 27 Werktage, ab dem 50. Altersjahr 30 (Art. 29.1 GAV).</small></div>
+  <div class="wahl"><label><input type="radio" name="av-ferien" value="gav" checked>nach GAV</label><label><input type="radio" name="av-ferien" value="mehr">mehr</label><span class="zs"><input type="number" id="av-ferien-tage" min="28" max="40" step="1" value="30" aria-label="Ferientage"> Werktage</span></div></div>
+
+<h3 class="gruppe">Werkzeug</h3>
+<div class="frage"><div class="f">Werkzeug<small>Ohne Abrede stellt die Arbeitgeberin Geräte und Material; stellt der Arbeitnehmer eigenes Werkzeug, ist er angemessen zu entschädigen, sofern nichts anderes verabredet ist (Art. 327 OR).</small></div>
+  <div class="wahl"><label><input type="radio" name="av-werkzeug" value="inventar" checked>Firma stellt Betriebsmittel, Handwerkzeug vom Arbeitnehmer</label><label><input type="radio" name="av-werkzeug" value="an">alles vom Arbeitnehmer, ohne Entschädigung</label><label><input type="radio" name="av-werkzeug" value="entsch">alles vom Arbeitnehmer, mit Entschädigung</label></div></div>
+
+<h3 class="gruppe">Beginn und Ende</h3>
+<div class="frage"><div class="f">Probezeit<small>Ohne schriftliche Abrede gilt der erste Monat als Probezeit, höchstens sind drei Monate möglich (Art. 335b OR).</small></div>
+  <div class="wahl"><label><input type="radio" name="av-probezeit" value="0" checked>keine</label><label><input type="radio" name="av-probezeit" value="1">ein Monat</label><label><input type="radio" name="av-probezeit" value="3">drei Monate</label></div></div>
+<div class="frage"><div class="f">Kündigungsfrist<small>Nach Gesetz ein bis drei Monate je nach Dienstjahr; eine Abrede darf sie ändern, aber nicht unter einen Monat senken (Art. 335c OR, Art. 45.1 GAV).</small></div>
+  <div class="wahl"><label><input type="radio" name="av-kuendigung" value="gesetz" checked>nach Gesetz</label><label><input type="radio" name="av-kuendigung" value="fest">fest</label><span class="zs"><input type="number" id="av-kuend-monate" min="1" max="6" step="1" value="3" aria-label="Kündigungsfrist in Monaten"> Monate</span></div></div>
+
+<h2><span class="st">B</span><span class="st-p"> · </span>Vertragsblatt</h2>
+<p class="erkl">Alle Felder sind freiwillig. Was leer bleibt, steht im PDF als Linie zum Ausfüllen von Hand. Die Sätze der Abzüge sind mit dem Stand 2026 vorbelegt, soweit sie gesetzlich feststehen.</p>
+<h3 class="gruppe">Arbeitgeberin</h3>
+<div class="row"><label for="av-firma">Firma</label><input id="av-firma" data-g="v-firma" type="text" autocomplete="organization"></div>
+<div class="row"><label for="av-adresse">Adresse</label><input id="av-adresse" data-g="v-adresse" type="text" placeholder="Strasse Nr., PLZ Ort"></div>
+<div class="row"><label for="av-vertreten">Vertreten durch<small>Name und Funktion, z. B. Geschäftsführer mit Einzelunterschrift</small></label><input id="av-vertreten" type="text"></div>
+<h3 class="gruppe">Arbeitnehmer</h3>
+<div class="row"><label for="av-name">Name</label><input id="av-name" data-g="a-name" type="text"></div>
+<div class="row"><label for="av-geboren">Geburtsdatum</label><input id="av-geboren" type="date"></div>
+<div class="row"><label for="av-wohnadresse">Adresse</label><input id="av-wohnadresse" type="text" placeholder="Strasse Nr., PLZ Ort"></div>
+<div class="row"><label for="av-quali">Qualifikation<small>z. B. Elektroinstallateur EFZ</small></label><input id="av-quali" data-g="a-quali" type="text"></div>
+<div class="row"><label for="av-ahv">AHV-Nummer<small>freiwillig</small></label><input id="av-ahv" type="text"></div>
+<h3 class="gruppe">Anstellung</h3>
+<div class="row"><label for="av-art">Art der Arbeit<small>z. B. Installations-, Service- und Montagearbeiten der Elektrobranche</small></label><input id="av-art" type="text"></div>
+<div class="row"><label for="av-beginn">Beginn</label><input id="av-beginn" type="date"></div>
+<h3 class="gruppe">Lohn und Spesen</h3>
+<div class="row" id="zeile-av-lohn"><label for="av-lohn">Monatslohn brutto in CHF<small>nicht unter dem Mindestlohn nach Anhang 5c GAV</small></label><input id="av-lohn" type="text" inputmode="decimal"></div>
+<div class="row" id="zeile-av-grundlohn" hidden><label for="av-grundlohn">Stundengrundlohn in CHF<small>ohne Zuschläge; die Zuschläge rechnet das PDF dazu</small></label><input id="av-grundlohn" type="text" inputmode="decimal"></div>
+<div class="row"><label for="av-iban">Lohnkonto (IBAN)</label><input id="av-iban" type="text"></div>
+<div class="row"><label for="av-spesen">Verpflegung je Arbeitstag in CHF<small>mindestens 18.00 nach Art. 33.1 GAV</small></label><input id="av-spesen" type="text" inputmode="decimal" value="18.00"></div>
+<div class="row"><label for="av-km">Auto je Kilometer in CHF<small>0.60 nach Art. 34.1 GAV</small></label><input id="av-km" type="text" inputmode="decimal" value="0.60"></div>
+<div class="row" id="zeile-av-wz" hidden><label for="av-wz-entsch">Werkzeugentschädigung in CHF je Monat</label><input id="av-wz-entsch" type="text" inputmode="decimal"></div>
+<h3 class="gruppe">Abzüge vom Bruttolohn</h3>
+<p class="erkl">Arbeitnehmeranteile, Stand 2026. NBU, Krankentaggeld und BVG stehen in Einreihung, Police und Anschlussvertrag; fehlen sie noch, trage einen provisorischen Satz ein.</p>
+<div class="row"><label for="av-abz-ahv">AHV/IV/EO</label><input id="av-abz-ahv" type="text" value="5,3 %"></div>
+<div class="row"><label for="av-abz-alv">Arbeitslosenversicherung (ALV)</label><input id="av-abz-alv" type="text" value="1,1 %"></div>
+<div class="row"><label for="av-abz-nbu">Nichtberufsunfallversicherung (NBU)</label><input id="av-abz-nbu" type="text" placeholder="z. B. provisorisch 1,5 %"></div>
+<div class="row" id="zeile-av-abz-ktg"><label for="av-abz-ktg">Krankentaggeld (KTG), hälftig</label><input id="av-abz-ktg" type="text"></div>
+<div class="row"><label for="av-abz-bvg">Berufliche Vorsorge (BVG)</label><input id="av-abz-bvg" type="text"></div>
+<div class="row"><label for="av-abz-vk">Weiterbildungs- und Vollzugskostenbeitrag GAV</label><input id="av-abz-vk" type="text" value="CHF 21.00 je Monat"></div>
+
+<h2><span class="st">C</span><span class="st-p"> · </span>Vertragsbedingungen</h2>
+<p class="erkl">So stehen die Vertragsbedingungen im PDF. Farbig hinterlegt ist, was von der vorgewählten Fassung abweicht.</p>
+<div class="vertrag" id="vertrag-av" aria-live="polite"></div>
+
+<h2><span class="st">D</span><span class="st-p"> · </span>PDF</h2>
+<p style="font-size:14.5px;color:var(--ink2);margin:6px 0">Das PDF enthält das Vertragsblatt, die Vertragsbedingungen und die Unterschriften. Es ist neutral gestaltet, ohne Logo und ohne Hinweis auf diese Seite. Es öffnet sich zuerst als Vorschau; herunterladen kannst du es danach. Drucke es zweimal aus und unterschreibe beide Exemplare für die Firma und für dich.</p>
+<div class="hint" id="fehler-av" hidden></div>
+<label class="beilage"><input type="checkbox" id="erl-beilage-av" checked> Erläuterungen als Beilage anhängen</label>
+<div class="knopfreihe"><button id="pdf-av" type="button">PDF erstellen</button></div>
+<div class="pdfvorschau" id="pdfvorschau-av" hidden>
+  <p class="erkl">Vorschau des PDF. Stimmt alles, lädst du es mit dem Knopf darunter herunter.</p>
+  <iframe id="pdfrahmen-av" title="Vorschau des PDF"></iframe>
+  <div class="knopfreihe">
+    <button id="pdfdown-av" type="button">PDF herunterladen</button>
+    <button id="pdftab-av" type="button" class="zweit">In neuem Tab öffnen</button>
+  </div>
+</div>
 </div>
 <aside class="calc-side" id="av-side">
-<!--AV-SEITE-->
+  <div class="side-box">
+    <h3>Was der Arbeitsvertrag nennen muss</h3>
+    <p>Als Leiharbeitsvertrag ist er schriftlich und regelt (Art. 19 Abs. 2 AVG): die Art der Arbeit, Arbeitsort und Beginn des Einsatzes, Dauer oder Kündigungsfrist, die Arbeitszeiten, Lohn, Spesen, Zulagen und Abzüge, die Leistungen bei Überstunden, Krankheit, Mutterschaft, Unfall, Militärdienst und Ferien sowie die Termine der Auszahlung. Was je Einsatz wechselt, ergänzt die Kopie des Verleihvertrags.</p>
+  </div>
+  <div class="side-box">
+    <h3>Du auf beiden Seiten</h3>
+    <p>Als Geschäftsführer oder Verwaltungsrat vertrittst du die Firma, als Arbeitnehmer bist du ihr Vertragspartner. Ein solcher Vertrag muss schriftlich abgefasst sein (Art. 718b OR, für die GmbH über Art. 814 Abs. 4 OR).</p>
+    <p>Bei der GmbH setzt die Gesellschafterversammlung die Entschädigung des Geschäftsführers fest (Art. 804 Abs. 2 Ziff. 6 OR). Halte den Beschluss in einem Protokoll fest und leg es dem Vertrag bei.</p>
+  </div>
+  <div class="side-box">
+    <h3>GAV Elektro</h3>
+    <p>Untersteht der Einsatzbetrieb dem allgemeinverbindlich erklärten GAV der Schweizerischen Elektrobranche, muss deine Firma dessen Lohn- und Arbeitszeitbestimmungen einhalten (Art. 20 AVG, Art. 48a AVV): Mindestlohn, 13. Monatslohn, Ferien, Zuschläge, Spesen. Die Vorlage folgt diesen Bestimmungen.</p>
+    <p class="q">Quellen: <a href="https://www.fedlex.admin.ch/eli/cc/1991/392_392_392/de#art_19" rel="noopener" target="_blank">Art. 19 AVG</a> · <a href="https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de#art_718_b" rel="noopener" target="_blank">Art. 718b OR</a> · <a href="https://www.plk-elektro.ch/" rel="noopener" target="_blank">PLK Elektro</a></p>
+  </div>
 </aside>
 </div>
 </section>
@@ -361,6 +466,8 @@ button{max-width:100%;white-space:normal}
 <script src="vertragswerk_verleih.js"></script>
 <script src="vertragswerk_arbeit.js"></script>
 <script src="vertragswerk_erlaeuterung.js"></script>
+<script src="esri_schluessel.js"></script>
+<script src="vertragswerk_rayon.js"></script>
 <script src="verfuegbarkeit.js"></script>
 <script src="hinweis.js"></script>
 <script src="nav.js"></script>
