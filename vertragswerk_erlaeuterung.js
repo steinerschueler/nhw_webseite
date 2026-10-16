@@ -85,6 +85,22 @@
     } else {
       b.push("Verleiht die Firma ausschliesslich ihren Inhaber, braucht sie keine Bewilligung (Art. 28 Abs. 2 AVV). Inhaber ist bei einer Ein-Personen-AG der Alleinaktionär, bei einer Ein-Personen-GmbH der alleinige Gesellschafter (SECO, Weisung 2014/1, Ziff. 2); für Mitbesitzer nennt die Weisung eigene Kriterien. Verleiht die Firma eine weitere Person, entfällt die Befreiung; ohne die nötige Bewilligung wäre der Verleihvertrag nichtig (Art. 22 Abs. 5 AVG). Den schriftlichen Verleihvertrag braucht es in jedem Fall (Art. 22 Abs. 1 AVG).");
     }
+    var tmZ = o.tagesmin ? ", {Z:tm}" : "";
+    b.push("Verleiher und Einsatzbetrieb verfolgen teils dieselben, teils entgegengesetzte Ziele. Beim Selbstverleih fallen die Ziele von Verleiher und Arbeitnehmer zusammen: Was der Verleiher einnimmt, trägt den Lohn seines Inhabers. Zwei Überlegungen bestimmen die meisten Punkte:");
+    b.push({liste: [
+      "Der Ansatz bezahlt neben dem Lohn alles, was der Verleiher auch ohne geleistete Stunde trägt: Ferien, Feiertage, 13. Monatslohn, Sozialabgaben, Versicherungen, Werkzeug, Zeit ohne Einsatz und die Kosten der Firma. Je mehr Stunden im Jahr verrechnet werden, desto kleiner ist dieser Anteil je Stunde. Für den Verleih eignen sich darum Einsätze mit vollen Wochen und langen Tagen. Wer nur wenige Stunden arbeiten kann, fährt mit einer Festanstellung besser; dort trägt der Arbeitgeber das Risiko leerer Stunden.",
+      "Eine zusätzliche Stunde lohnt sich für den, der an ihr verdient. Ein Lernender erhält für eine Stunde Überzeit wenig, der Betrieb verrechnet sie zum vollen Preis; seine Überzeit nützt vor allem dem Betrieb. Im Selbstverleih deckt der Ansatz die Kosten, und jede weitere verrechnete Stunde trägt zum Ertrag bei. Der Arbeitnehmer will darum möglichst viele Stunden, der Einsatzbetrieb nur so viele, wie er braucht."
+    ]});
+    b.push({tabelle: {kopf: ["Punkt", "Verleiher und Arbeitnehmer", "Einsatzbetrieb", "Ausgleich im Vertrag"], zeilen: [
+      ["Stunden je Tag", "möglichst viele verrechnete Stunden; kein Heimschicken am Nachmittag", "nur die Stunden, die er braucht", "Ziff. {Z:zeit}" + tmZ],
+      ["Ansatz", "deckt alle Kosten, auch die Stunden ohne Einsatz", "tief; Rabatt für lange Einsätze", "Ziff. {Z:kosten}"],
+      ["Wegzeit", "kleiner Rayon, Wegzeit verrechnet", "grosser Rayon, Wegzeit im Ansatz", "Ziff. {Z:ort}"],
+      ["Absage und Ausfall", "früh wissen, ob gearbeitet wird; späte Absage bezahlt", "kurzfristig und ohne Kosten absagen", "Ziff. {Z:absage}, {Z:ausfall}"],
+      ["Dauer", "lange Einsätze; Frist, um einen Anschluss zu finden", "rasch beenden können", "Ziff. {Z:kuend}"],
+      ["Zahlung", "kurze Zahlungsfrist", "lange Zahlungsfrist", "Ziff. {Z:rechnung}"],
+      ["Schäden", "Haftung nur für eigene Pflichten", "Ersatz für Schäden aus der Arbeit", "Ziff. {Z:haft}"]
+    ]}});
+    b.push("Gemeinsam ist beiden das Interesse an sicherer Arbeit, an einem sauberen Wochenrapport und an guter Arbeit, die zu weiteren Einsätzen führt.");
     b.push("Die Ziffern sind in Buchstaben (Bst.) gegliedert: \"Ziff. {R:rapport.einw}\" meint Buchstabe {B:rapport.einw} der Ziffer {Z:rapport}. Die Nummern hängen von der Auswahl ab, weil Ziffern und Buchstaben wegfallen können. Abkürzungen: OR Obligationenrecht; ArG Arbeitsgesetz; AVV Arbeitsvermittlungsverordnung; GAV Gesamtarbeitsvertrag der Schweizerischen Elektrobranche, PLK dessen Paritätische Landeskommission; NIV Niederspannungs-Installationsverordnung; VUV Verordnung über die Unfallverhütung.");
     b.push("Die Vertragsbedingungen regeln vor allem den Streitfall. Im Alltag lösen die Parteien vieles im Gespräch; der Vertrag sagt, was gilt, wenn das nicht gelingt.");
     b.push({quellen: [art("AVG", "22"), art("AVG", "12", "Abs. 1"), art("AVV", "28", "Abs. 2"), bge("144 III 93")]});
