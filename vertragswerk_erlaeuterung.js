@@ -62,7 +62,7 @@
   function datumText(d) { return TAG[d.getUTCDay()] + ", " + d.getUTCDate() + ". " + MONAT[d.getUTCMonth()] + " " + d.getUTCFullYear(); }
   /* Was bei später Absage und Arbeitsausfall in Rechnung kommt, kurz */
   function tagesWert(o, i) {
-    return o.tagesmin ? "das Tagesstundenminimum des " + WTG[i] : "die Stunden je Wochentag für den " + WT[i];
+    return o.tagesmin ? "das Tagesminimum des " + WTG[i] : "die Stunden je Wochentag für den " + WT[i];
   }
   function tagesBetrag(o, f, i) {
     var h = hTag(f, i), a = ansatz(f);
@@ -166,7 +166,7 @@
     var w = wochenStunden(f), teile = [];
     for (var i = 0; i < 5; i++) if (hTag(f, i)) teile.push(WT[i] + " " + std(hTag(f, i)));
     return [
-      "Das Einsatzblatt nennt die Stunden je Wochentag (Art. 22 Abs. 1 Bst. e AVG)" + (w ? ": " + teile.join(", ") + ", zusammen " + stunden(w) + " je Woche" : "") + "; innerhalb davon teilt der Einsatzbetrieb ein." + (o.tagesmin ? " Die Stunden sind zugleich das Tagesstundenminimum (Ziff. {R:tm.min})." : ""),
+      "Das Einsatzblatt nennt die Stunden je Wochentag (Art. 22 Abs. 1 Bst. e AVG)" + (w ? ": " + teile.join(", ") + ", zusammen " + stunden(w) + " je Woche" : "") + "; innerhalb davon teilt der Einsatzbetrieb ein." + (o.tagesmin ? " Die Stunden sind zugleich das Tagesminimum (Ziff. {R:tm.min})." : ""),
       "Arbeit über die Stunden je Wochentag hinaus kommt zum Ansatz in Rechnung. Überstunden sind Arbeit über die vertragliche Arbeitszeit, nach GAV gemessen an der Jahresarbeitszeit (Art. 21). Überzeit ist Arbeit über die Höchstarbeitszeit von 50 Stunden je Woche (Art. 9 ArG; GAV Art. 22.1), höchstens zwei Stunden je Tag (Art. 12 ArG)." +
         (o.zu.ue > 0 ? " Nur Überzeit erhält einen Zuschlag (Ziff. {R:tm.zuschlag})." : " Einen Zuschlag für Überzeit sieht die gewählte Fassung nicht vor."),
       "Nachtarbeit braucht die Zustimmung des Arbeitnehmers (Art. 17 Abs. 6 ArG). Samstag, Sonntag und Feiertage werden erst mit Bestätigung per E-Mail vereinbarte Tage (Ziff. {R:absage.weitere}). Für das ArG ist der Einsatzbetrieb verantwortlich, weil er einteilt.",
@@ -184,11 +184,11 @@
     im.push("Verwaltungsaufwand und Gewinn");
     var b = ["Die Ziffer nennt die Kosten des Verleihs abschliessend (Art. 22 Abs. 1 Bst. f AVG)" + (a ? "; Ansatz nach dem Einsatzblatt " + chf(a) + " je Stunde" : "") + ". Im Ansatz stecken namentlich:", {liste: im},
       "Was dazukommen kann, zählt Bst. {B:kosten.c} abschliessend auf. Die MWST fehlt dort, weil ein steuerpflichtiger Einsatzbetrieb sie als Vorsteuer abzieht."];
-    if (!tm) b.push("Ohne Tagesstundenminimum kommt an einem Arbeitstag nur die geleistete Arbeitszeit in Rechnung, auch wenn der Einsatzbetrieb ohne Hindernis früher heimschickt; den Lohn schuldet der Verleiher trotzdem (Art. 324 OR). Bei später Absage und Arbeitsausfall gelten die Stunden je Wochentag.");
+    if (!tm) b.push("Ohne Tagesminimum kommt an einem Arbeitstag nur die geleistete Arbeitszeit in Rechnung, auch wenn der Einsatzbetrieb ohne Hindernis früher heimschickt; den Lohn schuldet der Verleiher trotzdem (Art. 324 OR). Bei später Absage und Arbeitsausfall gelten die Stunden je Wochentag.");
     if (!tm && !zu) b.push("Ohne Zuschläge kommt auch Arbeit am Samstagnachmittag, in der Nacht, am Sonntag oder als Überzeit zum Ansatz in Rechnung; Lohnzuschläge nach GAV deckt dann der Ansatz.");
     if (o.rabatt) {
       var r = zahl(feld(f, "k-rabatt")), bis = VW.datum(feld(f, "k-rabatt-bis"));
-      b.push("Der Rabatt (Bst. {B:kosten.rabatt}) gilt auf den Ansatz für geleistete Arbeitszeit" + (r ? ", " + std(r) + " %" : "") + (bis ? " bis " + bis : " bis zum Datum im Einsatzblatt") + (a && r ? " (" + chf(a * (1 - r / 100)) + " je Stunde)" : "") + "; danach gilt ohne Zusatz der volle Ansatz. Zuschläge" + (tm ? ", Aufrundung auf das Tagesstundenminimum" : "") + " und die Posten nach Bst. {B:kosten.c} erhalten keinen Rabatt.");
+      b.push("Der Rabatt (Bst. {B:kosten.rabatt}) gilt auf den Ansatz für geleistete Arbeitszeit" + (r ? ", " + std(r) + " %" : "") + (bis ? " bis " + bis : " bis zum Datum im Einsatzblatt") + (a && r ? " (" + chf(a * (1 - r / 100)) + " je Stunde)" : "") + "; danach gilt ohne Zusatz der volle Ansatz. Zuschläge" + (tm ? ", Aufrundung auf das Tagesminimum" : "") + " und die Posten nach Bst. {B:kosten.c} erhalten keinen Rabatt.");
     } else {
       b.push("Ein Rabatt ist nicht gewählt; die andere Variante erlaubt einen befristeten Rabatt im Einsatzblatt, der am genannten Datum ohne Zusatz wegfällt.");
     }
@@ -203,10 +203,10 @@
     var tm = o.tagesmin, a = ansatz(f), b = [];
     if (tm) {
       var h = hTag(f, 1) || 8, g = h >= 6 ? 5 : h / 2;
-      b.push("Das Tagesstundenminimum ist eine Preisregel: Schickt der Einsatzbetrieb den Arbeitnehmer früher heim, schuldet der Verleiher ihm den Lohn trotzdem (Art. 324 OR); das Tagesstundenminimum legt dieses Risiko in den Preis. Weil Minima in der Praxis oft kleiner sind, steht es ausdrücklich im Vertrag. Geht der Arbeitnehmer aus Gründen in seiner Person früher oder bricht der Verleiher ab, gilt nur die geleistete Arbeitszeit; an Tagen, die keine Werktage sind, gilt kein Tagesstundenminimum. Verzichtet der Verleiher im Einzelfall, genügt sein Vermerk im Wochenrapport.");
+      b.push("Das Tagesminimum ist eine Preisregel: Schickt der Einsatzbetrieb den Arbeitnehmer früher heim, schuldet der Verleiher ihm den Lohn trotzdem (Art. 324 OR); das Tagesminimum legt dieses Risiko in den Preis. Weil Minima in der Praxis oft kleiner sind, steht es ausdrücklich im Vertrag. Geht der Arbeitnehmer aus Gründen in seiner Person früher oder bricht der Verleiher ab, gilt nur die geleistete Arbeitszeit; an Tagen, die keine Werktage sind, gilt kein Tagesminimum. Verzichtet der Verleiher im Einzelfall, genügt sein Vermerk im Wochenrapport.");
       b.push({beispiel: "Dienstag mit " + stunden(h) + " nach dem Einsatzblatt; nach " + stunden(g) + " schickt die Kontaktperson den Arbeitnehmer heim. In Rechnung: " + stunden(g) + " geleistet und " + stunden(h - g) + " Aufrundung als eigene Position" + (zuGewaehlt(o) ? ", ohne Zuschlag" : "") + (o.rabatt ? " und ohne Rabatt" : "") + (a ? ", zusammen " + chf(h * a) : "") + ". Geht er um 15 Uhr zum Zahnarzt, zählt nur die geleistete Arbeitszeit."});
     } else {
-      b.push("Ein Tagesstundenminimum ist nicht gewählt; die Ziffer regelt nur die Zuschläge (zur Folge Ziff. {Z:kosten}).");
+      b.push("Ein Tagesminimum ist nicht gewählt; die Ziffer regelt nur die Zuschläge (zur Folge Ziff. {Z:kosten}).");
     }
     var zeilen = [], abw = [];
     ["sa", "na", "so", "ue"].forEach(function (k) {
@@ -264,7 +264,7 @@
   E.absage = function (o, f) {
     var n = o.absage, ord = VW.ORDINAL[n], frist = 3 - n, vor = frist < 0, fWt = WT[(frist + 5) % 5] + (vor ? " der Vorwoche" : "");
     var b = [
-      "Jede Mitteilung vor einem vereinbarten Tag, dass nicht gearbeitet wird, ist eine Absage, gleich aus welchem Grund; über den Grund wird so nicht gestritten. Was am Tag selbst geschieht, regelt Ziff. {Z:ausfall}. Die Absage ist ein Recht mit Preis: Der Verleiher schuldet den Lohn auch für abgesagte Tage (Art. 324 OR; SECO-Weisungen Ziff. 3.8.22), das Risiko fehlender Einsätze liegt bei ihm (AWA Thurgau). Eine späte Absage kostet darum je Werktag " + (o.tagesmin ? "das Tagesstundenminimum" : "die Stunden je Wochentag") + ", nicht mehr, als der Tag gekostet hätte.",
+      "Jede Mitteilung vor einem vereinbarten Tag, dass nicht gearbeitet wird, ist eine Absage, gleich aus welchem Grund; über den Grund wird so nicht gestritten. Was am Tag selbst geschieht, regelt Ziff. {Z:ausfall}. Die Absage ist ein Recht mit Preis: Der Verleiher schuldet den Lohn auch für abgesagte Tage (Art. 324 OR; SECO-Weisungen Ziff. 3.8.22), das Risiko fehlender Einsätze liegt bei ihm (AWA Thurgau). Eine späte Absage kostet darum je Werktag " + (o.tagesmin ? "das Tagesminimum" : "die Stunden je Wochentag") + ", nicht mehr, als der Tag gekostet hätte.",
       "Gewählt: ohne Kosten bis 17 Uhr am " + ord + " Werktag davor. " + (n === 1 ? "Die kürzeste Frist; der Verleiher hat kaum Vorlauf." : n === 2 ? "Der Werktag dazwischen dient der Planung von Werkzeug und Material." : "Mehr Vorlauf für den Verleiher; der Einsatzbetrieb muss früher planen.") + (n !== 2 ? " Die Grundfassung nennt den zweiten Werktag." : "") + " Eine Absage kostet höchstens " + VW.zahlwort(n) + (n === 1 ? " Werktag" : " Werktage"),
       "Eine Absage umfasst höchstens zehn zusammenhängende Werktage; so bleibt der Vertrag nicht mit Absagen offen, ohne dass bezahlt oder gekündigt wird. Längere Betriebsferien gehen mit Zustimmung des Verleihers. Weitere Tage sind Anfragen und erst mit Bestätigung per E-Mail vereinbart; eine Verschiebung ist Absage plus Anfrage.",
       {beispiel: "E-Mail am Dienstag um 18 Uhr für den Donnerstag; sie geht am Mittwoch zu (Ziff. {R:schluss.a}). Die Frist lief bis " + fWt + " 17 Uhr: " + (n === 1 ? "rechtzeitig, ohne Kosten." : "zu spät, in Rechnung kommt " + tagesWert(o, 3) + tagesBetrag(o, f, 3) + ".") +
@@ -276,7 +276,7 @@
   };
 
   E.ausfall = function (o, f) {
-    var wert = o.tagesmin ? "das Tagesstundenminimum" : "die Stunden je Wochentag";
+    var wert = o.tagesmin ? "das Tagesminimum" : "die Stunden je Wochentag";
     var b = [
       "Arbeitsausfall ist der vereinbarte Werktag, an dem der Arbeitnehmer wegen eines Hindernisses nicht oder nicht voll arbeiten kann: fehlendes Material, Wetter, ein Halt durch andere Unternehmen, Bauleitung oder Bauherrschaft. In Rechnung kommt mindestens " + wert + ", auch ohne Verschulden des Einsatzbetriebs. Grund: Das Betriebsrisiko trägt der Arbeitgeber, der Verleiher schuldet den Lohn weiter (Art. 324 OR; BGE 150 III 22; AWA Basel-Stadt, Merkblatt 15). Das Gesetz erlaubt, diese Gefahr vertraglich dem Einsatzbetrieb zuzuweisen (Art. 119 Abs. 3 OR); er organisiert die Baustelle und klärt mit den Beteiligten, wer das Hindernis verursacht hat.",
       "Wetter ist ein Hindernis wie jedes andere; eine Schlechtwetterentschädigung gibt es für Elektroinstallationen nicht (Art. 65 AVIV). Mit Ersatzarbeit (Bst. {B:ausfall.b}) rettet der Einsatzbetrieb den Tag; dann zählt die geleistete Arbeitszeit.",
@@ -304,7 +304,7 @@
 
   E.hg = function (o) {
     return [
-      "Ohne diese Ziffer fiele etwa die Schliessung aller Baustellen durch die Behörden unter den Arbeitsausfall, und der Einsatzbetrieb schuldete " + (o.tagesmin ? "das Tagesstundenminimum" : "die Stunden je Wochentag") + ", obwohl der Verleiher bei einer allgemeinen behördlichen Massnahme keinen Lohn aus Annahmeverzug schuldet (BGE 150 III 22). Höhere Gewalt ist unvorhersehbar, aussergewöhnlich, kommt von aussen und lässt sich nicht abwenden (BGE 102 Ib 257); ein gewöhnlicher Herbststurm genügt wohl nicht (BGE 123 III 183). Beispiele, wenn alle Merkmale im Einzelfall erfüllt sind:",
+      "Ohne diese Ziffer fiele etwa die Schliessung aller Baustellen durch die Behörden unter den Arbeitsausfall, und der Einsatzbetrieb schuldete " + (o.tagesmin ? "das Tagesminimum" : "die Stunden je Wochentag") + ", obwohl der Verleiher bei einer allgemeinen behördlichen Massnahme keinen Lohn aus Annahmeverzug schuldet (BGE 150 III 22). Höhere Gewalt ist unvorhersehbar, aussergewöhnlich, kommt von aussen und lässt sich nicht abwenden (BGE 102 Ib 257); ein gewöhnlicher Herbststurm genügt wohl nicht (BGE 123 III 183). Beispiele, wenn alle Merkmale im Einzelfall erfüllt sind:",
       {liste: ["Erdbeben, Hochwasser, Lawine, Felssturz, aussergewöhnlicher Sturm", "Krieg, Aufruhr, Terroranschlag", "behördliche Schliessung aller Baustellen, Ausgangssperre, Epidemie mit Massnahmen", "grossflächiger, länger dauernder Stromausfall; Kontingentierung in einer Mangellage", "Generalstreik oder branchenweiter Streik bei Dritten"]},
       "Keine höhere Gewalt: gewöhnliches Wetter und Hindernisse auf der Baustelle (Ziff. {Z:ausfall}), Lieferengpässe, fehlendes Geld (Geldschulden werden nie unmöglich, BGer 4A_474/2009), Defekte an eigenen Geräten, Krankheit des Arbeitnehmers (Ziff. {Z:verh}), Absehbares. Die Wirkung reicht nur so weit und so lange, wie das Ereignis die Arbeit hindert; Geldschulden bleiben. Im Zweifel klären die Parteien es, bevor sich eine Seite darauf beruft.",
       {quellen: [{t: "BGE 102 Ib 257 E. 5"}, bge("123 III 183"), bge("150 III 22"), art("OR", "119")]}
@@ -341,7 +341,7 @@
     } else {
       b.push("Gewählt: Der Einsatzbetrieb stellt alles, auch Grundausrüstung und Werkzeug. Das stärkt das Bild des Verleihs, weil mit seinen Werkzeugen gearbeitet wird (Art. 26 Abs. 2 Bst. b AVV); die Kosten trägt er selbst. In der Grundfassung bringt der Arbeitnehmer sie mit, im Ansatz enthalten.");
     }
-    b.push("Bei Gefahr stoppt der Arbeitnehmer die Arbeit und teilt es der Kontaktperson mit (Suva: \"STOPP bei Gefahr\"). Bis zur Lösung gilt Ziff. {Z:ausfall}: Ersatzarbeit oder " + (o.tagesmin ? "das Tagesstundenminimum" : "die Stunden je Wochentag") + ".");
+    b.push("Bei Gefahr stoppt der Arbeitnehmer die Arbeit und teilt es der Kontaktperson mit (Suva: \"STOPP bei Gefahr\"). Bis zur Lösung gilt Ziff. {Z:ausfall}: Ersatzarbeit oder " + (o.tagesmin ? "das Tagesminimum" : "die Stunden je Wochentag") + ".");
     b.push({quellen: [art("VUV", "10"), art("VUV", "6"), art("AVV", "26", "Abs. 2"), SUVA, STEC]});
     return b;
   };
@@ -356,7 +356,7 @@
   }
 
   E.kuend = function (o, f) {
-    var k = o.kuendigung, n = o.absage, ende = VW.datum(feld(f, "a-ende")), tw = o.tagesmin ? "das Tagesstundenminimum" : "die Stunden je Wochentag";
+    var k = o.kuendigung, n = o.absage, ende = VW.datum(feld(f, "a-ende")), tw = o.tagesmin ? "das Tagesminimum" : "die Stunden je Wochentag";
     var b = [
       "Nennt das Einsatzblatt ein Ende" + (ende ? " (" + ende + ")" : "") + ", endet der Vertrag ohne Kündigung. Das Ende ist ein Datum; \"bis die Arbeit fertig ist\" gilt als Einsatz ohne Ende (AWA Basel-Stadt, Merkblatt 15). Wird danach mit Wissen beider weitergearbeitet, gilt der Vertrag ohne Ende weiter. Das Arbeitsverhältnis berührt das Ende nicht: Bei der Leiharbeit wechselt mit einem Einsatz nur der Arbeitsort (AWA Thurgau).",
       k === 2 ? "Gewählt: zwei Werktage, gleich wie die Grundfrist der Absage, als Entgegenkommen auch bei langen Einsätzen; die Bitte um eine Woche Vorlauf ist unverbindlich. Mehr Sicherheit erhält der Verleiher nur über ein Ende im Einsatzblatt."
