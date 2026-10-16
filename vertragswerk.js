@@ -242,6 +242,8 @@
       P.seite();
       P.schrift("bold", 13); P.farbe(INK); d.text(opts.titel, P.x, P.y); P.y += 7;
       var GAP = 6, CB = (P.B - GAP) / 2, col = 0, oben = P.y, ZH = 4.13, EIN = 5.2, GR = 9.8;
+      /* Unterschriftenblock: Linien für Ort und Datum, Unterschrift (mit mehr Raum darüber), Name; UH = Höhe des Blocks */
+      var LINIEN = [9, 25, 35], UH = 50;
       function sx() { return P.x + col * (CB + GAP); }
       P.platz = function (h) {
         if (P.y + h <= P.UNTEN) return;
@@ -291,7 +293,7 @@
           if (opts.parteien && z === gez[gez.length - 1] && ai === abs.length - 1) {
             P.schrift("normal", GR);
             var hAbs = a.t.reduce(function (h, teil) { return h + (typeof teil === "string" ? d.splitTextToSize(teil, CB - ein).length * ZH : 0); }, 0.7);
-            P.platz(hAbs + d.splitTextToSize(opts.schluss, CB).length * ZH + 6 + opts.parteien.length * 39);
+            P.platz(hAbs + d.splitTextToSize(opts.schluss, CB).length * ZH + 6 + opts.parteien.length * UH);
           }
           a.t.forEach(function (teil) { teilText(teil, ein, a.bst, erste); if (opts.erl) P.y += 1; });
           P.y += 0.7;
@@ -304,15 +306,15 @@
         P.platz(schluss.length * ZH + 4);
         P.y += 2; P.farbe(INK); d.text(schluss, sx(), P.y); P.y += schluss.length * ZH + 4;
         opts.parteien.forEach(function (p) {
-          P.platz(38);
+          P.platz(UH - 1);
           P.schrift("bold", 10.6); P.farbe(INK); d.text(p[0], sx(), P.y);
           if (p[1]) { P.schrift("normal", 8.5); P.farbe(GRAU); d.text(d.splitTextToSize(p[1], CB - 30)[0], sx() + 30, P.y); }
           ["Ort, Datum", "Unterschrift", "Name in Druckschrift"].forEach(function (l, i) {
-            var ly = P.y + 9 + i * 10;
+            var ly = P.y + LINIEN[i];
             d.setDrawColor(INK[0], INK[1], INK[2]); d.setLineWidth(0.3); d.line(sx(), ly, sx() + CB, ly);
             P.schrift("normal", 8.5); P.farbe(GRAU); d.text(l, sx(), ly + 3.6);
           });
-          P.y += 9 + 2 * 10 + 10;
+          P.y += UH;
         });
       }
       P.platz = function (h) { if (P.y + h > P.UNTEN) { d.addPage(); P.y = 22; } };
