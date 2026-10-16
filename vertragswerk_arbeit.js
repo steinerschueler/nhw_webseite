@@ -132,7 +132,7 @@
     var dreizehn;
     if (stunde) dreizehn = "Der Anteil 13. Monatslohn beträgt 8,33 % der Summe aus Stundengrundlohn, Ferienzuschlag und Feiertagszuschlag und wird mit dem Lohn jedes Monats ausbezahlt; dies ist die Absprache nach Art. 18.2 GAV. Einen gesonderten 13. Monatslohn gibt es nicht.";
     else if (o.dreizehnter === "monatlich") dreizehn = "Der 13. Monatslohn nach dem Vertragsblatt beträgt 100 % des durchschnittlichen Monatslohns des Kalenderjahres. Er wird nach Absprache monatlich mit je einem Zwölftel des Monatslohns ausgerichtet und auf der Lohnabrechnung ausgewiesen (Art. 18.1 und 18.2 GAV); bei Beginn oder Beendigung des Arbeitsverhältnisses im Lauf des Kalenderjahres ist er damit anteilsmässig ausgerichtet.";
-    else dreizehn = "Der 13. Monatslohn nach dem Vertragsblatt beträgt 100 % des durchschnittlichen Monatslohns des Kalenderjahres und wird mit dem Dezemberlohn ausgerichtet (Art. 18.1 GAV). Bei Beginn oder Beendigung des Arbeitsverhältnisses im Lauf des Kalenderjahres wird er anteilsmässig ausgerichtet.";
+    else dreizehn = "Der 13. Monatslohn nach dem Vertragsblatt beträgt 100 % des durchschnittlichen Monatslohns des Kalenderjahres und wird mit dem Dezemberlohn ausgerichtet (Art. 18.1 und 18.2 GAV). Bei Beginn oder Beendigung des Arbeitsverhältnisses im Lauf des Kalenderjahres wird er anteilsmässig ausgerichtet (Art. 18.3 GAV).";
     ziffer("lohn", "Lohn", [
       b("a", stunde
         ? "Der Arbeitnehmer erhält für jede geleistete Arbeitsstunde den Stundengrundlohn nach dem Vertragsblatt. Dazu kommen nach Art. 35.4 und Anhang 6 GAV der Ferienzuschlag (Ziff. {R:ferien.a}), der Feiertagszuschlag (Ziff. {R:ferien.feiertage}) und der Anteil 13. Monatslohn (Bst. {B:lohn.dreizehn}); die Sätze stehen im Vertragsblatt. Der Stundengrundlohn liegt nicht unter dem Mindestlohn des GAV für die Qualifikation des Arbeitnehmers, geteilt durch 174 Stunden (Art. 16.3, 17 und Anhang 5c GAV)."
@@ -399,7 +399,7 @@
     abschnitt("Abzüge vom Bruttolohn", "Arbeitnehmeranteile, Stand 2026; provisorische Abzüge ersetzt ein Nachtrag (" + ref("abzuege", "c") + ")");
     var zeilen = [
       ["AHV/IV/EO", f["av-abz-ahv"], "Art. 5 Abs. 1 AHVG, Art. 3 Abs. 1 IVG, Art. 27 Abs. 2 EOG"],
-      ["Arbeitslosenversicherung (ALV)", f["av-abz-alv"], "Art. 3 Abs. 2 AVIG, bis zum Höchstbetrag des versicherten Verdienstes"],
+      ["Arbeitslosenversicherung (ALV)", f["av-abz-alv"], "Art. 3 Abs. 2 und 3 AVIG, bis zum Höchstbetrag des versicherten Verdienstes"],
       ["Nichtberufsunfallversicherung (NBU)", f["av-abz-nbu"], "Art. 91 Abs. 2 und 3 UVG, Art. 39.4 GAV"],
       o.ktg === "arbeitgeberin"
         ? ["Krankentaggeld (KTG)", "kein Abzug, die Prämie trägt die Arbeitgeberin", ref("verh", "a")]
@@ -426,7 +426,7 @@
   /* ---------- Erläuterungen ---------- */
 
   var FL = {OR: "27/317_321_377", AVG: "1991/392_392_392", AVV: "1991/408_408_408", ArG: "1966/57_57_57",
-    ArGV1: "2000/243", VUV: "1983/1968_1968_1968", UVG: "1982/1676_1676_1676", BVG: "1983/797_797_797", NIV: "2002/22"};
+    ArGV1: "2000/243", VUV: "1983/1968_1968_1968", UVG: "1982/1676_1676_1676", BVG: "1983/797_797_797", NIV: "2002/22", ZPO: "2010/262"};
   /* Quelle mit fedlex-Verweis; art wie "335_c" für Art. 335c */
   function q(t, g, art) { return {t: t, url: "https://www.fedlex.admin.ch/eli/cc/" + FL[g] + "/de" + (art ? "#art_" + art : "")}; }
   function gav(t) { return {t: t}; }
@@ -535,7 +535,7 @@
 
   E.abzuege = function (o) {
     return [
-      "Die Tabelle im Vertragsblatt nennt die Arbeitnehmeranteile mit ihrer Grundlage. Stand 2026 betragen sie für AHV/IV/EO 5,3 % und für die ALV 1,1 % des Bruttolohns. Die Prämie der Nichtberufsunfallversicherung trägt nach Art. 39.4 GAV der Arbeitnehmer; ihr Satz ergibt sich aus der Einreihung durch den Unfallversicherer. Der Weiterbildungs- und Vollzugskostenbeitrag beträgt nach Anhang 5c GAV CHF 21.00 je Monat (CHF 11.00 Vollzug, CHF 10.00 Weiterbildung).",
+      "Die Tabelle im Vertragsblatt nennt die Arbeitnehmeranteile mit ihrer Grundlage. Stand 2026 betragen sie für AHV/IV/EO 5,3 % und für die ALV 1,1 % des Bruttolohns. Die Prämie der Nichtberufsunfallversicherung trägt nach Art. 39.4 GAV der Arbeitnehmer; ihr Satz ergibt sich aus der Einreihung durch den Unfallversicherer. Der Weiterbildungs- und Vollzugskostenbeitrag beträgt nach Art. 11.2 GAV CHF 21.00 je Monat (CHF 11.00 Vollzug, CHF 10.00 Weiterbildung).",
       o.ktg === "arbeitgeberin"
         ? "Gewählt ist, dass die Arbeitgeberin die Prämie der Krankentaggeldversicherung ganz trägt. Der GAV teilt sie je zur Hälfte (Art. 37.2 GAV); die Wahl ist für den Arbeitnehmer günstiger, und der Abzug fällt weg."
         : "Die Prämie der Krankentaggeldversicherung tragen die Parteien je zur Hälfte (Art. 37.2 GAV); der Satz steht in der Police.",
@@ -602,8 +602,8 @@
 
   E.geheim = function () {
     return [
-      "Die Arbeitgeberin gibt Einsatzbetrieben nur bekannt, was der Einsatz erfordert; dafür braucht es die Zustimmung des Arbeitnehmers (Art. 47 AVV), die er jederzeit widerrufen kann. Den Grund einer Verhinderung erfährt der Einsatzbetrieb nur mit Zustimmung im Einzelfall.",
-      {quellen: [q("Art. 321a OR", "OR", "321_a"), q("Art. 328b OR", "OR", "328_b"), q("Art. 47 AVV", "AVV", "47")]}
+      "Die Arbeitgeberin gibt Einsatzbetrieben nur bekannt, was der Einsatz erfordert; das erlaubt das Gesetz auch ohne Zustimmung (Art. 18 Abs. 3 AVG, Art. 47 Abs. 2 Bst. b AVV). Die Zustimmung in Bst. {B:geheim.b} bestätigt das; der Arbeitnehmer kann sie jederzeit widerrufen (Art. 47 Abs. 4 AVV). Was darüber hinausgeht, etwa den Grund einer Verhinderung, erfährt der Einsatzbetrieb nur mit Zustimmung im Einzelfall.",
+      {quellen: [q("Art. 321a OR", "OR", "321_a"), q("Art. 328b OR", "OR", "328_b"), q("Art. 18 AVG", "AVG", "18"), q("Art. 47 AVV", "AVV", "47")]}
     ];
   };
 
@@ -646,7 +646,7 @@
     return [
       "Änderungen brauchen die Schriftform, weil schon der Vertrag sie braucht (Art. 19 Abs. 1 AVG, Art. 718b OR). Ändert ein Nachtrag den Lohn, entscheidet die Gesellschafterversammlung (Art. 804 Abs. 2 Ziff. 6 OR).",
       "Den Gerichtsstand im Arbeitsrecht bestimmt die Zivilprozessordnung; der Arbeitnehmer kann nicht zum Voraus darauf verzichten (Art. 34 und 35 ZPO).",
-      {quellen: [q("Art. 12 OR", "OR", "12"), q("Art. 16 OR", "OR", "16"), q("Art. 718b OR", "OR", "718_b"), {t: "Art. 34 und 35 ZPO"}]}
+      {quellen: [q("Art. 12 OR", "OR", "12"), q("Art. 16 OR", "OR", "16"), q("Art. 718b OR", "OR", "718_b"), q("Art. 34 ZPO", "ZPO", "34"), q("Art. 35 ZPO", "ZPO", "35")]}
     ];
   };
 })(typeof window !== "undefined" ? window : globalThis);

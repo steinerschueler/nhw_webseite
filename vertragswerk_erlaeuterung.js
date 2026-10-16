@@ -37,7 +37,7 @@
   var PLK27 = {t: "PLK Elektro, Merkblatt zu Art. 27 GAV (Arbeitsweg)", url: "https://www.plk-elektro.ch/documents/783/Bezahlung_der_Reisezeit_gem._Art._27.pdf"};
   var PLK27W = {t: "PLK Elektro, Weisung zu Art. 27 GAV ab 1.1.2027", url: "https://www.plk-elektro.ch/documents/829/Weisung_Bezahlung_der_Reisezeit_gem._Art._27_GAV_g%C3%BCltig_ab_01.01.2027.pdf"};
   var PLKEA = {t: "PLK Elektro, Merkblatt Ein-/Anstellungsort, Firmendomizil", url: "https://www.plk-elektro.ch/documents/757/Ein-_Anstellungsort_Firmendomizil_DE_XDjS675.pdf"};
-  var EIT274 = {t: "EIT.swiss, Anwendung von Art. 27.4 GAV", url: "https://www.eit.swiss/fileadmin/user_upload/documents/Branche/GAV/_de/Anwendbarkeit_von_Art._27.4_Deutsch.pdf"};
+  var EIT274 = {t: "EIT.swiss, Anwendung von Art. 27.4 und 33.1 GAV, Stand 1.1.2026", url: "https://www.eit.swiss/fileadmin/user_upload/documents/Branche/GAV/_de/20251201_Rayon_fuer_GAV_2026_endversion.pdf"};
   var SUVA = {t: "Suva, Arbeitssicherheit in Personalverleih und Temporärarbeit", url: "https://www.suva.ch/de-ch/praevention/nach-branchen/arbeitssicherheit-in-personalverleih-und-temporaerarbeit"};
   var PLK = {t: "PLK Elektro", url: "https://www.plk-elektro.ch"};
 
@@ -81,7 +81,7 @@
       "Selbstverleih heisst: Eine Firma (GmbH oder AG) verleiht ihren Inhaber, der bei ihr als Arbeitnehmer angestellt ist, an einen Einsatzbetrieb. Rechtlich ist das Personalverleih nach dem Arbeitsvermittlungsgesetz (AVG): Die Firma ist Verleiher und Arbeitgeber, der Einsatzbetrieb erteilt die Weisungen zur Arbeit. Der Inhaber ist zugleich Arbeitnehmer und Geschäftsführer des Verleihers; die Vertragsbedingungen nennen ihn \"der Arbeitnehmer\"."
     ];
     if (o.bewilligung === "vorhanden") {
-      b.push("Die Auswahl geht von einem Verleiher mit Bewilligung aus. Eine Bewilligung braucht, wer gewerbsmässig verleiht (Art. 12 Abs. 1 AVG); befreit ist nur ein Betrieb, der ausschliesslich den Inhaber oder die Mitbesitzer verleiht (Art. 28 Abs. 2 AVV). Das Einsatzblatt nennt die Bewilligung (Art. 22 Abs. 1 Bst. a AVG). Die Vertragsbedingungen bleiben auf eine einzige verliehene Person zugeschnitten (Ziff. {R:an.a}). Ein Verleiher mit Bewilligung fällt zudem in den Geltungsbereich des GAV Personalverleih (dort Art. 2 Abs. 1); wie dieser neben dem GAV der Elektrobranche gilt, bildet die Vorlage nicht ab.");
+      b.push("Die Auswahl geht von einem Verleiher mit Bewilligung aus. Eine Bewilligung braucht, wer gewerbsmässig verleiht (Art. 12 Abs. 1 AVG); befreit ist nur ein Betrieb, der ausschliesslich den Inhaber oder die Mitbesitzer verleiht (Art. 28 Abs. 2 AVV). Das Einsatzblatt nennt die Bewilligung und die Bewilligungsbehörde (Art. 22 Abs. 1 Bst. a AVG). Die Vertragsbedingungen bleiben auf eine einzige verliehene Person zugeschnitten (Ziff. {R:an.a}). Ein Verleiher mit Bewilligung, dessen Hauptaktivität der Personalverleih ist, fällt zudem in den Geltungsbereich des GAV Personalverleih (dort Art. 2 Abs. 1); wie dieser neben dem GAV der Elektrobranche gilt, bildet die Vorlage nicht ab.");
     } else {
       b.push("Verleiht die Firma ausschliesslich ihren Inhaber, braucht sie keine Bewilligung (Art. 28 Abs. 2 AVV). Inhaber ist bei einer Ein-Personen-AG der Alleinaktionär, bei einer Ein-Personen-GmbH der alleinige Gesellschafter (SECO, Weisung 2014/1, Ziff. 2); für Mitbesitzer nennt die Weisung eigene Kriterien. Verleiht die Firma eine weitere Person, entfällt die Befreiung; ohne die nötige Bewilligung wäre der Verleihvertrag nichtig (Art. 22 Abs. 5 AVG). Den schriftlichen Verleihvertrag braucht es in jedem Fall (Art. 22 Abs. 1 AVG).");
     }
@@ -210,9 +210,9 @@
       b.push("Ein Rabatt ist nicht gewählt; die andere Variante erlaubt einen befristeten Rabatt im Einsatzblatt, der am genannten Datum ohne Zusatz wegfällt.");
     }
     b.push(o.mwst ? "Die MWST kommt zum gesetzlichen Satz dazu (Art. 25 MWSTG); der Satz steht nicht im Vertrag, damit eine Änderung keinen Zusatz braucht."
-      : "Der Verleiher ist nicht mehrwertsteuerpflichtig; steuerpflichtig wird ein Unternehmen in der Regel ab CHF 100'000 Umsatz im Jahr (Art. 10 MWSTG). Ändert sich das, braucht es einen Zusatz (Ziff. {R:schluss.b}).");
+      : "Der Verleiher ist nicht mehrwertsteuerpflichtig; steuerpflichtig wird ein Unternehmen in der Regel ab CHF 100'000 Umsatz im Jahr (Art. 10 Abs. 2 Bst. a MWSTG). Ändert sich das, braucht es einen Zusatz (Ziff. {R:schluss.b}).");
     b.push("Einen neuen Ansatz, etwa nach der Lohnrunde des GAV, teilt der Verleiher zwei Monate im Voraus mit; er gilt nur mit Zusatz, sonst kann jede Partei mit " + VW.zahlwort(o.kuendigung) + " Werktagen kündigen (Ziff. {R:kuend.frist}).");
-    b.push({quellen: [art("AVG", "22", "Abs. 1 Bst. f"), art("MWSTG", "25"), GAV("11.2, 33.1"), {t: "SECO, Muster Verleihvertrag, Ziff. 4"}]});
+    b.push({quellen: [art("AVG", "22", "Abs. 1 Bst. f"), (o.mwst ? art("MWSTG", "25") : art("MWSTG", "10", "Abs. 2 Bst. a")), GAV("11.2, 33.1"), {t: "SECO, Muster Verleihvertrag, Ziff. 4"}]});
     return b;
   };
 
@@ -263,7 +263,7 @@
     while (f1.getUTCDay() === 0 || f1.getUTCDay() === 6) f1 = new Date(f1.getTime() + 86400000);
     b.push({beispiel: "Rechnung vom " + datumText(d) + ": Der " + n + ". Tag danach ist " + datumText(f0) + (f1.getTime() !== f0.getTime() ? ", kein Werktag; fällig ist " + datumText(f1) : ", das Fälligkeitsdatum") + ". Danach folgen kostenlose Zahlungserinnerung, Mahnung, letzte Mahnung und Betreibung."});
     b.push((o.mahn
-      ? "Für die Mahnung schuldet der Einsatzbetrieb " + VW.chf(o.mahn[0]) + ", für die letzte " + VW.chf(o.mahn[1]) + ", als Konventionalstrafe: ohne Nachweis eines Schadens, bei Übermass vom Gericht herabsetzbar (Art. 160, 163 Abs. 3 OR)." + (o.mahn[0] !== 10 || o.mahn[1] !== 20 ? " Die Grundfassung nennt CHF 10 und CHF 20." : "")
+      ? "Für die Mahnung schuldet der Einsatzbetrieb " + VW.chf(o.mahn[0]) + ", für die letzte " + VW.chf(o.mahn[1]) + ", als Konventionalstrafe: ohne Nachweis eines Schadens, bei Übermass vom Gericht herabsetzbar (Art. 160, 161 Abs. 1, 163 Abs. 3 OR)." + (o.mahn[0] !== 10 || o.mahn[1] !== 20 ? " Die Grundfassung nennt CHF 10 und CHF 20." : "")
       : "Mahngebühren sind nicht gewählt; Mahnungen kosten nichts, es bleiben Verzugszins und Betreibungskosten.") +
       " Die Kosten einer Betreibung trägt der Einsatzbetrieb (Art. 68 SchKG).");
     b.push(o.verrechnung
@@ -272,7 +272,7 @@
     b.push(o.zurueck
       ? "Ist eine fällige Rechnung offen, kann der Verleiher nach Mitteilung per E-Mail die Arbeit an weiteren Tagen zurückhalten (nach dem Gedanken von Art. 82 OR); den Lohn schuldet er weiter. Endgültig ist die Kündigung auf sofort (Ziff. {R:kuend.sofort})."
       : "Zurückhalten und Kündigung auf sofort sind nicht gewählt; bei offenen Rechnungen bleiben Mahnung, Betreibung und die Kündigung nach Ziff. {R:kuend.frist}.");
-    b.push({quellen: [art("OR", "102", "Abs. 2"), art("OR", "104", "Abs. 1"), art("OR", o.verrechnung ? "126" : "120"), art("OR", "160"), art("OR", "82"), art("SchKG", "68")]});
+    b.push({quellen: [art("OR", "102", "Abs. 2"), art("OR", "104", "Abs. 1"), art("OR", o.verrechnung ? "126" : "120"), art("OR", "160"), art("OR", "161", "Abs. 1"), art("OR", "163", "Abs. 3"), art("OR", "82"), art("SchKG", "68")]});
     return b;
   };
 
@@ -358,7 +358,7 @@
     } else {
       b.push("Gewählt: Der Einsatzbetrieb stellt alles, auch Grundausrüstung und Werkzeug. Das stärkt das Bild des Verleihs, weil mit seinen Werkzeugen gearbeitet wird (Art. 26 Abs. 2 Bst. b AVV); die Kosten trägt er selbst. In der Grundfassung bringt der Arbeitnehmer sie mit, im Ansatz enthalten.");
     }
-    b.push("Bei Gefahr stoppt der Arbeitnehmer die Arbeit und teilt es der Kontaktperson mit (Suva: \"STOPP bei Gefahr\"). Bis zur Lösung gilt Ziff. {Z:ausfall}: Ersatzarbeit oder " + (o.tagesmin ? "das Tagesminimum" : "die Stunden je Wochentag") + ".");
+    b.push("Bei Gefahr stoppt der Arbeitnehmer die Arbeit und teilt es der Kontaktperson mit (Suva: \"STOPP sagen bei Gefahr\"). Bis zur Lösung gilt Ziff. {Z:ausfall}: Ersatzarbeit oder " + (o.tagesmin ? "das Tagesminimum" : "die Stunden je Wochentag") + ".");
     b.push({quellen: [art("VUV", "10"), art("VUV", "6"), art("AVV", "26", "Abs. 2"), SUVA, STEC]});
     return b;
   };
@@ -375,7 +375,7 @@
   E.kuend = function (o, f) {
     var k = o.kuendigung, n = o.absage, ende = VW.datum(feld(f, "a-ende")), tw = o.tagesmin ? "das Tagesminimum" : "die Stunden je Wochentag";
     var b = [
-      "Nennt das Einsatzblatt ein Ende" + (ende ? " (" + ende + ")" : "") + ", endet der Vertrag ohne Kündigung. Das Ende ist ein Datum; \"bis die Arbeit fertig ist\" gilt als Einsatz ohne Ende (AWA Basel-Stadt, Merkblatt 15). Wird danach mit Wissen beider weitergearbeitet, gilt der Vertrag ohne Ende weiter. Das Arbeitsverhältnis berührt das Ende nicht: Bei der Leiharbeit wechselt mit einem Einsatz nur der Arbeitsort (AWA Thurgau).",
+      "Nennt das Einsatzblatt ein Ende" + (ende ? " (" + ende + ")" : "") + ", endet der Vertrag ohne Kündigung. Das Ende ist ein Datum; \"bis die Arbeit fertig ist\" gilt als Einsatz ohne Ende, so wie die Behörden eine Angabe wie \"bis Ende Arbeitsüberlastung\" als unbefristeten Einsatz behandeln (AWA Basel-Stadt, Merkblatt 15). Wird danach mit Wissen beider weitergearbeitet, gilt der Vertrag ohne Ende weiter. Das Arbeitsverhältnis berührt das Ende nicht: Bei der Leiharbeit wechselt mit einem Einsatz nur der Arbeitsort (AWA Thurgau).",
       k === 2 ? "Gewählt: zwei Werktage, gleich wie die Grundfrist der Absage, als Entgegenkommen auch bei langen Einsätzen; die Bitte um eine Woche Vorlauf ist unverbindlich. Mehr Sicherheit erhält der Verleiher nur über ein Ende im Einsatzblatt."
         : "Gewählt: " + VW.zahlwort(k) + " Werktage. Der Verleiher hat mehr Vorlauf für einen neuen Einsatz, der Einsatzbetrieb bindet sich länger. Die Grundfassung nennt zwei Werktage.",
       {tabelle: {kopf: ["", "Absage", "Kündigung"], zeilen: [
