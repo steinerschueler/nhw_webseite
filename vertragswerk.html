@@ -92,6 +92,8 @@ button.zweit:hover{background:#F5F5F3}
 .erl{background:#fff;border:1px solid var(--line);border-radius:3px;padding:18px 22px;font-size:14.5px;line-height:1.55;color:var(--ink)}
 .erl h3.erlvertrag{font-family:'Archivo',sans-serif;font-weight:600;font-size:19px;margin:6px 0 10px}
 .erl .erlteil+.erlteil{margin-top:30px;border-top:1px solid var(--line);padding-top:16px}
+.erlvor{margin-top:18px}
+.erl+h2{margin-top:2.2em}
 .erl h4{font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;margin:16px 0 5px}
 .erl p{margin:0 0 7px}
 .erl ul{margin:2px 0 8px;padding-left:1.2em}
@@ -317,9 +319,11 @@ button{max-width:100%;white-space:normal}
 <section class="calc-section panel" id="p-erlaeuterungen" role="tabpanel" aria-labelledby="t-erlaeuterungen" hidden>
 <div class="calc-layout achse">
 <div class="calc-main">
-<h2><span class="st">E</span><span class="st-p"> · </span>Erläuterungen zu deiner Auswahl</h2>
-<p class="erkl">Die Erläuterungen entstehen aus deiner Auswahl in beiden Verträgen: Sie erklären die Ziffern so, wie sie in deinem Vertrag stehen, mit den Werten, die du eingesetzt hast. Sie sind nicht Bestandteil der Verträge.</p>
-<div class="erl" id="erl" aria-live="polite"></div>
+<p class="erkl erlvor">Die Erläuterungen entstehen aus deiner Auswahl: Sie erklären die Ziffern so, wie sie in deinem Vertrag stehen, mit den Werten, die du eingesetzt hast. Sie sind nicht Bestandteil der Verträge. Jeder Vertrag hat sein eigenes Kapitel; im PDF hängt das Kapitel als Beilage an seinen Vertrag.</p>
+<h2 id="kap-vv"><span class="st">1</span><span class="st-p"> · </span>Verleihvertrag</h2>
+<div class="erl" id="erl-vv" aria-live="polite"></div>
+<h2 id="kap-av"><span class="st">2</span><span class="st-p"> · </span>Arbeitsvertrag</h2>
+<div class="erl" id="erl-av" aria-live="polite"></div>
 </div>
 <aside class="calc-side">
   <div class="side-box">

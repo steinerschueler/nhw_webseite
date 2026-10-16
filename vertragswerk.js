@@ -558,14 +558,13 @@
       var gGrund = VW.gezaehlt(s.V.modell(s.V.GRUND, {}), art, JSON.parse(JSON.stringify(zahlen)));
       if ($(s.V.vorschauId)) VW.vorschau($(s.V.vorschauId), s.gez, VW.grundKarte(gGrund));
     });
-    var ez = $("erl");
-    if (ez) {
+    /* Erläuterungen: je Vertrag ein Kapitel */
+    Object.keys(stand).forEach(function (art) {
+      var ez = $("erl-" + art), s = stand[art];
+      if (!ez) return;
       ez.textContent = "";
-      Object.keys(stand).forEach(function (art) {
-        var s = stand[art];
-        VW.erlZeigen(ez, VW.erlaeutert(art, s.o, s.f, s.gez, zahlen), s.V.erlTitel);
-      });
-    }
+      VW.erlZeigen(ez, VW.erlaeutert(art, s.o, s.f, s.gez, zahlen), "");
+    });
     VW.stand = stand; VW.zahlen = zahlen;
     VW.vorschauWeg();
   };
