@@ -69,6 +69,54 @@ button.zweit:hover{background:#F5F5F3}
 .side-box a{color:var(--red);font-weight:600}
 .side-box p.q a{font-weight:500}
 .fbrand{margin-top:34px}
+.reiterzeile{padding-block:6px 18px}
+.reiter{display:flex;gap:4px 26px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.reiter a{font-family:'Archivo',sans-serif;font-weight:600;font-size:17px;color:var(--grey);text-decoration:none;padding:10px 0 9px;border-bottom:3px solid transparent;margin-bottom:-1px}
+.reiter a:hover{color:var(--ink)}
+.reiter a.on{color:var(--ink);border-bottom-color:var(--red)}
+.panel[hidden]{display:none}
+.vertrag .teil,.erl .teil{font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:1.6px;text-transform:uppercase;color:var(--grey);margin:22px 0 2px}
+.vertrag .teil:first-child{margin-top:0}
+.bg{text-decoration:underline dotted #9c968b;text-underline-offset:3px;text-decoration-thickness:1px;cursor:help}
+.bg:hover,.bg:focus{text-decoration-color:var(--red);outline:none}
+.bkarte{position:absolute;z-index:40;background:#fff;border:1px solid var(--line);border-left:3px solid var(--red);border-radius:3px;box-shadow:0 8px 22px rgba(0,0,0,.12);padding:9px 12px;font-size:13.5px;line-height:1.45;color:var(--ink2);pointer-events:none}
+.bkarte[hidden]{display:none}
+.bkarte strong{display:block;color:var(--ink);font-family:'Archivo',sans-serif;font-weight:600;font-size:14px;margin-bottom:3px}
+.bkarte p{margin:0 0 4px}
+.bkarte .mehr{font-size:11.5px;color:var(--grey)}
+.erl{background:#fff;border:1px solid var(--line);border-radius:3px;padding:18px 22px;font-size:14.5px;line-height:1.55;color:var(--ink)}
+.erl h3.erlvertrag{font-family:'Archivo',sans-serif;font-weight:600;font-size:19px;margin:6px 0 10px}
+.erl .erlteil+.erlteil{margin-top:30px;border-top:1px solid var(--line);padding-top:16px}
+.erl h4{font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;margin:16px 0 5px}
+.erl p{margin:0 0 7px}
+.erl ul{margin:2px 0 8px;padding-left:1.2em}
+.erl .beispiel{background:#F5F5F3;border-radius:3px;padding:8px 12px;margin:4px 0 8px;font-size:.95em}
+.erl .beispiel .lbl{display:block;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--grey);margin-bottom:2px}
+.erl .beispiel p{margin:0}
+.erl .erlhinweis{border-left:3px solid var(--org);padding:4px 10px;margin:4px 0 8px;color:var(--ink2)}
+.erl .q{font-size:.85em;color:var(--grey)}
+.erl .q a{color:var(--red)}
+.tabwrap{overflow-x:auto;margin:4px 0 10px}
+.erl table{border-collapse:collapse;font-size:.92em;min-width:100%}
+.erl th,.erl td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+.erl th{color:var(--grey);font-weight:600}
+.lexsuche input{width:100%;max-width:420px;padding:8px 10px;border:1px solid var(--editbd);border-radius:3px;background:var(--edit);font:inherit}
+.lexabc{display:flex;flex-wrap:wrap;gap:4px;margin:12px 0 8px}
+.lexabc a{display:inline-block;min-width:26px;text-align:center;padding:3px 4px;border:1px solid var(--line);border-radius:3px;color:var(--ink);text-decoration:none;font-size:13.5px}
+.lexabc a:hover{border-color:var(--red);color:var(--red)}
+.lexabc span{display:inline-block;min-width:26px;text-align:center;padding:3px 4px;color:#c9c4ba;font-size:13.5px}
+.lex .lbuchst{font-family:'Archivo',sans-serif;font-weight:600;font-size:22px;color:var(--red);margin:20px 0 4px;border-bottom:1px solid var(--line)}
+.lex .le{padding:10px 0 12px;border-bottom:1px dashed var(--line);scroll-margin-top:90px}
+.lex .le.ziel{background:#FBF1E7;transition:background .4s}
+.lex .le h4{font-family:'Archivo',sans-serif;font-weight:600;font-size:16px;margin:0 0 3px}
+.lex .le h4 small{font-family:"Segoe UI",system-ui,Arial,sans-serif;font-weight:400;color:var(--grey);font-size:12.5px;margin-left:6px}
+.lex .le p{margin:0 0 5px;font-size:14.5px;line-height:1.55}
+.lex .le .abgr{color:var(--ink2)}
+.lex .le .abgr b{color:var(--ink);font-weight:600}
+.lex .le .q{font-size:12.5px;color:var(--grey)}
+.lex .le .q a{color:var(--red)}
+.lex .le.siehe p{color:var(--ink2)}
+.lex .le a.sv{color:var(--red);font-weight:600}
 @media(max-width:1100px){.calc-layout{grid-template-columns:1fr}.calc-side{position:static;max-height:none;overflow:visible;padding:0}}
 @media(max-width:600px){
 .row label,.row input,.row input[type=date],.frage>.f,.wahl,.tage{flex:1 1 100%}
@@ -125,7 +173,13 @@ button{max-width:100%;white-space:normal}
 </div>
 </section>
 
-<section class="calc-section">
+<div class="wrap achse reiterzeile">
+<nav class="reiter" id="reiter" role="tablist" aria-label="Teile des Vertragswerks">
+  <a id="t-verleihvertrag" role="tab" href="#verleihvertrag">Verleihvertrag</a><a id="t-erlaeuterungen" role="tab" href="#erlaeuterungen">Erläuterungen</a><a id="t-arbeitsvertrag" role="tab" href="#arbeitsvertrag">Arbeitsvertrag</a><a id="t-begriffe" role="tab" href="#begriffe">Rechtsbegriffe</a>
+</nav>
+</div>
+
+<section class="calc-section panel" id="p-verleihvertrag" role="tabpanel" aria-labelledby="t-verleihvertrag">
 <div class="calc-layout achse">
 <div class="calc-main">
 
@@ -156,12 +210,14 @@ button{max-width:100%;white-space:normal}
   <div class="wahl"><label><input type="radio" name="tagesmin" value="ja" checked>ja</label><label><input type="radio" name="tagesmin" value="nein">nein</label></div></div>
 <div class="frage"><div class="f">Zuschläge in Prozent<small>0 lässt den Zuschlag weg. Trifft mehr als einer zu, gilt der höchste.</small></div>
   <div class="wahl"><span class="zs">Samstag 13 bis 23 Uhr <input type="number" id="zu-sa" min="0" step="5" value="25"></span><span class="zs">Nacht 23 bis 6 Uhr <input type="number" id="zu-na" min="0" step="5" value="50"></span><span class="zs">Sonntag und Feiertage <input type="number" id="zu-so" min="0" step="5" value="100"></span><span class="zs">Überzeit nach ArG <input type="number" id="zu-ue" min="0" step="5" value="25"></span></div></div>
-<div class="frage"><div class="f">Rayon<small>Im Rayon ist die Wegzeit im Ansatz enthalten, ausserhalb wird sie verrechnet. Die Fahrzeit misst du mit dem <a href="rayon.html">Rayon-Rechner</a>.</small></div>
-  <div class="wahl"><label><input type="radio" name="rayon" value="karte" checked>Karte im Einsatzblatt</label><label><input type="radio" name="rayon" value="minuten">Fahrzeit ab Sitz des Einsatzbetriebs</label><span class="zs" id="rayon-min-feld" hidden><input type="number" id="rayon-min" min="5" step="5" value="30"> Minuten</span></div></div>
+<div class="frage"><div class="f">Rayon gemessen ab<small>Im Rayon ist die Wegzeit im Ansatz enthalten, ausserhalb wird sie verrechnet. Vorgewählt ist die Messung wie im GAV (Art. 27.4): ab Sitz des Arbeitgebers, beim Verleih also des Verleihers.</small></div>
+  <div class="wahl"><label><input type="radio" name="rayon" value="verleiher" checked>Sitz des Verleihers</label><label><input type="radio" name="rayon" value="einsatz">Sitz des Einsatzbetriebs</label><label><input type="radio" name="rayon" value="beide">einer der beiden Sitze</label></div></div>
+<div class="frage"><div class="f">Grösse des Rayons<small>Fahrzeit mit dem Auto; der GAV rechnet mit 15 Minuten.</small></div>
+  <div class="wahl"><span class="zs"><input type="number" id="rayon-min" min="5" step="5" value="15"> Minuten</span></div></div>
+<div class="frage"><div class="f">Karte des Rayons<small>Die Karte zeigt, welche Baustellen im Rayon liegen. Sie entsteht mit dem <a href="rayon.html">Rayon-Rechner</a>.</small></div>
+  <div class="wahl"><label><input type="radio" name="rayonkarte" value="ja" checked>Karte im Einsatzblatt</label><label><input type="radio" name="rayonkarte" value="nein">ohne Karte</label></div></div>
 
-<h3 class="gruppe">Rolle des Arbeitnehmers</h3>
-<div class="frage"><div class="f">Selbstverleih<small>Der verliehene Arbeitnehmer ist zugleich Geschäftsführer des Verleihers.</small></div>
-  <div class="wahl"><label><input type="radio" name="selbst" value="ja" checked>ja</label><label><input type="radio" name="selbst" value="nein">nein</label></div></div>
+<h3 class="gruppe">Firma und Ausrüstung</h3>
 <div class="frage"><div class="f">Bewilligung<small>Verleiht die Firma ausschliesslich ihren Inhaber, braucht sie keine Bewilligung (Art. 28 Abs. 2 AVV).</small></div>
   <div class="wahl"><label><input type="radio" name="bewilligung" value="frei" checked>keine nötig (Inhaber)</label><label><input type="radio" name="bewilligung" value="vorhanden">Bewilligung vorhanden</label></div></div>
 <div class="frage"><div class="f">Werkzeug und Grundausrüstung<small>Handwerkzeug, Kleingeräte, Helm, Sicherheitsschuhe, Schutzbrille, Gehörschutz.</small></div>
@@ -171,17 +227,17 @@ button{max-width:100%;white-space:normal}
 
 <h3 class="gruppe">Ort und Recht</h3>
 <div class="frage"><div class="f">Kanton<small>Seine Feiertage gelten nicht als Werktage.</small></div>
-  <div class="wahl"><select id="kanton" aria-label="Kanton" style="padding:6px 8px;border:1px solid var(--editbd);border-radius:3px;background:var(--edit);font:inherit;font-size:14px"></select></div></div>
+  <div class="wahl"><select id="kanton" class="kanton" data-g="kanton" aria-label="Kanton" style="padding:6px 8px;border:1px solid var(--editbd);border-radius:3px;background:var(--edit);font:inherit;font-size:14px"></select></div></div>
 <div class="frage"><div class="f">Gerichtsstand</div>
   <div class="wahl"><label><input type="radio" name="gericht" value="verleiher" checked>Sitz des Verleihers</label><label><input type="radio" name="gericht" value="einsatz">Sitz des Einsatzbetriebs</label><label><input type="radio" name="gericht" value="ort">Ort</label><input type="text" id="gericht-ort" placeholder="z. B. Bern" aria-label="Gerichtsstand Ort" hidden></div></div>
 
 <h2><span class="st">B</span><span class="st-p"> · </span>Einsatzblatt</h2>
 <p class="erkl">Alle Felder sind freiwillig. Was leer bleibt, steht im PDF als Linie zum Ausfüllen von Hand.</p>
 <h3 class="gruppe">Verleiher</h3>
-<div class="row"><label for="v-firma">Firma</label><input id="v-firma" type="text" autocomplete="organization"></div>
-<div class="row"><label for="v-adresse">Adresse</label><input id="v-adresse" type="text" placeholder="Strasse Nr., PLZ Ort"></div>
+<div class="row"><label for="v-firma">Firma</label><input id="v-firma" data-g="v-firma" type="text" autocomplete="organization"></div>
+<div class="row"><label for="v-adresse">Adresse</label><input id="v-adresse" data-g="v-adresse" type="text" placeholder="Strasse Nr., PLZ Ort"></div>
 <div class="row"><label for="v-vertreten">Vertreten durch</label><input id="v-vertreten" type="text"></div>
-<div class="row"><label for="v-mail">E-Mail</label><input id="v-mail" type="email"></div>
+<div class="row"><label for="v-mail">E-Mail</label><input id="v-mail" data-g="v-mail" type="email"></div>
 <div class="row" id="zeile-bewilligung" hidden><label for="v-bewilligung">Bewilligung<small>Behörde und Datum der Bewilligung</small></label><input id="v-bewilligung" type="text"></div>
 <div class="row"><label for="v-stelle">Zuständige kantonale Stelle<small>Behörde für Personalverleih im Kanton des Verleihers, mit Adresse</small></label><input id="v-stelle" type="text"></div>
 <h3 class="gruppe">Einsatzbetrieb</h3>
@@ -190,8 +246,8 @@ button{max-width:100%;white-space:normal}
 <div class="row"><label for="e-kontakt">Kontaktperson<small>Unterzeichnet die Wochenrapporte</small></label><input id="e-kontakt" type="text"></div>
 <div class="row"><label for="e-mail">E-Mail</label><input id="e-mail" type="text"></div>
 <h3 class="gruppe">Einsatz</h3>
-<div class="row"><label for="a-name">Arbeitnehmer</label><input id="a-name" type="text"></div>
-<div class="row"><label for="a-quali">Berufliche Qualifikation<small>z. B. Elektroinstallateur EFZ</small></label><input id="a-quali" type="text"></div>
+<div class="row"><label for="a-name">Arbeitnehmer</label><input id="a-name" data-g="a-name" type="text"></div>
+<div class="row"><label for="a-quali">Berufliche Qualifikation<small>z. B. Elektroinstallateur EFZ</small></label><input id="a-quali" data-g="a-quali" type="text"></div>
 <div class="row"><label for="a-profil">Anforderungsprofil<small>Kenntnisse oder Nachweise über die Qualifikation hinaus, sonst leer</small></label><input id="a-profil" type="text"></div>
 <div class="row"><label for="a-art">Art der Arbeit<small>z. B. Elektroinstallationen auf Baustellen</small></label><input id="a-art" type="text"></div>
 <div class="row"><label for="a-beginn">Beginn des Einsatzes</label><input id="a-beginn" type="date"></div>
@@ -205,18 +261,18 @@ button{max-width:100%;white-space:normal}
 
 <h2><span class="st">C</span><span class="st-p"> · </span>Vertragsbedingungen</h2>
 <p class="erkl">So stehen die Vertragsbedingungen im PDF. Farbig hinterlegt ist, was von der vorgewählten Fassung abweicht.</p>
-<div class="vertrag" id="vertrag" aria-live="polite"></div>
+<div class="vertrag" id="vertrag-vv" aria-live="polite"></div>
 
 <h2><span class="st">D</span><span class="st-p"> · </span>PDF</h2>
 <p style="font-size:14.5px;color:var(--ink2);margin:6px 0">Das PDF enthält das Einsatzblatt, die Vertragsbedingungen und die Unterschriften. Es ist neutral gestaltet, ohne Logo und ohne Hinweis auf diese Seite. Es öffnet sich zuerst als Vorschau; herunterladen kannst du es danach. Drucke es zweimal aus: Jede Partei unterschreibt beide Exemplare und behält eines.</p>
-<div class="hint" id="fehler" hidden></div>
-<div class="knopfreihe"><button id="pdf" type="button">PDF erstellen</button></div>
-<div class="pdfvorschau" id="pdfvorschau" hidden>
+<div class="hint" id="fehler-vv" hidden></div>
+<div class="knopfreihe"><button id="pdf-vv" type="button">PDF erstellen</button></div>
+<div class="pdfvorschau" id="pdfvorschau-vv" hidden>
   <p class="erkl">Vorschau des PDF. Stimmt alles, lädst du es mit dem Knopf darunter herunter.</p>
-  <iframe id="pdfrahmen" title="Vorschau des PDF"></iframe>
+  <iframe id="pdfrahmen-vv" title="Vorschau des PDF"></iframe>
   <div class="knopfreihe">
-    <button id="pdfdown" type="button">PDF herunterladen</button>
-    <button id="pdftab" type="button" class="zweit">In neuem Tab öffnen</button>
+    <button id="pdfdown-vv" type="button">PDF herunterladen</button>
+    <button id="pdftab-vv" type="button" class="zweit">In neuem Tab öffnen</button>
   </div>
 </div>
 
@@ -245,6 +301,55 @@ button{max-width:100%;white-space:normal}
 </div>
 </section>
 
+<section class="calc-section panel" id="p-erlaeuterungen" role="tabpanel" aria-labelledby="t-erlaeuterungen" hidden>
+<div class="calc-layout achse">
+<div class="calc-main">
+<h2><span class="st">E</span><span class="st-p"> · </span>Erläuterungen zu deiner Auswahl</h2>
+<p class="erkl">Die Erläuterungen entstehen aus deiner Auswahl in beiden Verträgen: Sie erklären die Ziffern so, wie sie in deinem Vertrag stehen, mit den Werten, die du eingesetzt hast. Sie sind nicht Bestandteil der Verträge.</p>
+<div class="erl" id="erl" aria-live="polite"></div>
+</div>
+<aside class="calc-side">
+  <div class="side-box">
+    <h3>Wozu die Erläuterungen da sind</h3>
+    <p>Ein Vertrag regelt, was gilt; er erklärt nicht, warum. Die Erläuterungen geben dem Einsatzbetrieb und dir den Grund jeder Ziffer, ein Beispiel von der Baustelle und die Rechtsgrundlage. Du kannst sie dem Verleihvertrag als Beilage mitgeben.</p>
+  </div>
+  <div class="side-box">
+    <h3>Begriffe</h3>
+    <p>Bleibt die Maus kurz auf einem unterstrichenen Begriff stehen, erscheint seine Bedeutung. Ein Klick führt ins Lexikon unter <a href="#begriffe">Rechtsbegriffe</a>.</p>
+  </div>
+</aside>
+</div>
+</section>
+
+<section class="calc-section panel" id="p-arbeitsvertrag" role="tabpanel" aria-labelledby="t-arbeitsvertrag" hidden>
+<div class="calc-layout achse">
+<div class="calc-main" id="av-main">
+<!--AV-->
+</div>
+<aside class="calc-side" id="av-side">
+<!--AV-SEITE-->
+</aside>
+</div>
+</section>
+
+<section class="calc-section panel" id="p-begriffe" role="tabpanel" aria-labelledby="t-begriffe" hidden>
+<div class="calc-layout achse">
+<div class="calc-main">
+<h2><span class="st">L</span><span class="st-p"> · </span>Lexikon der Rechtsbegriffe</h2>
+<p class="erkl">Begriffe, die in Verleih- und Arbeitsverträgen vorkommen können, alphabetisch: was sie bedeuten, wie sie sich von ähnlichen Begriffen abgrenzen und wo sie im Gesetz stehen.</p>
+<div class="lexsuche"><input id="lex-suche" type="search" placeholder="Begriff suchen" aria-label="Begriff suchen"></div>
+<div class="lexabc" id="lex-abc"></div>
+<div class="lex" id="lex"></div>
+</div>
+<aside class="calc-side">
+  <div class="side-box">
+    <h3>Ein Wort, eine Sache</h3>
+    <p>Die Verträge im Vertragswerk brauchen für jede Sache genau ein Wort, so wie das Gesetz. Andere Wörter, die du aus Verträgen kennst, stehen im Lexikon mit einem Verweis auf das Wort, das hier gilt.</p>
+  </div>
+</aside>
+</div>
+</section>
+
 <div class="fbrand">
   <img src="bilder/emblem.png" alt="Naville Handwerk: Lastenvelo mit Anhänger und Firmenschild">
   <p class="fc">Der <span class="red">Notstromer</span> für Berner Elektrikerfirmen</p>
@@ -252,6 +357,10 @@ button{max-width:100%;white-space:normal}
 <footer class="foot">Naville Handwerk GmbH · 3005 Bern · UID CHE-334.176.319 · <a href="mailto:info@naville-handwerk.ch">info@naville-handwerk.ch</a> · <a href="impressum.html">Impressum</a></footer>
 <script src="vendor/jspdf.umd.min.js"></script>
 <script src="vertragswerk.js"></script>
+<script src="vertragswerk_begriffe.js"></script>
+<script src="vertragswerk_verleih.js"></script>
+<script src="vertragswerk_arbeit.js"></script>
+<script src="vertragswerk_erlaeuterung.js"></script>
 <script src="verfuegbarkeit.js"></script>
 <script src="hinweis.js"></script>
 <script src="nav.js"></script>

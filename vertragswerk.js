@@ -1,537 +1,624 @@
-/* Vertragswerk: Verleihvertrag für den Selbstverleih (Einsatzblatt und Vertragsbedingungen).
-   Die Auswahl unter A steuert den Text der Vertragsbedingungen, das Einsatzblatt unter B die
-   Felder der ersten Seite. Alles läuft im Browser: kein Speichern, keine Cookies, keine Abfragen.
-   Das PDF entsteht mit jsPDF (lokal in vendor/), immer neutral.
+/* Vertragswerk, Kern: Reiter, gemeinsame Angaben, Zählung der Ziffern, Vorschau, Begriffskärtchen
+   und die Bausteine des PDF. Die Verträge selbst stehen in eigenen Dateien und melden sich in
+   VW.vertraege an (vertragswerk_verleih.js, vertragswerk_arbeit.js); die Erläuterungen in
+   vertragswerk_erlaeuterung.js, das Lexikon in vertragswerk_begriffe.js.
+   Alles läuft im Browser: kein Speichern, keine Cookies. Die PDF entstehen mit jsPDF (vendor/).
 
-   Aufbau des Vertragstexts: modell(o) liefert die Ziffern mit ihren Buchstaben als Liste; was eine
-   Variante weglässt, fällt dort heraus. Ziffern und Buchstaben werden erst danach gezählt, und die
+   Aufbau eines Vertragstexts: modell(o) liefert die Ziffern als Liste [{id, titel, teil, abs: [{id, t}]}];
+   was eine Variante weglässt, fällt dort heraus. Ziffern und Buchstaben werden erst danach gezählt.
    Verweise im Text sind Marken, die beim Zählen aufgelöst werden:
    {Z:ziffer} = Nummer der Ziffer, {B:ziffer.buchstabe} = Buchstabe, {R:ziffer.buchstabe} = beides
-   ("7 a"). So stimmen die Verweise auch, wenn eine Variante einen Buchstaben weglässt. */
-(function () {
+   ("7 a"). Mit "@vv" oder "@av" zeigt eine Marke in den anderen Vertrag: {R@av:lohn.a}.
+   `teil` an einer Ziffer setzt einen Zwischentitel; die Buchstaben A, B, ... zählt der Kern. */
+(function (G) {
   "use strict";
+  var VW = G.VW = G.VW || {};
+  VW.vertraege = VW.vertraege || {};
+  VW.ERL = VW.ERL || {};
 
-  var KANTONE = [["AG", "Aargau"], ["AI", "Appenzell Innerrhoden"], ["AR", "Appenzell Ausserrhoden"], ["BE", "Bern"],
+  VW.KANTONE = [["AG", "Aargau"], ["AI", "Appenzell Innerrhoden"], ["AR", "Appenzell Ausserrhoden"], ["BE", "Bern"],
     ["BL", "Basel-Landschaft"], ["BS", "Basel-Stadt"], ["FR", "Freiburg"], ["GE", "Genf"], ["GL", "Glarus"],
     ["GR", "Graubünden"], ["JU", "Jura"], ["LU", "Luzern"], ["NE", "Neuenburg"], ["NW", "Nidwalden"], ["OW", "Obwalden"],
     ["SG", "St. Gallen"], ["SH", "Schaffhausen"], ["SO", "Solothurn"], ["SZ", "Schwyz"], ["TG", "Thurgau"], ["TI", "Tessin"],
     ["UR", "Uri"], ["VD", "Waadt"], ["VS", "Wallis"], ["ZG", "Zug"], ["ZH", "Zürich"]];
-  var ORDINAL = {1: "ersten", 2: "zweiten", 3: "dritten", 4: "vierten", 5: "fünften"};
+  VW.ORDINAL = {1: "ersten", 2: "zweiten", 3: "dritten", 4: "vierten", 5: "fünften"};
 
-  /* Grundfassung: die Vorwahl der Seite; Abweichungen davon werden in der Ansicht hinterlegt */
-  var GRUND = {absage: 2, kuendigung: 2, rechnung: "woche", zahlfrist: 30, mahn: [10, 20], verrechnung: true,
-    zurueck: true, mwst: true, rabatt: false, tagesmin: true, zu: {sa: 25, na: 50, so: 100, ue: 25},
-    rayon: "karte", rayonMin: 30, selbst: true, bewilligung: "frei", werkzeug: true, uebertritt: "frei",
-    kanton: "BE", gericht: "verleiher", gerichtOrt: ""};
+  VW.chf = function (n) { return "CHF " + String(n); };
+  VW.kantonName = function (k) { for (var i = 0; i < VW.KANTONE.length; i++) if (VW.KANTONE[i][0] === k) return VW.KANTONE[i][1]; return k; };
+  VW.datum = function (iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? m[3] + "." + m[2] + "." + m[1] : ""; };
+  var ZAHLWORT = ["null", "eins", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", "zwölf"];
+  /* Zahlen bis zwölf in Worten, ab 13 in Ziffern (Formregel der Vertragstexte) */
+  VW.zahlwort = function (n) { return n >= 0 && n <= 12 && n === Math.round(n) ? ZAHLWORT[n] : String(n); };
+  VW.b = function (id) { return {id: id, t: Array.prototype.slice.call(arguments, 1)}; };
 
-  function chf(n) { return "CHF " + String(n); }
-  function kantonName(k) { for (var i = 0; i < KANTONE.length; i++) if (KANTONE[i][0] === k) return KANTONE[i][1]; return k; }
+  /* ---------- Zählung und Marken ---------- */
 
-  /* ---------- Vertragstext ---------- */
-
-  function modell(o) {
-    var tm = o.tagesmin;
-    var zuTeile = [];
-    if (o.zu.sa > 0) zuTeile.push("Samstag 13 bis 23 Uhr " + o.zu.sa + " %");
-    if (o.zu.na > 0) zuTeile.push("Nacht 23 bis 6 Uhr " + o.zu.na + " %");
-    if (o.zu.so > 0) zuTeile.push("Sonntag und Feiertage " + o.zu.so + " %");
-    if (o.zu.ue > 0) zuTeile.push("Überzeit nach dem ArG " + o.zu.ue + " %");
-    var zu = zuTeile.length > 0;
-    var besondere = o.zu.sa > 0 || o.zu.na > 0 || o.zu.so > 0;
-    var stundenTag = tm ? "das Tagesminimum des Wochentags (Ziff. {R:tm.min})" : "die Stunden je Wochentag nach dem Einsatzblatt für diesen Tag";
-
-    var Z = [];
-    function ziffer(id, titel, abs) { Z.push({id: id, titel: titel, abs: abs.filter(Boolean)}); }
-    function b(id) { return {id: id, t: Array.prototype.slice.call(arguments, 1)}; }
-
-    ziffer("gegenstand", "Gegenstand und Vertragsteile", [
-      b("a", "Der Verleiher verleiht dem Einsatzbetrieb gegen Bezahlung der Kosten des Verleihs (Ziff. {Z:kosten}) den im Einsatzblatt genannten verliehenen Arbeitnehmer (nachfolgend Arbeitnehmer) im Personalverleih nach AVG (SR 823.11). Er schuldet weder ein Werk noch die Besorgung eines Auftrags."),
-      b("b", "Der Verleihvertrag besteht aus dem Einsatzblatt und diesen Vertragsbedingungen."),
-      b("c", "Bei Widerspruch gilt diese Rangordnung: zwingendes Recht; die nach Art. 20 AVG massgebenden Bestimmungen des Gesamtarbeitsvertrags der Schweizerischen Elektrobranche (GAV); Einsatzblatt; Vertragsbedingungen; im Übrigen das Gesetz."),
-      b("d", "Allgemeine Geschäftsbedingungen des Einsatzbetriebs gelten nur, soweit das Einsatzblatt oder ein Zusatz zum Verleihvertrag sie mit Titel und Fassung ausdrücklich übernimmt. Ein Verweis in einer Bestellung oder Auftragsbestätigung genügt nicht."),
-      b("e", "Arbeitstag ist jeder Tag, an dem der Arbeitnehmer beim Einsatzbetrieb arbeitet. Werktag ist Montag bis Freitag ohne die " +
-        (o.kanton === "BE" ? "Feiertage nach Art. 2 des Gesetzes über die Ruhe an öffentlichen Feiertagen des Kantons Bern (BSG 555.1)."
-          : "öffentlichen Feiertage des Kantons " + kantonName(o.kanton) + "."))
-    ]);
-
-    ziffer("an", "Arbeitnehmer und Qualifikation", [
-      b("a", "Der Verleiher verleiht nur den im Einsatzblatt genannten Arbeitnehmer. Er verleiht keinen anderen Arbeitnehmer an Stelle des genannten."),
-      b("qual", "Der Verleiher steht dafür ein, dass der Arbeitnehmer die im Einsatzblatt genannte Qualifikation hat."),
-      b("c", "Verlangt die Art der Arbeit Kenntnisse oder Ausbildungsnachweise über diese Qualifikation hinaus (Anforderungsprofil), nennt der Einsatzbetrieb sie, bevor die Parteien den Verleihvertrag unterzeichnen; sie stehen im Einsatzblatt."),
-      b("d", "Ausbildungsnachweise legt der Arbeitnehmer auf Verlangen vor. Kopien behält der Einsatzbetrieb nur so lange, wie er sie als Nachweis braucht.")
-    ]);
-
-    ziffer("weisung", "Weisungsrecht und Einbindung", [
-      b("a", "Der Einsatzbetrieb hat das Weisungsrecht über die Ausführung der Arbeit im Rahmen der Art der Arbeit. Er bindet den Arbeitnehmer in seine Arbeitsorganisation ein. Arbeitgeber bleibt der Verleiher."),
-      b("b", "Installationsarbeiten führt der Arbeitnehmer unter der Installationsbewilligung des Einsatzbetriebs aus, der ihn nach Art. 10b NIV einbindet und über diese Arbeiten die technische Aufsicht ausübt. Schlusskontrolle und Sicherheitsnachweis macht der Einsatzbetrieb durch seine fachkundigen oder kontrollberechtigten Personen."),
-      o.selbst && b("gf", "Der Arbeitnehmer ist zugleich Geschäftsführer des Verleihers. Während der Arbeit handelt er als Arbeitnehmer nach den Weisungen des Einsatzbetriebs; als Geschäftsführer handelt er nur bei Erklärungen zu diesem Vertrag."),
-      b("d", "Der Einsatzbetrieb verleiht den Arbeitnehmer nicht weiter und räumt keinem Dritten ein Weisungsrecht über ihn ein (Art. 26 Abs. 3 AVV). Arbeit auf Baustellen, auf denen andere Unternehmen tätig sind, bleibt zulässig. Für Arbeit in einer Arbeitsgemeinschaft braucht es die Zustimmung des Verleihers (E-Mail genügt).")
-    ]);
-
-    ziffer("ort", "Arbeitsort, Rayon und Wegzeit", [
-      b("a", "Arbeitsort sind der Sitz des Einsatzbetriebs und seine Baustellen. Ausserhalb des Rayons braucht es die Zustimmung des Verleihers (E-Mail genügt)."),
-      b("rayon", (o.rayon === "karte" ? "Der Rayon steht als Karte im Einsatzblatt."
-        : "Der Rayon umfasst die Orte, die vom Sitz des Einsatzbetriebs mit dem Auto in höchstens " + o.rayonMin + " Minuten Fahrzeit erreichbar sind.") +
-        " Im Rayon ist die Wegzeit im Ansatz enthalten; ausserhalb wird sie als Arbeitszeit in Rechnung gestellt."),
-      b("unterkunft", "Bei Arbeit ohne Heimkehr am Abend kommen die Kosten für Unterkunft und Verpflegung dazu.")
-    ]);
-
-    ziffer("zeit", "Arbeitszeit", [
-      b("a", "Die Stunden je Wochentag stehen im Einsatzblatt. Der Einsatzbetrieb teilt die Arbeitszeit ein."),
-      b("b", "Arbeit über die Stunden je Wochentag hinaus ordnet der Einsatzbetrieb im Rahmen von Arbeitsgesetz (ArG) und GAV an. Nachtarbeit braucht die Zustimmung des Arbeitnehmers (formlos, auch mündlich); Arbeit an Tagen, die keine Werktage sind, braucht die Bestätigung nach Ziff. {R:absage.weitere}. Bewilligungen holt der Einsatzbetrieb ein."),
-      b("c", "Für die Einhaltung des ArG (wöchentliche Höchstarbeitszeit, Pausen, Ruhezeit) ist der Einsatzbetrieb verantwortlich. Pausen sind keine Arbeitszeit."),
-      b("warte", "\"Fahrt zwischen Baustellen\" und \"Wartezeit während der Arbeit\" sind Arbeitszeit.")
-    ]);
-
-    var imAnsatz = ["der Lohn des Arbeitnehmers mit allen Sozialleistungen, Zulagen, Spesen und Nebenleistungen"];
-    if (o.werkzeug) imAnsatz.push("sein persönliches Handwerkzeug, seine Kleingeräte und seine persönliche Grundausrüstung");
-    imAnsatz.push("die Weiterbildungs- und Vollzugskosten nach dem GAV", "Verwaltungsaufwand und Gewinn des Verleihers");
-    var dazu = ["die Wegzeit ausserhalb des Rayons und bei Arbeit ohne Heimkehr am Abend die Kosten für Unterkunft und Verpflegung (Ziff. {R:ort.rayon}, {B:ort.unterkunft})"];
-    if (zu && tm) dazu.push("die Zuschläge und die Aufrundung auf das Tagesminimum (Ziff. {R:tm.min}, {B:tm.zuschlag})");
-    else if (tm) dazu.push("die Aufrundung auf das Tagesminimum (Ziff. {R:tm.min})");
-    else if (zu) dazu.push("die Zuschläge (Ziff. {R:tm.zuschlag})");
-    dazu.push((tm ? "das Tagesminimum" : "die Stunden") + " später abgesagter Werktage und bei Arbeitsausfall (Ziff. {R:absage.absage}, {R:ausfall.ausfall})");
-    dazu.push((o.mahn ? "die Konventionalstrafe für Mahnungen und die Kosten einer Betreibung" : "die Kosten einer Betreibung") + " (Ziff. {R:rechnung.mahnung})");
-
-    ziffer("kosten", "Kosten des Verleihs", [
-      b("a", "Der Einsatzbetrieb bezahlt für jede Stunde geleisteter Arbeitszeit den Ansatz nach dem Einsatzblatt."),
-      b("b", "Im Ansatz enthalten sind:", {liste: imAnsatz}, "Die Spesen des Arbeitnehmers sind Sache des Verleihers."),
-      b("c", "Zum Ansatz kommen nur dazu:", {liste: dazu}),
-      o.rabatt && b("rabatt", "Ein Rabatt nach dem Einsatzblatt gilt auf den Ansatz für die geleistete Arbeitszeit, bis zum dort genannten Datum."),
-      b("mwst", o.mwst ? "Zu allen Preisen kommt die Mehrwertsteuer (MWST) zum gesetzlichen Satz."
-        : "Der Verleiher ist nicht mehrwertsteuerpflichtig; auf die Preise kommt keine Mehrwertsteuer (MWST)."),
-      b("f", "Einen neuen Ansatz teilt der Verleiher mindestens zwei Monate im Voraus per E-Mail mit. Er gilt ab dem mitgeteilten Datum, sobald beide Parteien einen Zusatz zum Verleihvertrag unterzeichnet haben. Kommt kein Zusatz zustande, kann jede Partei den Verleihvertrag mit der Frist nach Ziff. {R:kuend.frist} kündigen, auch wenn das Einsatzblatt ein Ende des Einsatzes nennt.")
-    ]);
-
-    if (tm || zu) {
-      var zuSatz = "";
-      if (zu) {
-        zuSatz = "Für geleistete Arbeitszeit " + (besondere && o.zu.ue > 0 ? "zu besonderen Arbeitszeiten und für Überzeit" : besondere ? "zu besonderen Arbeitszeiten" : "für Überzeit") +
-          " kommt ein Zuschlag auf den Ansatz dazu: " + zuTeile.join(", ") + ".";
-        if (zuTeile.length > 1) zuSatz += " Trifft mehr als ein Zuschlag zu, gilt nur der höchste.";
-        if (tm) zuSatz += " Die Aufrundung auf das Tagesminimum erhält keinen Zuschlag.";
-      }
-      ziffer("tm", tm && zu ? "Tagesminimum und Zuschläge" : tm ? "Tagesminimum" : "Zuschläge", [
-        tm && b("min", "An jedem Werktag, an dem der Arbeitnehmer arbeitet, stellt der Verleiher mindestens die Stunden je Wochentag nach dem Einsatzblatt für diesen Tag in Rechnung (Tagesminimum), auch wenn der Einsatzbetrieb den Arbeitnehmer früher heimschickt. Darüber gilt die geleistete Arbeitszeit."),
-        tm && b("frueh", "Geht der Arbeitnehmer aus Gründen in seiner Person früher oder bricht der Verleiher den Arbeitstag ab, wird nur die geleistete Arbeitszeit in Rechnung gestellt. An Tagen, die keine Werktage sind, gilt kein Tagesminimum."),
-        zu && b("zuschlag", zuSatz),
-        tm && b("vermerk", "Abweichungen vom Tagesminimum gelten nur mit einem Vermerk des Verleihers im Wochenrapport.")
-      ]);
-    }
-
-    ziffer("rapport", "Wochenrapport", [
-      b("a", "Der Verleiher erfasst die geleistete Arbeitszeit je Kalenderwoche im Wochenrapport, mit Beginn, Ende und Pausen je Arbeitstag. Der Wochenrapport ist Grundlage der Rechnung."),
-      b("b", "Die Kontaktperson nach dem Einsatzblatt ist ermächtigt, den Wochenrapport für den Einsatzbetrieb zu unterzeichnen und Einwendungen zu erheben. Sie unterzeichnet von Hand auf Papier oder auf dem Bildschirm."),
-      b("einw", "Einwendungen sind innert fünf Werktagen nach der Unterschrift per E-Mail zu erheben; sie nennen den bestrittenen Arbeitstag und den Grund. Danach gilt der Wochenrapport als anerkannt; offensichtliche Schreib- und Rechenfehler bleiben vorbehalten. Der unbestrittene Teil der Rechnung bleibt bis zum Fälligkeitsdatum (Ziff. {R:rechnung.faellig}) zu bezahlen."),
-      b("zust", "Unterzeichnet der Einsatzbetrieb nicht, stellt der Verleiher den Wochenrapport per E-Mail zu; die Frist nach Bst. {B:rapport.einw} läuft ab dem Zugang.")
-    ]);
-
-    ziffer("rechnung", "Rechnung und Zahlung", [
-      b("faellig", "Der Verleiher stellt je " + (o.rechnung === "monat" ? "Kalendermonat" : "Kalenderwoche") + " Rechnung. Fälligkeitsdatum ist der " + o.zahlfrist + ". Tag nach dem Rechnungsdatum oder, wenn dieser kein Werktag ist, der nächste Werktag. Die Rechnung nennt das Fälligkeitsdatum; es ist Verfalltag."),
-      b("b", "Der Rechnungsbetrag ist ohne Abzug bis zum Fälligkeitsdatum über den QR-Zahlteil der Rechnung zu bezahlen."),
-      o.verrechnung && b("verrechnung", "Der Einsatzbetrieb verzichtet darauf, Forderungen des Verleihers mit Gegenforderungen zu verrechnen (Art. 126 OR). Einwendungen nach Ziff. {Z:rapport} bleiben vorbehalten."),
-      b("mahnung", "Nach einer kostenlosen Zahlungserinnerung mahnt der Verleiher höchstens zweimal. " +
-        (o.mahn ? "Für die Mahnung schuldet der Einsatzbetrieb " + chf(o.mahn[0]) + ", für die letzte Mahnung " + chf(o.mahn[1]) + ", als Konventionalstrafe für die verspätete Zahlung. " : "") +
-        "Die Kosten einer Betreibung trägt der Einsatzbetrieb."),
-      o.zurueck && b("zurueck", "Ist eine fällige Rechnung offen, kann der Verleiher nach Mitteilung per E-Mail die Arbeit an weiteren vereinbarten Tagen bis zur Zahlung zurückhalten, ohne dadurch ersatzpflichtig zu werden.")
-    ]);
-
-    ziffer("absage", "Weitere Tage, Absage und Verschiebung", [
-      b("a", "Vereinbart sind die Werktage, für die das Einsatzblatt Stunden vorsieht, und die Tage, die der Verleiher nach Bst. {B:absage.weitere} bestätigt hat."),
-      b("absage", "Der Einsatzbetrieb kann vereinbarte Tage absagen. Die Absage ist ohne Kosten, wenn sie dem Verleiher bis 17 Uhr am " + ORDINAL[o.absage] + " Werktag vor dem abgesagten Tag per E-Mail zugeht. Für jeden später abgesagten Werktag stellt der Verleiher " + stundenTag + " in Rechnung."),
-      b("c", "Eine Absage umfasst höchstens zehn zusammenhängende Werktage. Eine längere Absage braucht die Zustimmung des Verleihers (E-Mail genügt); im Übrigen gilt Ziff. {Z:kuend}."),
-      b("d", "Eine Verschiebung ist eine Absage nach Bst. {B:absage.absage}, verbunden mit einer Anfrage nach Bst. {B:absage.weitere}."),
-      b("weitere", "Weitere Tage fragt der Einsatzbetrieb per E-Mail an. Sie sind vereinbart, wenn der Verleiher sie per E-Mail bestätigt."),
-      b("f", "Teilt der Einsatzbetrieb vor einem vereinbarten Tag mit, dass an diesem nicht gearbeitet wird, ist das eine Absage, gleich aus welchem Grund. Hindernisse am Tag selbst regelt Ziff. {Z:ausfall}.")
-    ]);
-
-    ziffer("ausfall", "Arbeitsausfall", [
-      b("ausfall", "Kann der Arbeitnehmer an einem vereinbarten Werktag wegen eines Hindernisses nicht oder nicht voll arbeiten (Arbeitsausfall), stellt der Verleiher mindestens " + stundenTag + " in Rechnung, auch ohne Verschulden des Einsatzbetriebs. Hindernis ist jeder Umstand ausser höherer Gewalt (Ziff. {Z:hg}), der weder in der Person des Arbeitnehmers noch beim Verleiher liegt, etwa fehlendes Material, Wetter oder ein Halt durch andere Unternehmen, die Bauleitung oder die Bauherrschaft."),
-      b("b", "Der Einsatzbetrieb kann Ersatzarbeit zuweisen, im Rahmen der Art der Arbeit (Ziff. {R:weisung.a}) und an einem Arbeitsort nach Ziff. {Z:ort}. Die Zeit der Ersatzarbeit ist geleistete Arbeitszeit."),
-      b("c", "Teilt der Einsatzbetrieb ein Hindernis vor dem Tag mit, gilt Ziff. {Z:absage}. Wartezeit regelt Ziff. {R:zeit.warte}, höhere Gewalt Ziff. {Z:hg}.")
-    ]);
-
-    ziffer("verh", "Verhinderung des Arbeitnehmers", [
-      b("a", "Ist der Arbeitnehmer wegen Krankheit, Unfall oder aus einem anderen Grund in seiner Person verhindert, ruht der Einsatz. Für vereinbarte Tage, an denen er verhindert ist, stellt der Verleiher nichts in Rechnung; " +
-        (tm ? "für den Tag, an dem die Verhinderung während der Arbeit eintritt, gilt Ziff. {R:tm.frueh}." : "für den Tag, an dem die Verhinderung während der Arbeit eintritt, stellt er nur die geleistete Arbeitszeit in Rechnung.") +
-        " Ein Ende des Einsatzes nach dem Einsatzblatt bleibt."),
-      b("b", "Der Verleiher teilt die Verhinderung und ihre voraussichtliche Dauer sofort der Kontaktperson mit (formlos, auch mündlich). Den Grund nennt er nur mit Zustimmung des Arbeitnehmers."),
-      b("c", "Ferien und andere geplante Abwesenheiten des Arbeitnehmers teilt der Verleiher mindestens vier Wochen im Voraus per E-Mail mit; er nimmt dabei Rücksicht auf den Einsatzbetrieb. Diese Tage sind keine vereinbarten Tage.")
-    ]);
-
-    ziffer("hg", "Höhere Gewalt", [
-      b("a", "Höhere Gewalt ist ein unvorhersehbares, aussergewöhnliches Ereignis, das von aussen kommt und sich nicht abwenden lässt, etwa Krieg, Naturkatastrophe oder Epidemie mit behördlichen Massnahmen. Gewöhnliches Wetter und andere Hindernisse nach Ziff. {R:ausfall.ausfall} sind keine höhere Gewalt."),
-      b("b", "Soweit und solange höhere Gewalt die Arbeit hindert, ruht der Einsatz: Der Verleiher stellt für die betroffenen vereinbarten Tage nichts in Rechnung, und keine Partei haftet für die Folgen. Geldschulden bleiben bestehen."),
-      b("c", "Die betroffene Partei teilt das Ereignis der anderen Partei sofort mit (formlos, auch mündlich).")
-    ]);
-
-    ziffer("haft", "Haftung", [
-      b("a", "Der Verleiher haftet nur für die Qualifikation nach Ziff. {R:an.qual}. Für das Ergebnis der Arbeit haftet er nicht; Nachbesserung und Minderung sind ausgeschlossen. Für Folgen einer Verhinderung des Arbeitnehmers (Ziff. {Z:verh}) haftet er nicht."),
-      b("b", "Die im anerkannten Wochenrapport (Ziff. {R:rapport.einw}, {B:rapport.zust}) erfasste Arbeit gilt als auf Weisung des Einsatzbetriebs geleistet, soweit der Einsatzbetrieb nicht das Gegenteil beweist."),
-      b("schaden", "Schäden, die der Arbeitnehmer bei der Arbeit verursacht, trägt der Einsatzbetrieb. Das gilt für Schäden bei ihm selbst, an Sachen, die er dem Arbeitnehmer zur Verfügung stellt, und bei Dritten. Er hält den Verleiher und den Arbeitnehmer schadlos, auch gegen jeden Rückgriff eines Versicherers."),
-      b("d", "Bei Absicht oder grober Fahrlässigkeit des Arbeitnehmers gilt Bst. {B:haft.schaden} nicht.")
-    ]);
-
-    ziffer("vers", "Versicherungen", [
-      b("a", "Der Verleiher versichert den Arbeitnehmer nach Gesetz und Arbeitsvertrag (Unfall, Krankentaggeld, berufliche Vorsorge) und hat eine Betriebshaftpflichtversicherung für den Personalverleih."),
-      b("b", "Schäden an Sachen, an oder mit denen der Arbeitnehmer arbeitet, und an Sachen, die ihm zum Gebrauch zur Verfügung gestellt oder zur Aufbewahrung übergeben sind (Bearbeitungs- und Obhutsschäden), versichert der Einsatzbetrieb; ebenso Bauwerk, Material, Grossgeräte und Installationen, soweit nicht die Bauherrschaft sie versichert."),
-      b("c", "Die Betriebshaftpflichtversicherung des Einsatzbetriebs schliesst den Arbeitnehmer bei der Arbeit ein; dafür steht der Einsatzbetrieb ein."),
-      b("d", "Fahrzeuge stellt der Einsatzbetrieb dem Arbeitnehmer nur zur Verfügung, wenn dessen Führerausweis die Kategorie deckt. Halterhaftpflicht und Kasko samt Selbstbehalt sind Sache des Einsatzbetriebs; für Schäden gilt Ziff. {Z:haft}.")
-    ]);
-
-    ziffer("sicher", "Arbeitssicherheit, Ausrüstung und Werkzeug", [
-      b("a", "Der Einsatzbetrieb hat gegenüber dem Arbeitnehmer die Pflichten zur Arbeitssicherheit und zum Gesundheitsschutz wie gegenüber seinen eigenen Mitarbeitern (Art. 10 VUV). Er instruiert ihn zu Beginn des Einsatzes, auf jeder neuen Baustelle und bei jeder wesentlichen Änderung und stellt sichere Arbeitsmittel und die einsatzbezogene Schutzausrüstung."),
-      o.werkzeug && b("grund", "Die persönliche Grundausrüstung (Helm, Sicherheitsschuhe, Schutzbrille, Gehörschutz) bringt der Arbeitnehmer mit."),
-      b("werkzeug", o.werkzeug
-        ? "Der Arbeitnehmer bringt sein persönliches Handwerkzeug und seine Kleingeräte (Werkzeug) mit. Material, Grossgeräte, Gerüste, Hebemittel und Verbrauchsmaterial stellt der Einsatzbetrieb."
-        : "Die persönliche Grundausrüstung (Helm, Sicherheitsschuhe, Schutzbrille, Gehörschutz), Handwerkzeug, Kleingeräte, Material, Grossgeräte, Gerüste, Hebemittel und Verbrauchsmaterial stellt der Einsatzbetrieb."),
-      b("gefahr", "Bei Gefahr stoppt der Arbeitnehmer die betroffene Arbeit und teilt das sofort der Kontaktperson mit (formlos, auch mündlich). Bis eine Lösung gefunden ist, gilt Ziff. {Z:ausfall}."),
-      o.werkzeug && b("aufbewahrung", "Stellt der Einsatzbetrieb für das Werkzeug einen abschliessbaren Raum oder Behälter zur Verfügung, haftet er für Verlust und Beschädigung dort; andere gebrauchen das Werkzeug nur mit Zustimmung des Arbeitnehmers (formlos, auch mündlich). Sonst ist die Aufbewahrung Sache des Arbeitnehmers.")
-    ]);
-
-    var fristSatz = "Sonst kann jede Partei ihn mit einer Frist von " + o.kuendigung + " Werktagen per E-Mail kündigen.";
-    if (o.kuendigung === 2) fristSatz += " Als Entgegenkommen des Verleihers gilt diese kurze Frist auch dann, wenn der Einsatz schon lange dauert. Der Verleiher bittet darum, eine Kündigung wenn möglich eine Woche vor dem gewünschten Ende zu erklären, damit er für den Arbeitnehmer einen neuen Einsatz finden kann; verbindlich bleibt die Frist von zwei Werktagen.";
-    ziffer("kuend", "Dauer, Kündigung und Übertritt", [
-      b("frist", "Nennt das Einsatzblatt ein Ende des Einsatzes, endet der Verleihvertrag an diesem Tag ohne Kündigung. " + fristSatz),
-      b("b", "Wird nach dem Ende des Einsatzes mit Wissen beider Parteien weitergearbeitet, gilt der Verleihvertrag ohne Ende weiter und ist nach Bst. {B:kuend.frist} kündbar."),
-      o.zurueck && b("sofort", "Ist eine Rechnung nach Ablauf der Zahlungsfrist der letzten Mahnung noch offen, kann der Verleiher den Verleihvertrag per E-Mail auf sofort kündigen."),
-      b("uebertritt", o.uebertritt === "frei"
-        ? "Nach dem Ende des Einsatzes kann der Einsatzbetrieb den Arbeitnehmer anstellen (Übertritt in ein direktes Arbeitsverhältnis); eine Entschädigung schuldet er dafür nicht."
-        : "Nach dem Ende des Einsatzes kann der Einsatzbetrieb den Arbeitnehmer anstellen (Übertritt in ein direktes Arbeitsverhältnis). Hat der Einsatz weniger als drei Monate gedauert und tritt der Arbeitnehmer weniger als drei Monate nach dessen Ende über, schuldet der Einsatzbetrieb die Entschädigung nach dem Einsatzblatt (Art. 22 Abs. 3 und 4 AVG).")
-    ]);
-
-    ziffer("geheim", "Geheimhaltung, Datenschutz und Kontrollen der paritätischen Organe", [
-      b("a", "Die Parteien wahren gegenseitig ihre Geschäftsgeheimnisse, auch nach dem Ende des Einsatzes. Der Verleiher gibt Pläne, Preise, Kunden und Baustellen des Einsatzbetriebs sowie Zugangscodes und Schlüssel nicht an Dritte weiter, auch nicht an andere Einsatzbetriebe; ausgenommen ist, was Gesetz oder Behörden verlangen oder die Abwicklung des Verleihvertrags erfordert. Der Verleiher verpflichtet den Arbeitnehmer gleich."),
-      b("b", "Personendaten bearbeiten die Parteien zur Abwicklung des Verleihvertrags und zur Pflege der Geschäftsbeziehung. Über den Arbeitnehmer gibt der Verleiher nur bekannt, was der Einsatz erfordert; der Einsatzbetrieb verwendet diese Daten nur für den Einsatz."),
-      b("c", "Fotos von Baustellen veröffentlicht der Verleiher und den Einsatzbetrieb nennt er als Referenz nur mit dessen Zustimmung (E-Mail genügt)."),
-      b("d", "Der Einsatzbetrieb duldet Kontrollen der paritätischen Organe, gewährt ihnen während der Arbeitszeit Zutritt zum Arbeitsort und erteilt die Auskünfte zum Einsatz, die sie dafür brauchen.")
-    ]);
-
-    var gericht = o.gericht === "einsatz" ? "der Sitz des Einsatzbetriebs" : o.gericht === "ort" && o.gerichtOrt ? o.gerichtOrt : "der Sitz des Verleihers";
-    ziffer("schluss", "Schlussbestimmungen", [
-      b("a", "Erklärungen per E-Mail nach diesen Vertragsbedingungen gehen an die E-Mail-Adressen im Einsatzblatt. Erklärungen des Einsatzbetriebs per E-Mail kommen von den E-Mail-Adressen im Einsatzblatt; weitere Absender benennt er per E-Mail. Eine E-Mail geht zu, wenn sie im Postfach eintrifft; trifft sie nach 17 Uhr oder an einem Tag ein, der kein Werktag ist, geht sie am nächsten Werktag zu. Erklärungen an den Arbeitnehmer während der Arbeit ersetzen die E-Mail nicht."),
-      b("b", "Änderungen und Ergänzungen des Einsatzblatts oder der Vertragsbedingungen gelten nur, wenn beide Parteien sie als Zusatz zum Verleihvertrag unterzeichnen. Erklärungen per E-Mail nach diesen Vertragsbedingungen ändern den Verleihvertrag nicht."),
-      b("c", "Ist eine Bestimmung nichtig, bleibt der Verleihvertrag im Übrigen gültig; an ihre Stelle tritt die gültige Regelung, die ihrem Zweck am nächsten kommt."),
-      b("d", "Forderungen aus dem Verleihvertrag tritt keine Partei ohne Zustimmung der anderen Partei ab (E-Mail genügt)."),
-      b("e", "Es gilt schweizerisches Recht. Gerichtsstand ist " + gericht + ".")
-    ]);
-    return Z;
-  }
-
-  /* Zählt Ziffern und Buchstaben und löst die Verweis-Marken auf. Eine Ziffer mit nur einem
-     Absatz trägt keinen Buchstaben. Ergebnis: [{nr, titel, abs: [{id, bst, t}]}]. */
-  function gezaehlt(Z) {
-    var nr = {}, bst = {}, fehlt = [];
+  /* Nummern und Buchstaben eines Vertrags. Eine Ziffer mit nur einem Absatz trägt keinen Buchstaben. */
+  VW.zaehlen = function (Z) {
+    var nr = {}, bst = {}, teil = {}, t = 0;
     Z.forEach(function (z, i) {
       nr[z.id] = i + 1;
+      if (z.teil) { teil[z.id] = String.fromCharCode(65 + t) + ". " + z.teil; t++; }
       z.abs.forEach(function (a, j) { bst[z.id + "." + a.id] = z.abs.length > 1 ? String.fromCharCode(97 + j) : ""; });
     });
-    function aufloesen(s) {
-      return s.replace(/\{([ZBR]):([a-z]+)(?:\.([a-z]+))?\}/g, function (m, art, zid, pid) {
-        var n = nr[zid], k = zid + "." + pid;
-        if (n === undefined || (art !== "Z" && bst[k] === undefined)) { fehlt.push(m); return "?"; }
-        return art === "Z" ? String(n) : art === "B" ? bst[k] : (n + (bst[k] ? " " + bst[k] : ""));
+    return {nr: nr, bst: bst, teil: teil};
+  };
+
+  /* Löst die Marken eines Texts auf; `eigen` ist der Vertrag des Texts ("vv" oder "av"),
+     `zahlen` die Zählungen beider Verträge. Fehlende Ziele landen in `fehlt` und erscheinen als "?". */
+  VW.aufloeser = function (eigen, zahlen, fehlt) {
+    return function (s) {
+      return s.replace(/\{([ZBR])(?:@(vv|av))?:([a-z0-9]+)(?:\.([a-z0-9]+))?\}/g, function (m, art, wo, zid, pid) {
+        var zz = zahlen[wo || eigen];
+        var n = zz ? zz.nr[zid] : undefined, k = zid + "." + pid;
+        if (n === undefined || (art !== "Z" && zz.bst[k] === undefined)) { fehlt.push(m); return "?"; }
+        return art === "Z" ? String(n) : art === "B" ? zz.bst[k] : (n + (zz.bst[k] ? " " + zz.bst[k] : ""));
       });
-    }
+    };
+  };
+  function teilAufloesen(teil, auf) {
+    if (typeof teil === "string") return auf(teil);
+    var aus = {};
+    Object.keys(teil).forEach(function (k) {
+      var v = teil[k];
+      if (typeof v === "string") aus[k] = auf(v);
+      else if (Array.isArray(v)) aus[k] = v.map(function (x) {
+        if (typeof x === "string") return auf(x);
+        if (Array.isArray(x)) return x.map(function (y) { return typeof y === "string" ? auf(y) : y; });
+        return teilAufloesen(x, auf);
+      });
+      else if (v && typeof v === "object") aus[k] = teilAufloesen(v, auf);
+      else aus[k] = v;
+    });
+    return aus;
+  }
+  VW.teilAufloesen = teilAufloesen;
+
+  /* Gezählter Vertrag: [{id, nr, titel, teil, abs: [{id, bst, t}]}], dazu .fehlt */
+  VW.gezaehlt = function (Z, eigen, zahlen) {
+    eigen = eigen || "vv";
+    zahlen = zahlen || {};
+    var z0 = VW.zaehlen(Z);
+    zahlen[eigen] = z0;
+    var fehlt = [], auf = VW.aufloeser(eigen, zahlen, fehlt);
     var aus = Z.map(function (z) {
-      return {id: z.id, nr: nr[z.id], titel: z.titel, abs: z.abs.map(function (a) {
-        return {id: a.id, bst: bst[z.id + "." + a.id], t: a.t.map(function (teil) {
-          return typeof teil === "string" ? aufloesen(teil) : {liste: teil.liste.map(aufloesen)};
-        })};
+      return {id: z.id, nr: z0.nr[z.id], titel: z.titel, teil: z0.teil[z.id] || "", abs: z.abs.map(function (a) {
+        return {id: a.id, bst: z0.bst[z.id + "." + a.id], t: a.t.map(function (teil) { return teilAufloesen(teil, auf); })};
       })};
     });
     if (fehlt.length && typeof console !== "undefined") console.warn("Vertragswerk: Verweis ohne Ziel", fehlt);
     aus.fehlt = fehlt;
     return aus;
-  }
+  };
 
   /* Text eines Absatzes zum Vergleich mit der Grundfassung (ohne Nummern, damit eine weggefallene
      Ziffer nicht alle folgenden als geändert markiert) */
-  function vergleichstext(a) {
-    return a.t.map(function (teil) { return typeof teil === "string" ? teil : teil.liste.join("|"); }).join("#")
+  VW.vergleichstext = function (a) {
+    return a.t.map(function (teil) { return typeof teil === "string" ? teil : JSON.stringify(teil); }).join("#")
       .replace(/Ziff\. [0-9]+( [a-z])?(, [0-9]*( ?[a-z])?)*/g, "Ziff.").replace(/Bst\. [a-z]/g, "Bst.");
-  }
-  function listeMitZeichen(liste) {
+  };
+  VW.listeMitZeichen = function (liste) {
     return liste.map(function (p, i) { return p + (i < liste.length - 1 ? ";" : "."); });
+  };
+
+  /* Erläuterungen eines Vertrags zur Auswahl o: [{id, nr, titel, teil, bloecke}] in der Reihenfolge
+     des gezählten Vertrags. Blöcke: Text, {liste}, {tabelle: {kopf, zeilen}}, {beispiel}, {hinweis},
+     {quellen: [{t, url}]}. */
+  VW.erlaeutert = function (art, o, f, gez, zahlen) {
+    var E = VW.ERL[art] || {}, fehlt = [], auf = VW.aufloeser(art, zahlen, fehlt), aus = [];
+    function bloecke(fn, z) {
+      if (typeof fn !== "function") return [];
+      return (fn(o, f, z) || []).filter(Boolean).map(function (bl) { return teilAufloesen(bl, auf); });
+    }
+    var vor = bloecke(E._vorspann, null);
+    gez.forEach(function (z) {
+      aus.push({id: z.id, nr: z.nr, titel: z.titel, teil: z.teil, bloecke: bloecke(E[z.id], z)});
+    });
+    aus.vorspann = vor;
+    aus.fehlt = fehlt;
+    return aus;
+  };
+
+  /* ---------- Begriffe ---------- */
+
+  var muster = null, formZuId = {};
+  function begriffMuster() {
+    if (muster !== null) return muster;
+    var formen = [];
+    (VW.BEGRIFFE || []).forEach(function (e) {
+      (e.formen || []).forEach(function (fo) { formen.push(fo); formZuId[fo.toLowerCase()] = e.id; });
+    });
+    formen.sort(function (a, b) { return b.length - a.length; });
+    var bst = "A-Za-zÄÖÜäöüàéèêëïôç";
+    muster = formen.length ? new RegExp("(^|[^" + bst + "])(" + formen.map(function (s) {
+      return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }).join("|") + ")(?=$|[^" + bst + "])", "g") : null;
+    return muster;
   }
+  VW.begriff = function (id) {
+    var L = VW.BEGRIFFE || [];
+    for (var i = 0; i < L.length; i++) if (L[i].id === id) return L[i];
+    return null;
+  };
+  /* Fundstellen der Lexikon-Begriffe in einem Text: [{von, bis, id}] */
+  VW.begriffeIn = function (s) {
+    var re = begriffMuster(), aus = [], m;
+    if (!re) return aus;
+    re.lastIndex = 0;
+    while ((m = re.exec(s)) !== null) {
+      var von = m.index + m[1].length;
+      aus.push({von: von, bis: von + m[2].length, id: formZuId[m[2].toLowerCase()]});
+      re.lastIndex = von + m[2].length;
+    }
+    return aus;
+  };
+
+  /* ---------- PDF-Bausteine (A4 hoch, Helvetica) ---------- */
+
+  VW.pdfNeu = function (JsPDF) {
+    var d = new JsPDF({unit: "mm", format: "a4"});
+    var P = {d: d, x: 20, rechts: 190, PH: 297, y: 22};
+    P.B = P.rechts - P.x; P.UNTEN = P.PH - 18;
+    var INK = [0, 0, 0], GRAU = [110, 107, 100], LINIE = [200, 196, 188];
+    P.INK = INK; P.GRAU = GRAU; P.LINIE = LINIE;
+    P.farbe = function (c) { d.setTextColor(c[0], c[1], c[2]); };
+    P.schrift = function (stil, gr) { d.setFont("helvetica", stil); d.setFontSize(gr); };
+    P.platz = function (h) { if (P.y + h > P.UNTEN) { d.addPage(); P.y = 22; } };
+    P.seite = function () { d.addPage(); P.y = 22; };
+
+    P.titel = function (t, unter, kopftext) {
+      P.schrift("bold", 17); P.farbe(INK); d.text(t, P.x, P.y); P.y += 6.5;
+      if (unter) { P.schrift("normal", 11); P.farbe(GRAU); d.text(unter, P.x, P.y); P.y += 6; }
+      if (kopftext) {
+        P.schrift("normal", 9); P.farbe(GRAU);
+        var k = d.splitTextToSize(kopftext, P.B); d.text(k, P.x, P.y); P.y += k.length * 4 + 1;
+      }
+    };
+    P.abschnitt = function (t) {
+      P.platz(18);
+      P.y += 3; P.schrift("bold", 10.5); P.farbe(INK); d.text(t, P.x, P.y);
+      P.y += 1.8; d.setDrawColor(INK[0], INK[1], INK[2]); d.setLineWidth(0.35); d.line(P.x, P.y, P.rechts, P.y); P.y += 4.6;
+    };
+    P.LX = 58;   /* Breite der Bezeichnungsspalte */
+    P.feld = function (label, w, hinweis) {
+      var LX = P.LX;
+      P.schrift("normal", 10);
+      var zl = w ? d.splitTextToSize(String(w), P.B - LX) : [""];
+      P.schrift("normal", 7);
+      var hl = hinweis ? d.splitTextToSize(hinweis, LX - 3) : [];
+      var h = Math.max(zl.length * 4.6, 3.4 + hl.length * 3) + 2;
+      P.platz(h);
+      P.schrift("normal", 9.5); P.farbe(GRAU); d.text(label, P.x, P.y);
+      if (hl.length) { P.schrift("normal", 7); d.text(hl, P.x, P.y + 3.3); }
+      P.schrift("normal", 10); P.farbe(INK); if (w) d.text(zl, P.x + LX, P.y);
+      var ly = P.y + (zl.length - 1) * 4.6 + 1.6;
+      if (hl.length) ly = Math.max(ly, P.y + 1.6);
+      d.setDrawColor(LINIE[0], LINIE[1], LINIE[2]); d.setLineWidth(0.25); d.line(P.x + LX, ly, P.rechts, ly);
+      P.y += h;
+    };
+    /* Kleine Tabelle mit Kopfzeile in der Wertspalte (z. B. Stunden je Wochentag) */
+    P.raster = function (label, hinweis, koepfe, werte) {
+      var LX = P.LX;
+      P.platz(17);
+      P.schrift("normal", 9.5); P.farbe(GRAU); d.text(label, P.x, P.y);
+      if (hinweis) { P.schrift("normal", 7.5); d.text(hinweis, P.x, P.y + 3.8); }
+      var tb = (P.B - LX) / koepfe.length;
+      d.setDrawColor(LINIE[0], LINIE[1], LINIE[2]); d.setLineWidth(0.25);
+      koepfe.forEach(function (k, i) {
+        var tx = P.x + LX + i * tb;
+        d.rect(tx, P.y - 3.6, tb, 5, "S"); d.rect(tx, P.y + 1.4, tb, 6.5, "S");
+        P.schrift("normal", 8.5); P.farbe(GRAU); d.text(k, tx + tb / 2, P.y, {align: "center"});
+        P.schrift("normal", 10); P.farbe(INK); if (werte[i]) d.text(String(werte[i]), tx + tb / 2, P.y + 6, {align: "center"});
+      });
+      P.y += 13;
+    };
+    /* Tabelle über die volle Breite: Spalten [{t, b}] (b = Anteil), Zeilen als Listen von Texten */
+    P.tabelle = function (spalten, zeilen, gr) {
+      gr = gr || 9;
+      var summe = spalten.reduce(function (s, c) { return s + c.b; }, 0);
+      var br = spalten.map(function (c) { return P.B * c.b / summe; });
+      function zeile(werte, kopf) {
+        P.schrift(kopf ? "bold" : "normal", gr);
+        var zz = werte.map(function (w, i) { return d.splitTextToSize(String(w || ""), br[i] - 2); });
+        var h = Math.max.apply(null, zz.map(function (z) { return z.length; })) * gr * 0.42 + 2.2;
+        P.platz(h);
+        var xx = P.x;
+        zz.forEach(function (z, i) { P.farbe(kopf ? GRAU : INK); d.text(z, xx + 1, P.y + gr * 0.36); xx += br[i]; });
+        P.y += h;
+        d.setDrawColor(LINIE[0], LINIE[1], LINIE[2]); d.setLineWidth(0.25); d.line(P.x, P.y - 0.8, P.rechts, P.y - 0.8);
+      }
+      zeile(spalten.map(function (c) { return c.t; }), true);
+      zeilen.forEach(function (z) { zeile(z, false); });
+      P.y += 2;
+    };
+    P.satz = function (t, stil, gr) {
+      P.schrift(stil || "normal", gr || 10); P.farbe(INK);
+      var z = d.splitTextToSize(t, P.B); P.platz(z.length * 4.4 + 2); d.text(z, P.x, P.y); P.y += z.length * 4.4 + 1;
+    };
+
+    /* Zweispaltiger Text mit Ziffern, Buchstaben und Zwischentiteln; danach Unterschriften.
+       gez = gezählter Vertrag; opts: {titel, schluss, parteien: [[Rolle, Name]], erl: true für Erläuterungen} */
+    P.spalten = function (gez, opts) {
+      P.seite();
+      P.schrift("bold", 13); P.farbe(INK); d.text(opts.titel, P.x, P.y); P.y += 7;
+      var GAP = 6, CB = (P.B - GAP) / 2, col = 0, oben = P.y, ZH = 4.13, EIN = 5.2, GR = 9.8;
+      function sx() { return P.x + col * (CB + GAP); }
+      P.platz = function (h) {
+        if (P.y + h <= P.UNTEN) return;
+        if (col === 0) { col = 1; P.y = oben; return; }
+        d.addPage(); col = 0; P.y = oben = 22;
+      };
+      function zeilen(liste, ein, dx, marke, bst, erste) {
+        P.schrift("normal", GR); P.farbe(INK);
+        liste.forEach(function (zl, k) {
+          P.platz(ZH);
+          if (erste.ja && bst) d.text(bst + ")", sx(), P.y);
+          if (k === 0 && marke) d.text(marke, sx() + ein + 0.6, P.y);
+          d.text(zl, sx() + ein + dx, P.y); P.y += ZH; erste.ja = false;
+        });
+      }
+      function teilText(teil, ein, bst, erste) {
+        P.schrift("normal", GR);
+        if (typeof teil === "string") { zeilen(d.splitTextToSize(teil, CB - ein), ein, 0, null, bst, erste); return; }
+        if (teil.liste) { (opts.erl ? teil.liste : VW.listeMitZeichen(teil.liste)).forEach(function (s) { zeilen(d.splitTextToSize(s, CB - ein - 3.4), ein, 3.4, "-", bst, erste); }); return; }
+        if (teil.beispiel) { P.schrift("italic", GR); zeilen(d.splitTextToSize("Beispiel: " + teil.beispiel, CB - ein), ein, 0, null, bst, erste); return; }
+        if (teil.hinweis) { zeilen(d.splitTextToSize(teil.hinweis, CB - ein), ein, 0, null, bst, erste); return; }
+        if (teil.quellen) { zeilen(d.splitTextToSize("Grundlage: " + teil.quellen.map(function (q) { return q.t; }).join(", "), CB - ein), ein, 0, null, bst, erste); return; }
+        if (teil.tabelle) {
+          (teil.tabelle.zeilen || []).forEach(function (z) {
+            var s = (teil.tabelle.kopf || []).map(function (k, i) { return i ? k + ": " + z[i] : z[i]; }).join("; ");
+            zeilen(d.splitTextToSize(s, CB - ein - 3.4), ein, 3.4, "-", bst, erste);
+          });
+        }
+      }
+      gez.forEach(function (z) {
+        var abs = opts.erl ? [{bst: "", t: z.bloecke}] : z.abs;
+        if (!abs[0].t.length) return;
+        P.schrift("bold", 9.8);
+        var tz = d.splitTextToSize((opts.erl ? "Ziff. " + z.nr + " " : z.nr + ". ") + z.titel, CB);
+        P.platz(tz.length * 4.2 + 1.4 + 2 * ZH + (z.teil ? 6 : 0));
+        if (z.teil) { P.schrift("bold", 8); P.farbe(GRAU); d.text(z.teil.toUpperCase(), sx(), P.y, {charSpace: 0.35}); P.y += 4.4; }
+        P.schrift("bold", 9.8); P.farbe(INK); d.text(tz, sx(), P.y); P.y += tz.length * 4.2 + 0.8;
+        abs.forEach(function (a) {
+          var ein = a.bst ? EIN : 0, erste = {ja: true};
+          a.t.forEach(function (teil) { teilText(teil, ein, a.bst, erste); if (opts.erl) P.y += 1; });
+          P.y += 0.7;
+        });
+        P.y += 1.5;
+      });
+      if (opts.parteien) {
+        P.schrift("normal", GR);
+        var schluss = d.splitTextToSize(opts.schluss, CB);
+        P.platz(schluss.length * ZH + 4);
+        P.y += 2; P.farbe(INK); d.text(schluss, sx(), P.y); P.y += schluss.length * ZH + 4;
+        opts.parteien.forEach(function (p) {
+          P.platz(38);
+          P.schrift("bold", 10.6); P.farbe(INK); d.text(p[0], sx(), P.y);
+          if (p[1]) { P.schrift("normal", 8.5); P.farbe(GRAU); d.text(d.splitTextToSize(p[1], CB - 30)[0], sx() + 30, P.y); }
+          ["Ort, Datum", "Unterschrift", "Name in Druckschrift"].forEach(function (l, i) {
+            var ly = P.y + 9 + i * 10;
+            d.setDrawColor(INK[0], INK[1], INK[2]); d.setLineWidth(0.3); d.line(sx(), ly, sx() + CB, ly);
+            P.schrift("normal", 8.5); P.farbe(GRAU); d.text(l, sx(), ly + 3.6);
+          });
+          P.y += 9 + 2 * 10 + 10;
+        });
+      }
+      P.platz = function (h) { if (P.y + h > P.UNTEN) { d.addPage(); P.y = 22; } };
+    };
+    P.fuss = function (text) {
+      var n = d.getNumberOfPages();
+      for (var i = 1; i <= n; i++) {
+        d.setPage(i); P.schrift("normal", 8); P.farbe(GRAU);
+        d.setDrawColor(LINIE[0], LINIE[1], LINIE[2]); d.setLineWidth(0.25); d.line(P.x, P.PH - 13, P.rechts, P.PH - 13);
+        d.text(text, P.x, P.PH - 9);
+        d.text("Seite " + i + "/" + n, P.rechts, P.PH - 9, {align: "right"});
+      }
+    };
+    return P;
+  };
 
   /* ---------- Seite ---------- */
 
   if (typeof document === "undefined") {
-    if (typeof module !== "undefined") module.exports = {modell: modell, gezaehlt: gezaehlt, GRUND: GRUND, pdfBauen: pdfBauen};
+    if (typeof module !== "undefined") module.exports = VW;
     return;
   }
 
   function $(id) { return document.getElementById(id); }
-  function radio(name) { var r = document.querySelector("input[name=" + name + "]:checked"); return r ? r.value : ""; }
-  function zahl(id, vorgabe) { var v = parseFloat(String($(id).value).replace(",", ".")); return isFinite(v) && v >= 0 ? v : vorgabe; }
-  function wert(id) { return String($(id).value || "").trim(); }
-  function zeige(el, an) { if (an) el.removeAttribute("hidden"); else el.setAttribute("hidden", ""); }
+  VW.$ = $;
+  VW.radio = function (name) { var r = document.querySelector("input[name=" + name + "]:checked"); return r ? r.value : ""; };
+  VW.zahl = function (id, vorgabe) { var v = parseFloat(String($(id).value).replace(",", ".")); return isFinite(v) && v >= 0 ? v : vorgabe; };
+  VW.wert = function (id) { var el = $(id); return el ? String(el.value || "").trim() : ""; };
+  VW.zeige = function (el, an) { if (!el) return; if (an) el.removeAttribute("hidden"); else el.setAttribute("hidden", ""); };
 
-  function auswahl() {
-    return {
-      absage: parseInt(radio("absage"), 10), kuendigung: parseInt(radio("kuendigung"), 10),
-      rechnung: radio("rechnung"), zahlfrist: parseInt(radio("zahlfrist"), 10),
-      mahn: radio("mahnung") === "ja" ? [zahl("mahn1", 10), zahl("mahn2", 20)] : null,
-      verrechnung: radio("verrechnung") === "ja", zurueck: radio("zurueck") === "ja", mwst: radio("mwst") === "ja",
-      rabatt: radio("rabatt") === "ja", tagesmin: radio("tagesmin") === "ja",
-      zu: {sa: zahl("zu-sa", 0), na: zahl("zu-na", 0), so: zahl("zu-so", 0), ue: zahl("zu-ue", 0)},
-      rayon: radio("rayon"), rayonMin: Math.max(1, Math.round(zahl("rayon-min", 30))),
-      selbst: radio("selbst") === "ja", bewilligung: radio("bewilligung"), werkzeug: radio("werkzeug") === "ja",
-      uebertritt: radio("uebertritt"), kanton: $("kanton").value, gericht: radio("gericht"), gerichtOrt: wert("gericht-ort")
-    };
+  /* Text mit markierten Begriffen; `schon` hält fest, welche Begriffe im Abschnitt schon markiert
+     sind (jeder Begriff einmal je Ziffer) */
+  function textMitBegriffen(el, s, schon) {
+    var treffer = VW.begriffeIn(s), pos = 0;
+    treffer.forEach(function (t) {
+      if (!t.id || schon[t.id]) return;
+      schon[t.id] = true;
+      if (t.von > pos) el.appendChild(document.createTextNode(s.slice(pos, t.von)));
+      var sp = document.createElement("span");
+      sp.className = "bg"; sp.tabIndex = 0; sp.setAttribute("data-b", t.id); sp.setAttribute("role", "button");
+      sp.textContent = s.slice(t.von, t.bis);
+      el.appendChild(sp);
+      pos = t.bis;
+    });
+    if (pos < s.length) el.appendChild(document.createTextNode(s.slice(pos)));
   }
-  function felder() {
-    var f = {};
-    ["v-firma", "v-adresse", "v-vertreten", "v-mail", "v-bewilligung", "v-stelle", "e-firma", "e-adresse", "e-kontakt", "e-mail",
-      "a-name", "a-quali", "a-profil", "a-art", "a-beginn", "a-ende", "h-mo", "h-di", "h-mi", "h-do", "h-fr",
-      "k-ansatz", "k-rabatt", "k-rabatt-bis", "k-entsch"].forEach(function (id) { f[id] = wert(id); });
-    return f;
+  VW.textMitBegriffen = textMitBegriffen;
+
+  function absatzInhalt(t, teile, schon) {
+    teile.forEach(function (teil) {
+      if (typeof teil === "string") { var p = document.createElement("p"); textMitBegriffen(p, teil, schon); t.appendChild(p); return; }
+      if (teil.liste) {
+        var ul = document.createElement("ul");
+        VW.listeMitZeichen(teil.liste).forEach(function (s) { var li = document.createElement("li"); textMitBegriffen(li, s, schon); ul.appendChild(li); });
+        t.appendChild(ul);
+      }
+    });
   }
 
-  function ansicht() {
-    var o = auswahl();
-    zeige($("rayon-min-feld"), o.rayon === "minuten");
-    zeige($("gericht-ort"), o.gericht === "ort");
-    zeige($("zeile-bewilligung"), o.bewilligung === "vorhanden");
-    zeige($("zeile-rabatt"), o.rabatt); zeige($("zeile-rabatt-bis"), o.rabatt);
-    zeige($("zeile-entsch"), o.uebertritt === "entsch");
-    var grund = {};
-    gezaehlt(modell(GRUND)).forEach(function (z) { z.abs.forEach(function (a) { grund[z.id + "." + a.id] = vergleichstext(a); }); });
-    var ziel = $("vertrag");
+  /* Vorschau eines gezählten Vertrags; Absätze, die von der Grundfassung abweichen, sind hinterlegt */
+  VW.vorschau = function (ziel, gez, grund) {
     ziel.textContent = "";
-    gezaehlt(modell(o)).forEach(function (z) {
+    gez.forEach(function (z) {
+      var schon = {};
+      if (z.teil) { var tt = document.createElement("div"); tt.className = "teil"; tt.textContent = z.teil; ziel.appendChild(tt); }
       var h = document.createElement("h4"); h.textContent = z.nr + ". " + z.titel; ziel.appendChild(h);
       z.abs.forEach(function (a) {
         var zeile = document.createElement("div"); zeile.className = "bst";
         var l = document.createElement("span"); l.textContent = a.bst ? a.bst + ")" : "";
         var t = document.createElement("div");
-        if (grund[z.id + "." + a.id] !== vergleichstext(a)) t.className = "neu";
-        a.t.forEach(function (teil) {
-          if (typeof teil === "string") { var p = document.createElement("p"); p.textContent = teil; t.appendChild(p); return; }
-          var ul = document.createElement("ul");
-          listeMitZeichen(teil.liste).forEach(function (s) { var li = document.createElement("li"); li.textContent = s; ul.appendChild(li); });
-          t.appendChild(ul);
-        });
+        if (grund && grund[z.id + "." + a.id] !== VW.vergleichstext(a)) t.className = "neu";
+        absatzInhalt(t, a.t, schon);
         zeile.appendChild(l); zeile.appendChild(t); ziel.appendChild(zeile);
       });
     });
-    vorschauWeg();
-  }
+  };
+  VW.grundKarte = function (gez) {
+    var g = {};
+    gez.forEach(function (z) { z.abs.forEach(function (a) { g[z.id + "." + a.id] = VW.vergleichstext(a); }); });
+    return g;
+  };
 
-  /* ---------- PDF ---------- */
-
-  function pdfErstellen() {
-    zeige($("fehler"), false);
-    if (!window.jspdf || !window.jspdf.jsPDF) {
-      $("fehler").textContent = "PDF-Bibliothek nicht geladen. Bitte die Seite neu laden.";
-      zeige($("fehler"), true); return;
+  /* Erläuterungen ins Ziel schreiben */
+  VW.erlZeigen = function (ziel, erl, ueberschrift) {
+    var schon;
+    function block(el, bl) {
+      if (typeof bl === "string") { var p = document.createElement("p"); textMitBegriffen(p, bl, schon); el.appendChild(p); return; }
+      if (bl.liste) {
+        var ul = document.createElement("ul");
+        bl.liste.forEach(function (s) { var li = document.createElement("li"); textMitBegriffen(li, s, schon); ul.appendChild(li); });
+        el.appendChild(ul); return;
+      }
+      if (bl.tabelle) {
+        var wrap = document.createElement("div"); wrap.className = "tabwrap";
+        var tb = document.createElement("table");
+        if (bl.tabelle.kopf) {
+          var tr = document.createElement("tr");
+          bl.tabelle.kopf.forEach(function (k) { var th = document.createElement("th"); th.textContent = k; tr.appendChild(th); });
+          var th0 = document.createElement("thead"); th0.appendChild(tr); tb.appendChild(th0);
+        }
+        var tbody = document.createElement("tbody");
+        bl.tabelle.zeilen.forEach(function (z) {
+          var tr2 = document.createElement("tr");
+          z.forEach(function (c) { var td = document.createElement("td"); textMitBegriffen(td, String(c), schon); tr2.appendChild(td); });
+          tbody.appendChild(tr2);
+        });
+        tb.appendChild(tbody); wrap.appendChild(tb); el.appendChild(wrap); return;
+      }
+      if (bl.beispiel) {
+        var bx = document.createElement("div"); bx.className = "beispiel";
+        var lb = document.createElement("span"); lb.className = "lbl"; lb.textContent = "Beispiel";
+        bx.appendChild(lb); var pb = document.createElement("p"); textMitBegriffen(pb, bl.beispiel, schon); bx.appendChild(pb);
+        el.appendChild(bx); return;
+      }
+      if (bl.hinweis) {
+        var hx = document.createElement("div"); hx.className = "erlhinweis"; textMitBegriffen(hx, bl.hinweis, schon); el.appendChild(hx); return;
+      }
+      if (bl.quellen) {
+        var q = document.createElement("p"); q.className = "q"; q.appendChild(document.createTextNode("Grundlage: "));
+        bl.quellen.forEach(function (qq, i) {
+          if (i) q.appendChild(document.createTextNode(" · "));
+          if (qq.url) { var a = document.createElement("a"); a.href = qq.url; a.rel = "noopener"; a.target = "_blank"; a.textContent = qq.t; q.appendChild(a); }
+          else q.appendChild(document.createTextNode(qq.t));
+        });
+        el.appendChild(q);
+      }
     }
-    var d = pdfBauen(window.jspdf.jsPDF, auswahl(), felder());
-    pdfVorschau(d, "verleihvertrag" + (wert("e-firma") ? "_" + dateiteil(wert("e-firma")) : "") + ".pdf");
+    var sek = document.createElement("div"); sek.className = "erlteil";
+    if (ueberschrift) { var h3 = document.createElement("h3"); h3.className = "erlvertrag"; h3.textContent = ueberschrift; sek.appendChild(h3); }
+    schon = {};
+    erl.vorspann.forEach(function (bl) { block(sek, bl); });
+    erl.forEach(function (z) {
+      if (!z.bloecke.length) return;
+      schon = {};
+      if (z.teil) { var tt = document.createElement("div"); tt.className = "teil"; tt.textContent = z.teil; sek.appendChild(tt); }
+      var h = document.createElement("h4"); h.textContent = "Ziff. " + z.nr + " " + z.titel; sek.appendChild(h);
+      z.bloecke.forEach(function (bl) { block(sek, bl); });
+    });
+    ziel.appendChild(sek);
+  };
+
+  /* ---------- Begriffskärtchen ----------
+     Bleibt die Maus kurz auf einem markierten Begriff stehen, erscheint das Kärtchen; sobald sie sich
+     wieder bewegt, verschwindet es. Klick oder Enter öffnet den Eintrag im Lexikon. Auf Touch öffnet
+     das erste Tippen das Kärtchen, das zweite den Eintrag; Tippen daneben schliesst es. */
+  var karte = null, kTimer = null, kPos = null, kBegriff = null;
+  function karteBauen() {
+    karte = document.createElement("div");
+    karte.className = "bkarte"; karte.setAttribute("role", "tooltip"); karte.hidden = true;
+    document.body.appendChild(karte);
   }
-  function dateiteil(s) {
-    return s.toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 40);
+  function karteZeigen(sp) {
+    var e = VW.begriff(sp.getAttribute("data-b"));
+    if (!e) return;
+    karte.textContent = "";
+    var h = document.createElement("strong"); h.textContent = e.wort; karte.appendChild(h);
+    var p = document.createElement("p"); p.textContent = e.kurz; karte.appendChild(p);
+    var s = document.createElement("span"); s.className = "mehr"; s.textContent = "Klick: mehr im Lexikon"; karte.appendChild(s);
+    karte.hidden = false;
+    var r = sp.getBoundingClientRect(), kb = Math.min(340, window.innerWidth - 24);
+    karte.style.maxWidth = kb + "px";
+    var x = Math.min(Math.max(12, r.left), window.innerWidth - kb - 12);
+    var y = r.bottom + 8;
+    karte.style.left = (x + window.pageXOffset) + "px";
+    karte.style.top = (y + window.pageYOffset) + "px";
+    if (karte.getBoundingClientRect().bottom > window.innerHeight - 8) karte.style.top = (r.top - karte.offsetHeight - 8 + window.pageYOffset) + "px";
+    kBegriff = sp;
+  }
+  function karteWeg() { clearTimeout(kTimer); if (karte) karte.hidden = true; kBegriff = null; }
+  function zumLexikon(id) { location.hash = "begriff-" + id; }
+  function karteEinrichten() {
+    karteBauen();
+    document.addEventListener("mousemove", function (ev) {
+      if (kPos && Math.abs(ev.clientX - kPos.x) < 3 && Math.abs(ev.clientY - kPos.y) < 3) return;
+      kPos = {x: ev.clientX, y: ev.clientY};
+      karteWeg();
+      var sp = ev.target.closest ? ev.target.closest(".bg") : null;
+      if (sp) kTimer = setTimeout(function () { karteZeigen(sp); }, 450);
+    });
+    document.addEventListener("click", function (ev) {
+      var sp = ev.target.closest ? ev.target.closest(".bg") : null;
+      if (!sp) { karteWeg(); return; }
+      ev.preventDefault();
+      if (ev.pointerType === "touch" || (ev.sourceCapabilities && ev.sourceCapabilities.firesTouchEvents)) {
+        if (kBegriff !== sp) { karteZeigen(sp); return; }
+      }
+      karteWeg(); zumLexikon(sp.getAttribute("data-b"));
+    });
+    document.addEventListener("focusin", function (ev) { if (ev.target.classList && ev.target.classList.contains("bg")) karteZeigen(ev.target); });
+    document.addEventListener("focusout", function (ev) { if (ev.target.classList && ev.target.classList.contains("bg")) karteWeg(); });
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape") karteWeg();
+      if ((ev.key === "Enter" || ev.key === " ") && ev.target.classList && ev.target.classList.contains("bg")) { ev.preventDefault(); karteWeg(); zumLexikon(ev.target.getAttribute("data-b")); }
+    });
+    window.addEventListener("scroll", karteWeg, {passive: true});
   }
 
-  var vorschau = {url: null, name: ""};
-  function pdfVorschau(d, name) {
-    if (vorschau.url) URL.revokeObjectURL(vorschau.url);
-    vorschau.url = URL.createObjectURL(d.output("blob")); vorschau.name = name;
-    $("pdfrahmen").src = vorschau.url;
-    zeige($("pdfvorschau"), true);
-    $("pdfvorschau").scrollIntoView({behavior: "smooth", block: "start"});
+  /* ---------- Reiter ---------- */
+
+  var REITER = ["verleihvertrag", "erlaeuterungen", "arbeitsvertrag", "begriffe"];
+  function reiterAus(hash) {
+    var h = (hash || "").replace(/^#/, "");
+    if (/^begriff-/.test(h)) return "begriffe";
+    return REITER.indexOf(h) >= 0 ? h : "verleihvertrag";
   }
-  function vorschauWeg() {
+  function reiterZeigen() {
+    var h = location.hash.replace(/^#/, ""), r = reiterAus(h);
+    REITER.forEach(function (k) {
+      VW.zeige($("p-" + k), k === r);
+      var t = $("t-" + k); if (t) { t.setAttribute("aria-selected", k === r ? "true" : "false"); t.classList.toggle("on", k === r); }
+    });
+    document.dispatchEvent(new Event("achse-neu"));
+    if (/^begriff-/.test(h)) {
+      var el = $("b-" + h.slice(8));
+      if (el) { el.classList.add("ziel"); setTimeout(function () { el.classList.remove("ziel"); }, 1600); el.scrollIntoView({block: "center"}); }
+    } else if (h) {
+      var tb = $("reiter"); if (tb && tb.getBoundingClientRect().top < 0) tb.scrollIntoView({block: "start"});
+    }
+  }
+
+  /* Gemeinsame Angaben: Felder mit gleichem data-g zeigen denselben Wert */
+  function abgleichen(ev) {
+    var g = ev.target.getAttribute && ev.target.getAttribute("data-g");
+    if (!g) return;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-g=\"" + g + "\"]"), function (el) {
+      if (el !== ev.target && el.value !== ev.target.value) el.value = ev.target.value;
+    });
+  }
+
+  /* ---------- Gesamtansicht ---------- */
+
+  VW.ansicht = function () {
+    var zahlen = {}, stand = {};
+    ["vv", "av"].forEach(function (art) {
+      var V = VW.vertraege[art];
+      if (!V) return;
+      var o = V.auswahl(), f = V.felder();
+      if (V.ansichtFelder) V.ansichtFelder(o);
+      var gez = VW.gezaehlt(V.modell(o, f), art, zahlen);
+      stand[art] = {V: V, o: o, f: f, gez: gez};
+    });
+    /* zweiter Durchgang, damit Marken in den jeweils anderen Vertrag Ziele finden */
+    Object.keys(stand).forEach(function (art) {
+      var s = stand[art];
+      s.gez = VW.gezaehlt(s.V.modell(s.o, s.f), art, zahlen);
+      var gGrund = VW.gezaehlt(s.V.modell(s.V.GRUND, {}), art, JSON.parse(JSON.stringify(zahlen)));
+      if ($(s.V.vorschauId)) VW.vorschau($(s.V.vorschauId), s.gez, VW.grundKarte(gGrund));
+    });
+    var ez = $("erl");
+    if (ez) {
+      ez.textContent = "";
+      Object.keys(stand).forEach(function (art) {
+        var s = stand[art];
+        VW.erlZeigen(ez, VW.erlaeutert(art, s.o, s.f, s.gez, zahlen), s.V.erlTitel);
+      });
+    }
+    VW.stand = stand; VW.zahlen = zahlen;
+    VW.vorschauWeg();
+  };
+
+  /* ---------- PDF-Vorschau ---------- */
+
+  var vorschau = {url: null, name: "", art: ""};
+  VW.pdfErstellen = function (art) {
+    var fe = $("fehler-" + art); VW.zeige(fe, false);
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      fe.textContent = "PDF-Bibliothek nicht geladen. Bitte die Seite neu laden."; VW.zeige(fe, true); return;
+    }
+    VW.ansicht();
+    var V = VW.vertraege[art], s = VW.stand[art];
+    var d = V.pdf(window.jspdf.jsPDF, s.o, s.f, s.gez, VW.zahlen);
+    VW.vorschauWeg();
+    vorschau.url = URL.createObjectURL(d.output("blob")); vorschau.name = V.dateiname(s.f); vorschau.art = art;
+    $("pdfrahmen-" + art).src = vorschau.url;
+    VW.zeige($("pdfvorschau-" + art), true);
+    $("pdfvorschau-" + art).scrollIntoView({behavior: "smooth", block: "start"});
+  };
+  VW.vorschauWeg = function () {
     if (!vorschau.url) return;
-    zeige($("pdfvorschau"), false); $("pdfrahmen").removeAttribute("src");
+    VW.zeige($("pdfvorschau-" + vorschau.art), false); $("pdfrahmen-" + vorschau.art).removeAttribute("src");
     URL.revokeObjectURL(vorschau.url); vorschau.url = null;
-  }
+  };
   function pdfHerunterladen() {
     if (!vorschau.url) return;
     var a = document.createElement("a"); a.href = vorschau.url; a.download = vorschau.name;
     document.body.appendChild(a); a.click(); a.remove();
   }
+  VW.dateiteil = function (s) {
+    return s.toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 40);
+  };
 
   /* ---------- Start ---------- */
 
-  KANTONE.forEach(function (k) {
-    var op = document.createElement("option"); op.value = k[0]; op.textContent = k[1];
-    if (k[0] === GRUND.kanton) op.selected = true;
-    $("kanton").appendChild(op);
-  });
-  document.querySelector(".calc-main").addEventListener("input", ansicht);
-  document.querySelector(".calc-main").addEventListener("change", ansicht);
-  $("pdf").addEventListener("click", pdfErstellen);
-  $("pdfdown").addEventListener("click", pdfHerunterladen);
-  $("pdftab").addEventListener("click", function () { if (vorschau.url) window.open(vorschau.url, "_blank"); });
-  ansicht();
-
-  /* ---------- PDF-Aufbau (A4 hoch, Helvetica) ---------- */
-
-  function pdfBauen(JsPDF, o, f) {
-    var Z = gezaehlt(modell(o));
-    function zif(id) { for (var i = 0; i < Z.length; i++) if (Z[i].id === id) return Z[i]; return null; }
-    function ref(zid, pid) { var z = zif(zid); if (!z) return ""; for (var i = 0; i < z.abs.length; i++) if (z.abs[i].id === pid) return z.nr + (z.abs[i].bst ? " " + z.abs[i].bst : ""); return String(z.nr); }
-    function datum(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? m[3] + "." + m[2] + "." + m[1] : ""; }
-
-    var d = new JsPDF({unit: "mm", format: "a4"});
-    var x = 20, rechts = 190, B = rechts - x, PH = 297, UNTEN = PH - 18, y = 22;
-    var INK = [0, 0, 0], GRAU = [110, 107, 100], LINIE = [200, 196, 188];
-    function farbe(c) { d.setTextColor(c[0], c[1], c[2]); }
-    function schrift(stil, gr) { d.setFont("helvetica", stil); d.setFontSize(gr); }
-    function platz(h) { if (y + h > UNTEN) { d.addPage(); y = 22; } }
-
-    /* Einsatzblatt */
-    schrift("bold", 17); farbe(INK); d.text("Verleihvertrag", x, y); y += 6.5;
-    schrift("normal", 11); farbe(GRAU); d.text("Einsatzblatt", x, y); y += 6;
-    schrift("normal", 9); farbe(GRAU);
-    var kopf = d.splitTextToSize("Personalverleih nach dem Arbeitsvermittlungsgesetz (AVG, SR 823.11). Vor Beginn des Einsatzes schriftlich abzuschliessen, in zwei Exemplaren (Art. 22 Abs. 1 AVG, Art. 50 AVV).", B);
-    d.text(kopf, x, y); y += kopf.length * 4 + 1;
-
-    function abschnitt(t) {
-      platz(18);
-      y += 3; schrift("bold", 10.5); farbe(INK); d.text(t, x, y);
-      y += 1.8; d.setDrawColor(INK[0], INK[1], INK[2]); d.setLineWidth(0.35); d.line(x, y, rechts, y); y += 4.6;
-    }
-    var LX = 58;   /* Breite der Bezeichnungsspalte */
-    function feld(label, w, hinweis) {
-      schrift("normal", 10);
-      var zl = w ? d.splitTextToSize(String(w), B - LX) : [""];
-      schrift("normal", 7);
-      var hl = hinweis ? d.splitTextToSize(hinweis, LX - 3) : [];
-      var h = Math.max(zl.length * 4.6, 3.4 + hl.length * 3) + 2;
-      platz(h);
-      schrift("normal", 9.5); farbe(GRAU); d.text(label, x, y);
-      if (hl.length) { schrift("normal", 7); d.text(hl, x, y + 3.3); }
-      schrift("normal", 10); farbe(INK); if (w) d.text(zl, x + LX, y);
-      var ly = y + (zl.length - 1) * 4.6 + 1.6;
-      if (hl.length) ly = Math.max(ly, y + 1.6);
-      d.setDrawColor(LINIE[0], LINIE[1], LINIE[2]); d.setLineWidth(0.25); d.line(x + LX, ly, rechts, ly);
-      y += h;
-    }
-
-    abschnitt("Verleiher");
-    feld("Firma", f["v-firma"]);
-    feld("Adresse", f["v-adresse"]);
-    feld("Vertreten durch", f["v-vertreten"]);
-    feld("E-Mail", f["v-mail"]);
-    feld("Bewilligung", o.bewilligung === "frei" ? "Keine Bewilligung erforderlich: Der Verleiher verleiht ausschliesslich seinen Inhaber (Art. 28 Abs. 2 AVV)." : f["v-bewilligung"]);
-    feld("Zuständige kantonale Stelle", f["v-stelle"]);
-
-    abschnitt("Einsatzbetrieb");
-    feld("Firma", f["e-firma"]);
-    feld("Adresse", f["e-adresse"]);
-    feld("Kontaktperson", f["e-kontakt"], "unterzeichnet die Wochenrapporte (Ziff. " + ref("rapport", "b") + ")");
-    feld("E-Mail", f["e-mail"]);
-
-    abschnitt("Einsatz");
-    feld("Arbeitnehmer", f["a-name"]);
-    feld("Berufliche Qualifikation", f["a-quali"]);
-    feld("Anforderungsprofil", f["a-profil"], "nur wenn verlangt (Ziff. " + ref("an", "c") + ")");
-    feld("Art der Arbeit", f["a-art"]);
-    feld("Arbeitsort", "Sitz des Einsatzbetriebs und seine Baustellen (Ziff. " + ref("ort", "a") + ")");
-    if (o.rayon === "minuten") feld("Rayon", "Orte bis " + o.rayonMin + " Minuten Fahrzeit mit dem Auto ab Sitz des Einsatzbetriebs (Ziff. " + ref("ort", "rayon") + ")");
-    feld("Beginn des Einsatzes", datum(f["a-beginn"]));
-    feld("Ende des Einsatzes", datum(f["a-ende"]), "leer: ohne Ende, kündbar nach Ziff. " + ref("kuend", "frist"));
-
-    /* Stunden je Wochentag als kleine Tabelle */
-    platz(17);
-    schrift("normal", 9.5); farbe(GRAU); d.text("Stunden je Wochentag", x, y);
-    schrift("normal", 7.5); d.text("Ziff. " + ref("zeit", "a"), x, y + 3.8);
-    var tage = [["Mo", "h-mo"], ["Di", "h-di"], ["Mi", "h-mi"], ["Do", "h-do"], ["Fr", "h-fr"]], tb = (B - LX) / 5;
-    d.setDrawColor(LINIE[0], LINIE[1], LINIE[2]); d.setLineWidth(0.25);
-    tage.forEach(function (t, i) {
-      var tx = x + LX + i * tb;
-      d.rect(tx, y - 3.6, tb, 5, "S"); d.rect(tx, y + 1.4, tb, 6.5, "S");
-      schrift("normal", 8.5); farbe(GRAU); d.text(t[0], tx + tb / 2, y, {align: "center"});
-      schrift("normal", 10); farbe(INK); if (f[t[1]]) d.text(f[t[1]], tx + tb / 2, y + 6, {align: "center"});
-    });
-    y += 13;
-
-    if (o.rayon === "karte") feld("Rayon", "Karte auf der nächsten Seite (Ziff. " + ref("ort", "rayon") + ")");
-
-    abschnitt("Kosten des Verleihs");
-    feld("Ansatz je Stunde", f["k-ansatz"] ? "CHF " + f["k-ansatz"] : "", (o.mwst ? "zuzüglich MWST" : "ohne MWST, nicht mehrwertsteuerpflichtig") + " (Ziff. " + ref("kosten", "a") + ", " + ref("kosten", "mwst").split(" ")[1] + ")");
-    if (o.rabatt) feld("Rabatt", f["k-rabatt"] || f["k-rabatt-bis"] ? (f["k-rabatt"] ? f["k-rabatt"] + " % auf den Ansatz" : "") + (f["k-rabatt-bis"] ? " bis " + datum(f["k-rabatt-bis"]) : "") : "", "Ziff. " + ref("kosten", "rabatt"));
-    if (o.uebertritt === "entsch") feld("Entschädigung bei Übertritt", f["k-entsch"] ? "CHF " + f["k-entsch"] : "", "Ziff. " + ref("kuend", "uebertritt") + ", Art. 22 Abs. 3 und 4 AVG");
-
-    platz(10); y += 4;
-    schrift("bold", 10); farbe(INK);
-    d.text("Die Vertragsbedingungen und die Unterschriften folgen auf dieses Einsatzblatt.", x, y);
-
-    /* Rayon als Karte: eigene Seite des Einsatzblatts mit einem Rahmen zum Einfügen */
-    if (o.rayon === "karte") {
-      d.addPage(); y = 22;
-      schrift("bold", 13); farbe(INK); d.text("Einsatzblatt: Rayon", x, y); y += 6;
-      schrift("normal", 9); farbe(GRAU);
-      var rz = d.splitTextToSize("Karte des Rayons einfügen oder einzeichnen: Sitz des Einsatzbetriebs und Grenze des Rayons (Ziff. " + ref("ort", "rayon") + "). Im Rayon ist die Wegzeit im Ansatz enthalten, ausserhalb wird sie als Arbeitszeit in Rechnung gestellt.", B);
-      d.text(rz, x, y); y += rz.length * 4 + 3;
-      d.setDrawColor(LINIE[0], LINIE[1], LINIE[2]); d.setLineWidth(0.3); d.rect(x, y, B, Math.min(B, UNTEN - y - 4), "S");
-    }
-
-    /* Vertragsbedingungen, zweispaltig; Spaltenwechsel und Seitenumbruch über platz() */
-    d.addPage(); y = 22;
-    schrift("bold", 13); farbe(INK); d.text("Vertragsbedingungen zum Verleihvertrag", x, y); y += 7;
-    var GAP = 6, CB = (B - GAP) / 2, col = 0, oben = y, ZH = 4.13, EIN = 5.2, GR = 9.8;
-    function sx() { return x + col * (CB + GAP); }
-    platz = function (h) {
-      if (y + h <= UNTEN) return;
-      if (col === 0) { col = 1; y = oben; return; }
-      d.addPage(); col = 0; y = oben = 22;
-    };
-    Z.forEach(function (z) {
-      schrift("normal", GR);
-      var erste = z.abs[0].t[0];
-      var ersteZeilen = Math.min(2, d.splitTextToSize(typeof erste === "string" ? erste : erste.liste[0], CB - EIN).length);
-      var tz = d.splitTextToSize(z.nr + ". " + z.titel, CB); schrift("bold", 9.8); tz = d.splitTextToSize(z.nr + ". " + z.titel, CB);
-      platz(tz.length * 4.2 + 1.4 + ersteZeilen * ZH);
-      schrift("bold", 9.8); farbe(INK); d.text(tz, sx(), y); y += tz.length * 4.2 + 0.8;
-      z.abs.forEach(function (a) {
-        var ein = a.bst ? EIN : 0, ersteZeile = true;
-        function zeilen(liste, dx, marke) {
-          schrift("normal", GR); farbe(INK);
-          liste.forEach(function (zl, k) {
-            platz(ZH);
-            if (ersteZeile && a.bst) d.text(a.bst + ")", sx(), y);
-            if (k === 0 && marke) d.text(marke, sx() + ein + 0.6, y);
-            d.text(zl, sx() + ein + dx, y); y += ZH; ersteZeile = false;
-          });
-        }
-        a.t.forEach(function (teil) {
-          schrift("normal", GR);
-          if (typeof teil === "string") { zeilen(d.splitTextToSize(teil, CB - ein), 0, null); return; }
-          listeMitZeichen(teil.liste).forEach(function (s) { zeilen(d.splitTextToSize(s, CB - ein - 3.4), 3.4, "-"); });
-        });
-        y += 1.1;
+  function start() {
+    Array.prototype.forEach.call(document.querySelectorAll("select.kanton"), function (sel) {
+      VW.KANTONE.forEach(function (k) {
+        var op = document.createElement("option"); op.value = k[0]; op.textContent = k[1];
+        if (k[0] === "BE") op.selected = true;
+        sel.appendChild(op);
       });
-      y += 2.2;
     });
-
-    /* Unterschriften: in der Spalte, je Partei ein zusammenhängender Block */
-    schrift("normal", GR);
-    var schluss = d.splitTextToSize("Mit ihrer Unterschrift bestätigen die Parteien das Einsatzblatt und diese Vertragsbedingungen. Jede Partei erhält ein unterzeichnetes Exemplar.", CB);
-    platz(schluss.length * ZH + 4);
-    y += 2; farbe(INK); d.text(schluss, sx(), y); y += schluss.length * ZH + 4;
-    [["Verleiher", f["v-firma"]], ["Einsatzbetrieb", f["e-firma"]]].forEach(function (p) {
-      platz(38);
-      schrift("bold", 10.6); farbe(INK); d.text(p[0], sx(), y);
-      if (p[1]) { schrift("normal", 8.5); farbe(GRAU); d.text(d.splitTextToSize(p[1], CB)[0], sx() + 26, y); }
-      ["Ort, Datum", "Unterschrift", "Name in Druckschrift"].forEach(function (l, i) {
-        var ly = y + 9 + i * 10;
-        d.setDrawColor(INK[0], INK[1], INK[2]); d.setLineWidth(0.3); d.line(sx(), ly, sx() + CB, ly);
-        schrift("normal", 8.5); farbe(GRAU); d.text(l, sx(), ly + 3.6);
-      });
-      y += 9 + 2 * 10 + 10;
+    Object.keys(VW.vertraege).forEach(function (art) { if (VW.vertraege[art].einrichten) VW.vertraege[art].einrichten(); });
+    if (VW.lexikonBauen) VW.lexikonBauen();
+    Array.prototype.forEach.call(document.querySelectorAll(".calc-main"), function (m) {
+      m.addEventListener("input", function (ev) { abgleichen(ev); VW.ansicht(); });
+      m.addEventListener("change", function (ev) { abgleichen(ev); VW.ansicht(); });
     });
-
-    var n = d.getNumberOfPages();
-    for (var i = 1; i <= n; i++) {
-      d.setPage(i); schrift("normal", 8); farbe(GRAU);
-      d.setDrawColor(LINIE[0], LINIE[1], LINIE[2]); d.setLineWidth(0.25); d.line(x, PH - 13, rechts, PH - 13);
-      d.text("Verleihvertrag" + (f["e-firma"] ? " · " + f["e-firma"] : ""), x, PH - 9);
-      d.text("Seite " + i + "/" + n, rechts, PH - 9, {align: "right"});
-    }
-    return d;
+    ["vv", "av"].forEach(function (art) {
+      if (!$("pdf-" + art)) return;
+      $("pdf-" + art).addEventListener("click", function () { VW.pdfErstellen(art); });
+      $("pdfdown-" + art).addEventListener("click", pdfHerunterladen);
+      $("pdftab-" + art).addEventListener("click", function () { if (vorschau.url) window.open(vorschau.url, "_blank"); });
+    });
+    karteEinrichten();
+    window.addEventListener("hashchange", reiterZeigen);
+    VW.ansicht();
+    reiterZeigen();
   }
-})();
+  document.addEventListener("DOMContentLoaded", start);
+
+})(typeof window !== "undefined" ? window : globalThis);

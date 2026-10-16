@@ -16,6 +16,8 @@
    Reihe); die Reihen hängen von der Fensterbreite ab, darum werden die Marken nach einer
    Grössenänderung neu gesetzt.
 
+   Seiten mit Reitern lösen nach einem Wechsel das Ereignis "achse-neu" aus.
+
    Lage und Aussehen regelt achse.css (.pf-reihe, .pf), hier steht nur das
    Verhalten. Ohne JavaScript fehlen die Marken, die Seite bleibt vollständig. */
 (function () {
@@ -107,7 +109,7 @@
 
   function bauen() {
     abbauen();
-    punkte = Array.prototype.slice.call(document.querySelectorAll(STATIONEN)).filter(istStation);
+    punkte = Array.prototype.slice.call(document.querySelectorAll(STATIONEN)).filter(function (el) { return el.getClientRects().length > 0; }).filter(istStation);
     if (punkte.length < 2) { punkte = []; return; }
 
     punkte.forEach(function (el, i) {
@@ -130,6 +132,8 @@
   }
 
   bauen();
+  /* Seiten mit Reitern (Vertragswerk) melden einen Wechsel; versteckte Stationen zählen nicht */
+  document.addEventListener("achse-neu", bauen);
 
   /* Die Monatsreihen des Kalenders und die Grenze breit/schmal hängen von der Fensterbreite ab */
   var timer = null;
