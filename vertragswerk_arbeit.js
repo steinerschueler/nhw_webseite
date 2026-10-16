@@ -599,6 +599,7 @@
   E.gav = function (o) {
     return [
       "Untersteht der Einsatzbetrieb einem allgemeinverbindlich erklärten Gesamtarbeitsvertrag, muss die Arbeitgeberin dessen Lohn- und Arbeitszeitbestimmungen einhalten (Art. 20 Abs. 1 AVG); welche das sind, zählt Art. 48a AVV auf. Der Weiterbildungs- und Vollzugskostenbeitrag ist ab dem ersten Arbeitstag geschuldet (Art. 48b AVV).",
+      "Der Vertrag nimmt den GAV zudem selbst in Bezug (Bst. {B:gav.a}); er gilt damit unabhängig vom Einsatzbetrieb. Ob der GAV für die Firma des Inhabers auch direkt gilt, etwa für den Vollzugskostenbeitrag, ist nicht abschliessend geklärt; Auskunft gibt die Paritätische Landeskommission (PLK) Elektro.",
       "Ein Konkurrenzverbot gibt es nicht. Als Geschäftsführer darf der Inhaber ohnehin keine konkurrenzierende Tätigkeit ausüben, soweit Statuten oder Gesellschafter nichts anderes zulassen (Art. 812 Abs. 3 OR).",
       {quellen: [q("Art. 20 AVG", "AVG", "20"), q("Art. 48a AVV", "AVV", "48_a"), q("Art. 48b AVV", "AVV", "48_b"), q("Art. 812 OR", "OR", "812")]}
     ];
