@@ -120,13 +120,14 @@ Cookies und ohne Speicherung:
 | Dienst | Wofür | Schlüssel | Attribution |
 |---|---|---|---|
 | swisstopo, `api3.geo.admin.ch` (SearchServer) und `wms.geo.admin.ch` (GetMap) | Adressen zu Koordinaten; Kartenbild (Landeskarte grau, LV95) | keiner | «© swisstopo» |
-| Esri ArcGIS Location Platform, `route-api.arcgis.com` (Route, Service areas) | Fahrzeit mit Verkehrsprognose je Sitz; 15-Minuten-Gebiete | `ESRI_KEY` in `rayon.js` | «Powered by Esri», Strassen- und Verkehrsdaten TomTom |
+| Esri ArcGIS Location Platform, `route-api.arcgis.com` (Route, Service areas) | Fahrzeit mit Verkehrsprognose je Sitz; 15-Minuten-Gebiete | `ESRI_SCHLUESSEL` in `esri_schluessel.js` | «Powered by Esri», Strassen- und Verkehrsdaten TomTom |
 
 An Esri gehen nur Koordinaten und die Abfahrtszeit, keine Adresstexte. Die
 Datenschutzerklärung in `impressum.html` nennt beide Dienste; wer einen Dienst wechselt, passt
 sie im selben Zug an, ebenso die Content-Security-Policy der Seite (`connect-src`, `img-src`).
 
-**Der Esri-Schlüssel** ist ein Browser-Schlüssel: Er steht sichtbar in `rayon.js`, ist im
+**Der Esri-Schlüssel** ist ein Browser-Schlüssel: Er steht sichtbar in `esri_schluessel.js` (gelesen von `rayon.js` und
+`vertragswerk_rayon.js`), ist im
 Esri-Konto (Element «Rayon-Rechner Webseite», Typ API-Schlüssel, öffentliche Anwendung) auf
 die Referrer `https://naville-handwerk.ch` und `https://www.naville-handwerk.ch` beschränkt
 und auf die zwei Berechtigungen «Einfaches Routing» und «Einzugsgebiet» unter
@@ -134,7 +135,7 @@ Positionsservices, und er läuft nach höchstens einem Jahr ab. Esri prüft den 
 serverseitig: Aufrufe ohne oder mit fremdem Referrer erhalten «Invalid Token». Das Konto hat kein Zahlungsmittel; wird das
 Freikontingent (Routen und Service areas je Monat) überschritten, sperrt Esri bis zum
 Monatsanfang, es entstehen keine Kosten. Erneuern oder ersetzen: im Esri-Dashboard einen neuen
-Schlüssel mit denselben Einstellungen anlegen, `ESRI_KEY` in `rayon.js` ersetzen, committen,
+Schlüssel mit denselben Einstellungen anlegen, `ESRI_SCHLUESSEL` in `esri_schluessel.js` ersetzen, committen,
 pushen auf Wort des Inhabers; den alten Schlüssel löschen. **Jede Änderung am Esri-Element**
 (Referrer, Berechtigungen) macht den bestehenden Schlüssel sofort ungültig; danach immer neu
 generieren und eintragen, sonst meldet die Seite «Invalid Token». Ohne Schlüssel (leer) laufen Adressen
@@ -216,7 +217,7 @@ Reihenfolge der Script-Tags); ein Verweis ohne Ziel erscheint als "?" und in `.f
 - Jede Seite trägt eine Content-Security-Policy (per `<meta>`). Echte Header (HSTS, X-Frame-Options) kann
   GitHub Pages nicht setzen — bei Bedarf Cloudflare (gratis) davorschalten. `rayon.html` erlaubt
   zusätzlich die Dienste von swisstopo und Esri (`connect-src`, `img-src`), sonst nichts Fremdes.
-- **Ausnahme vom Schlüssel-Verbot:** Der Esri-Schlüssel in `rayon.js` ist kein Geheimnis. Er steht
+- **Ausnahme vom Schlüssel-Verbot:** Der Esri-Schlüssel in `esri_schluessel.js` ist kein Geheimnis. Er steht
   in der ausgelieferten Seite, ist auf die Referrer dieser Domain und das Privileg Routing
   beschränkt, läuft nach höchstens einem Jahr ab, und das Konto hat kein Zahlungsmittel (Abschnitt
   «Rayon-Rechner»). Jeder andere Schlüssel bleibt draussen.

@@ -14,13 +14,14 @@
    Attribution: "© swisstopo" und "Powered by Esri" stehen auf der Seite, im Bild und im PDF.
 
    Esri-Schluessel: ein Browser-Schluessel, auf die Referrer der Webseite beschraenkt und auf das
-   Privileg Routing; er steht hier bewusst im Quelltext (er ist in der ausgelieferten Seite
-   ohnehin sichtbar). Er laeuft nach hoechstens einem Jahr ab; Erneuerung: README.md. Leer =
+   Privileg Routing; er steht in esri_schluessel.js (ESRI_SCHLUESSEL), gemeinsam mit dem
+   Vertragswerk, und ist in der ausgelieferten Seite ohnehin sichtbar. Er laeuft nach hoechstens einem Jahr ab; Erneuerung: README.md. Leer =
    Routing aus, Adressen und Karte laufen trotzdem. */
 (function () {
   "use strict";
 
-  var ESRI_KEY = "AAPTaZh70gdMw1s1M3ytocFv0jA..WZ8oRYSDRJ27x0_UPtgWDkOWkEpy-cBw8w2Muj8xV0KAMvDGon1uy4pb-ZjtNRdw123-seV_vrnm55SlB7vd9kR__yK2QlbrtMX84EQOO_nym8grJB5hCVxGKoVCkn8TnbQKEG-Q6Ba6rskWM62JyG-4zpQNsy3x9C5iAmEmK65G6dSh5HeHz5UsewuPiYUVQa-tImtvkr_IhhPqyrvPfnqU9ofBE53cY2uKvSdb3blK1hncyw..AT1_AmXggOTB";
+  /* Schlüssel aus esri_schluessel.js (dieselbe Datei wie im Vertragswerk) */
+  var ESRI_KEY = typeof ESRI_SCHLUESSEL === "string" ? ESRI_SCHLUESSEL : "";
   var RAYON_MIN = 15;
 
   var SUCHE = "https://api3.geo.admin.ch/rest/services/ech/SearchServer";
