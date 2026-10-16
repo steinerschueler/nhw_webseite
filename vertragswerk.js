@@ -511,7 +511,7 @@
 
   /* ---------- Reiter ---------- */
 
-  var REITER = ["verleihvertrag", "erlaeuterungen", "arbeitsvertrag", "begriffe"];
+  var REITER = ["verleihvertrag", "erlaeuterungen", "arbeitsvertrag", "ueberlegungen", "begriffe"];
   function reiterAus(hash) {
     var h = (hash || "").replace(/^#/, "");
     if (/^begriff-/.test(h)) return "begriffe";
@@ -570,6 +570,15 @@
       if (!ez) return;
       ez.textContent = "";
       VW.erlZeigen(ez, VW.erlaeutert(art, s.o, s.f, s.gez, zahlen), "");
+    });
+    /* Überlegungen: je Vertrag ein Kapitel, Marken wie in den Erläuterungen */
+    Object.keys(stand).forEach(function (art) {
+      var uz = $("ueb-" + art), fn = VW.UEB && VW.UEB[art];
+      if (!uz || !fn) return;
+      var fehlt = [], auf = VW.aufloeser(art, zahlen, fehlt), leer = [];
+      leer.vorspann = (fn(stand[art].o, stand[art].f) || []).map(function (bl) { return teilAufloesen(bl, auf); });
+      uz.textContent = "";
+      VW.erlZeigen(uz, leer, "");
     });
     VW.stand = stand; VW.zahlen = zahlen;
     Object.keys(stand).forEach(function (art) { wirkungZeigen(art, stand[art], zahlen); });

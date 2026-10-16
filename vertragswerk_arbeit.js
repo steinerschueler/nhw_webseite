@@ -437,9 +437,18 @@
 
   var E = VW.ERL.av = VW.ERL.av || {};
 
+  VW.UEB = VW.UEB || {};
+  VW.UEB.av = function () {
+    return [
+      "Die GmbH ist eine eigene Person, der Inhaber ist ihr Arbeitnehmer. Ein Vertrag zwischen der Gesellschaft und der Person, die sie vertritt, muss schriftlich abgefasst werden (Art. 718b in Verbindung mit Art. 814 Abs. 4 OR); der Leiharbeitsvertrag braucht die Schriftform ohnehin (Art. 19 Abs. 1 AVG).",
+      "Der Vertrag hält fest, welche Entschädigung die Gesellschafterversammlung festgesetzt hat (Art. 804 Abs. 2 Ziff. 6 OR), und trennt die Arbeit als Arbeitnehmer von der Führung der Gesellschaft (Ziff. {R@av:stellung.organ}). Mit ihm lassen sich Lohn, Arbeitszeit, Ferien und Abzüge gegenüber Ausgleichskasse, Versicherern, paritätischer Kommission und Steuerbehörde belegen.",
+      {quellen: [q("Art. 718b OR", "OR", "718_b"), q("Art. 804 OR", "OR", "804"), q("Art. 814 OR", "OR", "814"), q("Art. 19 AVG", "AVG", "19")]}
+    ];
+  };
+
   E._vorspann = function () {
     return [
-      "Der Arbeitsvertrag regelt das Verhältnis zwischen der Firma und ihrem Inhaber, der bei ihr angestellt ist und von ihr an Einsatzbetriebe verliehen wird. Er ist ein Einzelarbeitsvertrag nach Art. 319 ff. OR und zugleich ein Leiharbeitsvertrag nach Art. 19 AVG. Dieser verlangt die schriftliche Form und nennt die Punkte, die der Vertrag regeln muss: Art der Arbeit, Arbeitsort und Beginn des Einsatzes, Dauer oder Kündigungsfrist, Arbeitszeiten, Lohn, Spesen, Zulagen und Abzüge, die Leistungen bei Überstunden, Krankheit, Mutterschaft, Unfall, Militärdienst und Ferien sowie die Termine der Auszahlung.",
+      "Der Arbeitsvertrag regelt das Verhältnis zwischen der GmbH und ihrem Inhaber, der bei ihr angestellt ist und von ihr an Einsatzbetriebe verliehen wird; er ist für die Ein-Personen-GmbH gebaut. Er ist ein Einzelarbeitsvertrag nach Art. 319 ff. OR und zugleich ein Leiharbeitsvertrag nach Art. 19 AVG. Dieser verlangt die schriftliche Form und nennt die Punkte, die der Vertrag regeln muss: Art der Arbeit, Arbeitsort und Beginn des Einsatzes, Dauer oder Kündigungsfrist, Arbeitszeiten, Lohn, Spesen, Zulagen und Abzüge, die Leistungen bei Überstunden, Krankheit, Mutterschaft, Unfall, Militärdienst und Ferien sowie die Termine der Auszahlung.",
       "Jeder Wert steht einmal, im Vertragsblatt; die Ziffern der Vertragsbedingungen sagen \"nach dem Vertragsblatt\". Was je Einsatz wechselt, steht im Verleihvertrag, den der Arbeitnehmer in Kopie erhält (Ziff. {R:einsatz.a}).",
       {quellen: [q("Art. 19 AVG", "AVG", "19"), q("Art. 319 OR", "OR", "319")]}
     ];
