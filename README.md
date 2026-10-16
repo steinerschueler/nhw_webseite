@@ -50,8 +50,8 @@ Reines HTML/CSS/JS, kein Server nötig.
   gewählten Abfahrtszeit, getrennt ausgewertet für Wegzeit (Art. 27.4) und Verpflegung (Art. 33.1);
   die 15-Minuten-Gebiete auf einer swisstopo-Karte; PDF mit Schalter «neutral» (Abschnitt
   «Rayon-Rechner» unten)
-- `vertragswerk.html` + `vertragswerk.js` — Vertragswerk: Verleihvertrag für den Selbstverleih im
-  Elektrogewerbe (Abschnitt «Vertragswerk» unten)
+- `vertragswerk.html` + `vertragswerk*.js` — Vertragswerk: Verleihvertrag, Erläuterungen, Arbeitsvertrag und
+  Lexikon für den Selbstverleih im Elektrogewerbe (Abschnitt «Vertragswerk» unten)
 - `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Verfügbarkeit")
 - `kalender.html` — Jahreskalender (Verfügbarkeit; freie Tage per E-Mail anfragen, kein Backend)
 - `impressum.html` — Impressum / Datenschutz
@@ -144,24 +144,46 @@ Vorbelegen lässt sich die Seite über die Adresse: `rayon.html?v=<Sitz Arbeitge
 Einsatzbetrieb>&w=<Wohnort Arbeitnehmer>&b=<Baustelle>&zeit=07:00&neutral=0` (`v` oder `e` muss da
 sein, `w` darf fehlen; `neutral=0` schaltet den PDF-Schalter aus, der sonst an ist).
 
-## Vertragswerk (`vertragswerk.html`, `vertragswerk.js`)
+## Vertragswerk (`vertragswerk.html`, `vertragswerk*.js`)
 
-Neutrale Vorlage eines Verleihvertrags für Elektroinstallateure, die sich über ihre eigene Firma
-verleihen: Einsatzblatt und Vertragsbedingungen (19 Ziffern) mit Unterschriften. Die Seite nennt
-keinen Einsatzbetrieb und keine Werte der GmbH; das PDF ist immer neutral (kein Logo, kein Hinweis
-auf die Seite). Unter A wählt der Besucher Varianten (Fristen und Geld, Tag und Zeit, Rolle des
-Arbeitnehmers, Ort und Recht), unter B füllt er das Einsatzblatt aus (leere Felder bleiben im PDF
-als Linie), unter C liest er die Bedingungen; Absätze, die von der Grundfassung (`GRUND` in
-`vertragswerk.js`) abweichen, sind hinterlegt. Kein Speichern, keine Cookies, keine Abfragen;
-jsPDF lokal wie im Preisrechner.
+Neutrale Vorlagen für Elektroinstallateure, die sich über ihre eigene Firma verleihen
+(Selbstverleih), in vier Reitern (Anker `#verleihvertrag`, `#erlaeuterungen`,
+`#arbeitsvertrag`, `#begriffe`, ein Lexikon-Eintrag mit `#begriff-<id>`):
 
-Der Vertragstext steht in `modell(o)` in `vertragswerk.js`: je Ziffer die Buchstaben, was eine
-Variante weglässt, fällt heraus. Ziffern und Buchstaben werden danach gezählt; Verweise im Text
-sind Marken (`{Z:ziffer}`, `{B:ziffer.buchstabe}`, `{R:ziffer.buchstabe}`), die beim Zählen
-aufgelöst werden, damit sie auch nach dem Wegfall eines Buchstabens stimmen. Wer den Text ändert,
-prüft die Varianten mit Node: `vertragswerk.js` exportiert ausserhalb des Browsers `modell`,
-`gezaehlt`, `GRUND` und `pdfBauen` (jsPDF aus `vendor/` lässt sich mit `require` laden); ein
-Verweis ohne Ziel erscheint als "?" und in `gezaehlt(...).fehlt`.
+- **Verleihvertrag:** A Auswahl, B Einsatzblatt (leere Felder bleiben im PDF als Linie), C
+  Vertragsbedingungen (19 Ziffern in sechs Gruppen; Absätze, die von der Grundfassung abweichen,
+  sind hinterlegt), D PDF. Der Rayon ist in der Grundfassung wie im GAV (Art. 27.4) bemessen:
+  15 Minuten ab Sitz des Verleihers; unter B lässt er sich messen (gleiche Dienste wie der
+  Rayon-Rechner), die Karte kommt ins Einsatzblatt.
+- **Erläuterungen:** entstehen aus der Auswahl beider Verträge (Grundtext je Ziffer, Baustein je
+  Variante, Beispiele, Grundlagen); als Beilage an das PDF anhängbar.
+- **Arbeitsvertrag:** Vertrag zwischen der Firma und ihrem Inhaber (Art. 19 AVG), Vertragsblatt
+  und 18 Ziffern in fünf Gruppen.
+- **Rechtsbegriffe:** alphabetisches Lexikon mit Bedeutung, Abgrenzung und Quelle. Begriffe in
+  Verträgen und Erläuterungen sind dezent unterstrichen: Bleibt die Maus kurz darauf stehen,
+  erscheint ein Kärtchen mit der Kurzfassung, das bei der nächsten Mausbewegung verschwindet;
+  ein Klick führt ins Lexikon (Touch: erstes Tippen Kärtchen, zweites Lexikon).
+
+Gemeinsame Angaben (Firma, Adresse, E-Mail, Arbeitnehmer, Qualifikation, Kanton) tragen dasselbe
+`data-g` und werden zwischen den Reitern abgeglichen. Kein Speichern, keine Cookies; Abfragen nur
+bei der Rayon-Messung (swisstopo, Esri; Datenschutz im Impressum). Das PDF ist immer neutral.
+
+| Datei | Inhalt |
+|---|---|
+| `vertragswerk.js` | Kern: Reiter, Zählung und Marken, Vorschau, Begriffskärtchen, PDF-Bausteine (`VW.pdfNeu`) |
+| `vertragswerk_verleih.js` | Verleihvertrag: `modell(o)`, Auswahl, Einsatzblatt, PDF |
+| `vertragswerk_arbeit.js` | Arbeitsvertrag samt seinen Erläuterungen (`VW.ERL.av`) |
+| `vertragswerk_erlaeuterung.js` | Erläuterungen zum Verleihvertrag (`VW.ERL.vv`) |
+| `vertragswerk_begriffe.js` | Lexikon (`VW.BEGRIFFE`) und Aufbau des Reiters |
+| `vertragswerk_rayon.js` | Rayon-Messung und Karte fürs Einsatzblatt |
+| `esri_schluessel.js` | öffentlicher, auf die Domain beschränkter Esri-Schlüssel |
+
+Vertragstexte stehen in `modell(o)`: je Ziffer die Buchstaben, was eine Variante weglässt, fällt
+heraus; `teil` setzt einen Zwischentitel. Ziffern, Buchstaben und Gruppen werden danach gezählt;
+Verweise sind Marken (`{Z:ziffer}`, `{B:ziffer.buchstabe}`, `{R:ziffer.buchstabe}`, mit `@vv`/`@av`
+in den anderen Vertrag), damit sie auch nach dem Wegfall eines Buchstabens stimmen. Erläuterungen
+sind je Ziffer-ID eine Funktion der Auswahl. Alle Dateien laufen auch in Node (`require` in der
+Reihenfolge der Script-Tags); ein Verweis ohne Ziel erscheint als "?" und in `.fehlt`.
 
 ## Deployment (GitHub Pages)
 
