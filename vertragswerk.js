@@ -284,8 +284,15 @@
         P.platz(tz.length * 4.2 + 1.4 + 2 * ZH + (z.teil ? 6 : 0));
         if (z.teil) { P.schrift("bold", 8); P.farbe(GRAU); d.text(z.teil.toUpperCase(), sx(), P.y, {charSpace: 0.35}); P.y += 4.4; }
         P.schrift("bold", 9.8); P.farbe(INK); d.text(tz, sx(), P.y); P.y += tz.length * 4.2 + 0.8;
-        abs.forEach(function (a) {
+        abs.forEach(function (a, ai) {
           var ein = a.bst ? EIN : 0, erste = {ja: true};
+          /* Unterschriften nie allein: der letzte Absatz, der Schlusssatz und alle Unterschriftenblöcke
+             stehen zusammen in einer Spalte */
+          if (opts.parteien && z === gez[gez.length - 1] && ai === abs.length - 1) {
+            P.schrift("normal", GR);
+            var hAbs = a.t.reduce(function (h, teil) { return h + (typeof teil === "string" ? d.splitTextToSize(teil, CB - ein).length * ZH : 0); }, 0.7);
+            P.platz(hAbs + d.splitTextToSize(opts.schluss, CB).length * ZH + 6 + opts.parteien.length * 39);
+          }
           a.t.forEach(function (teil) { teilText(teil, ein, a.bst, erste); if (opts.erl) P.y += 1; });
           P.y += 0.7;
         });

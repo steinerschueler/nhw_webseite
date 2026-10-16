@@ -112,16 +112,16 @@
     ], "Einsätze und Arbeitszeit");
 
     ziffer("zeit", "Arbeitszeit", [
-      b("a", "Die wöchentliche Arbeitszeit steht im Vertragsblatt; sie verteilt sich im Durchschnitt auf " + H + " Stunden je Tag von Montag bis Freitag. Die Stunden je Wochentag richten sich nach dem jeweiligen Verleihvertrag; nennt er keine, gelten " + H + " Stunden je Tag von Montag bis Freitag. Innerhalb dieser Stunden teilt der Einsatzbetrieb die Arbeitszeit ein, im Rahmen des Arbeitsgesetzes (ArG) und des GAV. Nennt ein Verleihvertrag weniger Stunden, bleibt die Arbeitszeit nach dem Vertragsblatt geschuldet. Die Jahresbruttoarbeitszeit richtet sich nach Anhang 5c des GAV" +
+      b("a", "Die wöchentliche Arbeitszeit steht im Vertragsblatt. Die Stunden je Wochentag richten sich nach dem jeweiligen Verleihvertrag, sonst gelten " + H + " Stunden je Tag von Montag bis Freitag. Innerhalb dieser Stunden teilt der Einsatzbetrieb die Arbeitszeit ein, im Rahmen des Arbeitsgesetzes (ArG) und des GAV. Nennt ein Verleihvertrag weniger Stunden, bleibt die Arbeitszeit nach dem Vertragsblatt geschuldet. Die Jahresbruttoarbeitszeit nach Art. 21.1 GAV richtet sich nach Anhang 5c des GAV" +
         (teil ? "," + verh : "") +
-        ", bei Beginn des Arbeitsverhältnisses im Lauf des Kalenderjahres anteilsmässig; sie ist die vertraglich festgelegte Jahresbruttoarbeitszeit nach Art. 21.1 GAV. Vorholzeit gibt es keine, solange die Arbeitgeberin sie nicht zu Beginn eines Jahres schriftlich festlegt (Art. 20.2 und 26.2 GAV)."),
-      b("b", "Die wöchentliche Höchstarbeitszeit beträgt 50 Stunden (Art. 9 Abs. 1 Bst. b ArG). Pausen sind keine Arbeitszeit; die Mittagspause dauert 60 Minuten, bei höchstens neun Stunden Arbeit nach Vereinbarung 30 Minuten (Art. 28.1 bis 28.3 GAV). Bewilligungen für Nacht- und Sonntagsarbeit holt der Einsatzbetrieb ein; Nacht- und Sonntagsarbeit leistet der Arbeitnehmer nur mit seiner Zustimmung (Art. 17 Abs. 6 und 19 Abs. 5 ArG), Arbeit an Samstagen, Sonntagen und Feiertagen nur, wenn die Arbeitgeberin sie nach dem jeweiligen Verleihvertrag bestätigt hat. Die Arbeitgeberin sorgt über aufeinanderfolgende Einsätze für die Einhaltung des ArG (Höchstarbeitszeit, Ruhezeit, freier Sonntag, Ersatzruhe)."),
+        ", bei Beginn des Arbeitsverhältnisses im Lauf des Kalenderjahres anteilsmässig. Vorholzeit gibt es keine, solange die Arbeitgeberin sie nicht zu Beginn eines Jahres schriftlich festlegt (Art. 20.2 und 26.2 GAV)."),
+      b("b", "Die wöchentliche Höchstarbeitszeit beträgt 50 Stunden (Art. 9 Abs. 1 Bst. b ArG). Pausen sind keine Arbeitszeit; die Mittagspause dauert 60 Minuten, bei höchstens neun Stunden Arbeit nach Vereinbarung 30 Minuten (Art. 28.1 bis 28.3 GAV). Bewilligungen für Nacht- und Sonntagsarbeit holt der Einsatzbetrieb ein; Nacht- und Sonntagsarbeit leistet der Arbeitnehmer nur mit seiner Zustimmung (Art. 17 Abs. 6 und 19 Abs. 5 ArG), Arbeit an Samstagen, Sonntagen und Feiertagen nur, wenn die Arbeitgeberin sie nach dem jeweiligen Verleihvertrag bestätigt hat. Die Arbeitgeberin sorgt über aufeinanderfolgende Einsätze für die Einhaltung des ArG."),
       b("c", "\"Fahrt zwischen Baustellen\" und \"Wartezeit während der Arbeit\" sind Arbeitszeit."),
       b("weg", "Wegzeit: Der Weg zwischen dem Wohnort des Arbeitnehmers und dem Sitz des Einsatzbetriebs ist Arbeitsweg und keine Arbeitszeit (Art. 27.2 GAV; als Betrieb gilt hier wie bei Art. 33.1 GAV der Sitz des Einsatzbetriebs). Beginnt oder endet die Arbeit auf einer Baustelle, gilt die zeitliche Differenz, die diesen Arbeitsweg übersteigt, als Arbeitszeit (Art. 27.3 GAV)."),
       b("ueber", "Arbeit über die Stunden je Wochentag hinaus ordnet der Einsatzbetrieb im Rahmen von ArG und GAV an. Überstunden nach Art. 21 GAV sind die zwischen 6 und 23 Uhr geleisteten Stunden, die die Jahresbruttoarbeitszeit übersteigen; Ferien, Feiertage, bezahlte Absenzen und Zeit ohne Einsatz zählen mit den Stunden je Wochentag (Art. 20.1 und 21.1 GAV). " + (stunde
-        ? "Beim Stundenlohn werden Überstunden nicht durch Freizeit ausgeglichen und nicht auf einen folgenden Einsatz übertragen: Nach dem Ende jedes Einsatzes, spätestens bei Ende des Arbeitsverhältnisses, vergleicht die Arbeitgeberin die geleisteten mit den geschuldeten Stunden und zahlt die Überstunden aus, bis zum Anteil der Einsatzdauer an " + grenze + " je Jahr ohne Lohnzuschlag, darüber mit einem Lohnzuschlag von 25 %. "
+        ? "Beim Stundenlohn zahlt die Arbeitgeberin Überstunden nach jedem Einsatz aus, ohne Ausgleich durch Freizeit: bis zum Anteil der Einsatzdauer an " + grenze + " je Jahr ohne Lohnzuschlag, darüber mit 25 %. "
         : "Bis " + grenze + " werden sie innert Jahresfrist nach Art. 21.3 GAV ohne Lohnzuschlag durch Freizeit gleicher Dauer oder in Geld ausgeglichen; der Ausgleich wird schriftlich festgehalten. Weitere Stunden zahlt die Arbeitgeberin im Januar mit einem Lohnzuschlag von 25 % aus. ") + "Überzeit über die wöchentliche Höchstarbeitszeit hinaus zahlt die Arbeitgeberin bis zum Ende des folgenden Monats mit einem Lohnzuschlag von 25 % aus (Art. 22.2 GAV); wird für dieselben Stunden ein Lohnzuschlag nach Ziff. {R:lohn.zuschlag} bezahlt, entfällt der Überzeitzuschlag (Art. 22.3 GAV)."),
-      b("ohne", "Kann die Arbeitgeberin keinen Einsatz zuweisen oder beendet der Einsatzbetrieb die Arbeit vor Ablauf der Stunden je Wochentag, bleibt sie zur Lohnzahlung verpflichtet (Art. 324 OR). Diese Zeit ohne Einsatz gilt mit den Stunden je Wochentag, ohne Verleihvertrag mit " + H + " Stunden je Tag von Montag bis Freitag, als geleistet; sie wird nicht an Überstunden, Ferien oder Lohn angerechnet. Der Arbeitnehmer hält sich in dieser Zeit für Einsätze bereit; was er daneben als Geschäftsführer tut, bleibt Organtätigkeit (Ziff. {R:stellung.organ}) und ändert daran nichts. Bleibt er aus Gründen in seiner Person der Arbeit fern, gilt diese Zeit nicht als geleistet.")
+      b("ohne", "Kann die Arbeitgeberin keinen Einsatz zuweisen oder beendet der Einsatzbetrieb die Arbeit vor Ablauf der Stunden je Wochentag, bleibt sie zur Lohnzahlung verpflichtet (Art. 324 OR). Diese Zeit ohne Einsatz gilt mit den Stunden je Wochentag nach Bst. {B:zeit.a} als geleistet; sie wird nicht an Überstunden, Ferien oder Lohn angerechnet. Der Arbeitnehmer hält sich für Einsätze bereit; Organtätigkeit in dieser Zeit ändert daran nichts (Ziff. {R:stellung.organ}). Bleibt er aus Gründen in seiner Person der Arbeit fern, gilt diese Zeit nicht als geleistet.")
     ]);
 
     ziffer("rapport", "Wochenrapport", [
@@ -130,7 +130,7 @@
     ]);
 
     var dreizehn;
-    if (stunde) dreizehn = "Der Anteil 13. Monatslohn beträgt 8,33 % der Summe aus Stundengrundlohn, Ferienzuschlag und Feiertagszuschlag und wird mit dem Lohn jedes Monats ausbezahlt; dies ist die Absprache nach Art. 18.2 GAV. Einen gesonderten 13. Monatslohn gibt es nicht.";
+    if (stunde) dreizehn = "Der Anteil 13. Monatslohn beträgt 8,33 % der Summe aus Stundengrundlohn, Ferienzuschlag und Feiertagszuschlag und wird mit dem Lohn jedes Monats ausbezahlt (Absprache nach Art. 18.2 GAV); einen gesonderten 13. Monatslohn gibt es nicht.";
     else if (o.dreizehnter === "monatlich") dreizehn = "Der 13. Monatslohn nach dem Vertragsblatt beträgt 100 % des durchschnittlichen Monatslohns des Kalenderjahres. Er wird nach Absprache monatlich mit je einem Zwölftel des Monatslohns ausgerichtet und auf der Lohnabrechnung ausgewiesen (Art. 18.1 und 18.2 GAV); bei Beginn oder Beendigung des Arbeitsverhältnisses im Lauf des Kalenderjahres ist er damit anteilsmässig ausgerichtet.";
     else dreizehn = "Der 13. Monatslohn nach dem Vertragsblatt beträgt 100 % des durchschnittlichen Monatslohns des Kalenderjahres und wird mit dem Dezemberlohn ausgerichtet (Art. 18.1 und 18.2 GAV). Bei Beginn oder Beendigung des Arbeitsverhältnisses im Lauf des Kalenderjahres wird er anteilsmässig ausgerichtet (Art. 18.3 GAV).";
     ziffer("lohn", "Lohn", [
@@ -141,7 +141,7 @@
           : "Der Monatslohn steht im Vertragsblatt. Er liegt nicht unter dem Mindestlohn des GAV für die Qualifikation des Arbeitnehmers (Art. 17 und Anhang 5c GAV)."),
       b("dreizehn", dreizehn),
       b("c", "Die Arbeitgeberin zahlt den Lohn am Monatsende auf das Lohnkonto nach dem Vertragsblatt (Art. 323 Abs. 1 OR). Mit jeder Zahlung erhält der Arbeitnehmer eine Lohnabrechnung über Lohn, Arbeitszeit, Vorholzeit, Überstunden, Ferien, Spesen, Lohnzuschläge, Familienzulagen und Abzüge (Art. 323b Abs. 1 OR, Art. 35.3 GAV)." + (stunde
-        ? " Sie weist Stundengrundlohn, Ferienzuschlag, Feiertagszuschlag und Anteil 13. Monatslohn je mit Satz und Betrag aus" + (o.ferienlohn === "laufend" ? "." : ", dazu den Rückbehalt für das Ferienguthaben und dessen Stand.")
+        ? " Sie weist jeden Zuschlag mit Satz und Betrag aus" + (o.ferienlohn === "laufend" ? "." : ", dazu Rückbehalt und Stand des Ferienguthabens.")
         : "") + " Familienzulagen richten sich nach dem Familienzulagengesetz (FamZG) und werden mit dem Lohn ausbezahlt."),
       b("zuschlag", "Für besondere Arbeitszeiten erhält der Arbeitnehmer die Lohnzuschläge nach Art. 25 GAV in Geld: Samstag 13 bis 23 Uhr 25 %, Nacht 23 bis 6 Uhr 50 %, Sonntag und Feiertage 100 %; Grundlage ist der Stundenlohn " + (stunde ? "nach Ziff. {R:lohn.a}" : "nach Art. 16.3 GAV") + ". Überzeit: Ziff. {R:zeit.ueber}."),
       b("e", "Änderungen des " + (stunde ? "Lohns" : "Monatslohns") + " richten sich nach Ziff. {R:kuend.aenderung} und {R:schluss.nachtrag}; allgemeinverbindlich erklärte Lohnanpassungen nach dem GAV bleiben vorbehalten.")
@@ -150,10 +150,7 @@
     ziffer("abzuege", "Abzüge vom Lohn", [
       b("a", "Vom Bruttolohn zieht die Arbeitgeberin die Arbeitnehmeranteile nach der Tabelle im Vertragsblatt ab."),
       b("b", "Die Arbeitgeberin trägt ihre gesetzlichen und gesamtarbeitsvertraglichen Arbeitgeberanteile und Beiträge (AHV/IV/EO mit dem Verwaltungskostenbeitrag der Ausgleichskasse, ALV, Beitrag an die Familienausgleichskasse, Berufsunfallversicherung, " + (ktgHalb ? "hälftige Prämie" : "ganze Prämie") + " der Krankentaggeldversicherung, berufliche Vorsorge, Weiterbildungs- und Vollzugskostenbeitrag)."),
-      b("c", "Die als provisorisch bezeichneten Abzüge ersetzt ein Nachtrag durch die definitiven, sobald " + (ktgHalb
-        ? "die Einreihung durch den Unfallversicherer, die Police der Krankentaggeldversicherung der Arbeitgeberin und der Anschlussvertrag ihrer Vorsorgeeinrichtung vorliegen"
-        : "die Einreihung durch den Unfallversicherer und der Anschlussvertrag der Vorsorgeeinrichtung der Arbeitgeberin vorliegen") +
-        "; er braucht keinen Beschluss der Gesellschafterversammlung, solange der Lohn gleich bleibt (Ziff. {R:schluss.nachtrag}). Ein definitiver Abzug gilt bis zur nächsten Änderung durch den Versicherer oder die Vorsorgeeinrichtung. Die Arbeitgeberin teilt die definitiven Abzüge innert eines Monats schriftlich mit (Art. 19 Abs. 2 Bst. e AVG).")
+      b("c", "Die als provisorisch bezeichneten Abzüge ersetzt ein Nachtrag durch die definitiven, sobald die Unterlagen der Versicherer und der Vorsorgeeinrichtung vorliegen; er braucht keinen Beschluss der Gesellschafterversammlung, solange der Lohn gleich bleibt (Ziff. {R:schluss.nachtrag}). Ein definitiver Abzug gilt bis zur nächsten Änderung durch den Versicherer oder die Vorsorgeeinrichtung. Die Arbeitgeberin teilt die definitiven Abzüge innert eines Monats schriftlich mit (Art. 19 Abs. 2 Bst. e AVG).")
     ]);
 
     ziffer("spesen", "Spesen", [
@@ -163,7 +160,7 @@
     ]);
 
     var feiertage = o.kanton === "BE"
-      ? "die Feiertage nach Art. 30 GAV am Sitz der Arbeitgeberin im Kanton Bern: Neujahr, Berchtoldstag, Karfreitag, Ostermontag, Auffahrt, Pfingstmontag, Bundesfeiertag, Weihnachten und Stephanstag, soweit sie auf einen Tag von Montag bis Freitag fallen"
+      ? "die neun Feiertage nach Art. 30.2 GAV, die am Sitz der Arbeitgeberin im Kanton Bern gelten, soweit sie auf einen Tag von Montag bis Freitag fallen"
       : "die neun Feiertage, die Art. 30 GAV nach dem Recht des Kantons " + VW.kantonName(o.kanton) + " am Sitz der Arbeitgeberin bestimmt, soweit sie auf einen Tag von Montag bis Freitag fallen";
     ziffer("ferien", "Ferien und Feiertage", [
       b("a", (o.ferien === "mehr"
@@ -175,10 +172,10 @@
           ? "Während des Arbeitsverhältnisses werden die Ferien nicht in Geld abgegolten (Art. 329d Abs. 2 OR)."
           : o.ferienlohn === "laufend"
             ? "Der Ferienlohn wird als Ferienzuschlag nach dem Vertragsblatt mit dem laufenden Lohn ausbezahlt und auf jeder Lohnabrechnung mit Satz und Betrag ausgewiesen; beim Bezug der Ferien wird kein weiterer Lohn bezahlt."
-            : "Der Ferienzuschlag nach dem Vertragsblatt gehört zum Bruttolohn des Monats, von dem die Abzüge nach Ziff. {R:abzuege.a} berechnet werden. Mit dem laufenden Lohn wird er nicht ausbezahlt (Art. 329d Abs. 2 OR): Die Arbeitgeberin behält ihn nach den Abzügen zurück und schreibt ihn einem Ferienguthaben gut. Bezieht der Arbeitnehmer Ferien, zahlt sie mit dem Lohn des Monats den Teil des Ferienguthabens aus, der den bezogenen Ferientagen im Verhältnis zu den noch offenen Ferientagen entspricht. Bei Ende des Arbeitsverhältnisses zahlt sie das restliche Ferienguthaben aus, soweit die Ferien bis dahin nicht bezogen werden können.")),
+            : "Der Ferienzuschlag nach dem Vertragsblatt gehört zum Bruttolohn (Abzüge nach Ziff. {R:abzuege.a}), wird aber nicht mit dem laufenden Lohn ausbezahlt (Art. 329d Abs. 2 OR): Die Arbeitgeberin schreibt ihn nach den Abzügen einem Ferienguthaben gut. Beim Ferienbezug zahlt sie den Teil aus, der den bezogenen im Verhältnis zu den offenen Ferientagen entspricht, bei Ende des Arbeitsverhältnisses den Rest.")),
       b("b", "Ferien und andere geplante Absenzen teilt der Arbeitnehmer der Arbeitgeberin so früh mit, dass sie die Frist des jeweiligen Verleihvertrags gegenüber dem Einsatzbetrieb einhalten kann."),
       b("feiertage", (stunde
-        ? "Massgebend sind " + feiertage + ". Die Feiertagsentschädigung wird als Feiertagszuschlag nach Anhang 6 GAV für die Zahl dieser Feiertage im Kalenderjahr mit dem Lohn jedes Monats ausbezahlt (Art. 31.5 GAV); der Satz für das erste Jahr steht im Vertragsblatt, für jedes folgende Jahr gilt der Satz nach derselben Regel."
+        ? "Massgebend sind " + feiertage + ". Sie werden als Feiertagszuschlag nach Anhang 6 GAV mit jedem Lohn bezahlt, zum Satz für die Zahl dieser Feiertage im Kalenderjahr (Art. 31.5 GAV); der Satz des ersten Jahres steht im Vertragsblatt."
         : "Bezahlt sind " + feiertage + ".") +
         " Liegt der Einsatzbetrieb in einem anderen Kanton, sind dessen gesetzliche Feiertage mindestens nach dessen Recht bezahlt.")
     ]);
@@ -247,13 +244,13 @@
       b("c", "Die Kündigung erfolgt schriftlich, mit eingeschriebenem Brief oder durch Übergabe gegen Empfangsbestätigung."),
       b("aenderung", "Änderungen von Beschäftigungsgrad oder Lohn, namentlich wenn die Arbeitgeberin ihre Verleihtätigkeit vorübergehend nicht ausübt, erfolgen durch Nachtrag nach Ziff. {R:schluss.nachtrag} oder durch Änderungskündigung unter Einhaltung der Kündigungsfrist."),
       b("uebertritt", "Nach Beendigung des Arbeitsverhältnisses kann der Arbeitnehmer in ein direktes Arbeitsverhältnis mit dem Einsatzbetrieb übertreten (Art. 19 Abs. 5 Bst. b AVG)."),
-      b("rueckgabe", "Bei Beendigung gibt der Arbeitnehmer Unterlagen, Schlüssel und Betriebsmittel der Arbeitgeberin zurück (Art. 339a OR); Schlüssel, Badges und Unterlagen eines Einsatzbetriebs gibt er diesem am Ende des Einsatzes zurück. Die Arbeitgeberin weist ihn bei der Beendigung schriftlich auf den Übergang in die Einzelversicherung des Krankentaggelds (Art. 38.5 GAV), die Abredeversicherung nach UVG und die Nachdeckung der beruflichen Vorsorge hin.")
+      b("rueckgabe", "Bei Beendigung gibt der Arbeitnehmer Unterlagen, Schlüssel und Betriebsmittel der Arbeitgeberin zurück (Art. 339a OR), was einem Einsatzbetrieb gehört, diesem am Ende des Einsatzes. Die Arbeitgeberin weist ihn bei der Beendigung schriftlich auf den Übergang in die Einzelversicherung des Krankentaggelds (Art. 38.5 GAV), die Abredeversicherung nach UVG und die Nachdeckung der beruflichen Vorsorge hin.")
     ], "Dauer und Schluss");
 
     ziffer("schluss", "Schlussbestimmungen", [
       b("nachtrag", "Änderungen und Ergänzungen dieses Vertrags bedürfen der Schriftform (Art. 12 und 16 OR); Nachträge werden fortlaufend nummeriert. Ändert ein Nachtrag den Lohn, braucht er einen Beschluss der Gesellschafterversammlung (Art. 804 Abs. 2 Ziff. 6 OR)."),
       b("b", "Es gilt schweizerisches Recht, namentlich OR, AVG mit AVV und ArG."),
-      b("c", "Für Streitigkeiten aus diesem Vertrag sind die Gerichte am Wohnsitz oder Sitz der beklagten Partei oder am Ort, an dem der Arbeitnehmer gewöhnlich die Arbeit verrichtet, zuständig (Art. 34 Abs. 1 der Zivilprozessordnung, ZPO); für Klagen des Arbeitnehmers, die sich auf das AVG stützen, zudem das Gericht am Ort der Geschäftsniederlassung der Arbeitgeberin (Art. 34 Abs. 2 ZPO). Der Arbeitnehmer kann auf diese Gerichtsstände nicht zum Voraus verzichten (Art. 35 Abs. 1 Bst. d ZPO)."),
+      b("c", "Gerichtsstand ist der Wohnsitz oder Sitz der beklagten Partei oder der Ort, an dem der Arbeitnehmer gewöhnlich arbeitet; für Klagen des Arbeitnehmers nach dem AVG zudem der Ort der Geschäftsniederlassung der Arbeitgeberin. Auf diese Gerichtsstände kann der Arbeitnehmer nicht zum Voraus verzichten (Art. 34 und 35 Abs. 1 Bst. d der Zivilprozessordnung, ZPO)."),
       b("d", "Dieser Vertrag wird in zwei Exemplaren ausgefertigt; je eines bleibt bei der Arbeitgeberin und beim Arbeitnehmer. Beilage: Protokoll der Gesellschafterversammlung (Ziff. {R:gegenstand.b}).")
     ]);
     return Z;
@@ -415,7 +412,7 @@
     V.blattSeiten = d.getNumberOfPages();
 
     P.spalten(gez, {titel: "Vertragsbedingungen zum Arbeitsvertrag",
-      schluss: "Mit ihrer Unterschrift bestätigen die Parteien das Vertragsblatt und diese Vertragsbedingungen (Ziff. 1 bis " + gez.length + ") als Bestandteile dieses Vertrags. Jede Partei erhält ein unterzeichnetes Exemplar (" + ref("schluss", "d") + ").",
+      schluss: "Mit ihrer Unterschrift bestätigen die Parteien das Vertragsblatt und diese Vertragsbedingungen (Ziff. 1 bis " + gez.length + ") als Bestandteile dieses Vertrags.",
       parteien: [["Arbeitgeberin", f["av-firma"]], ["Arbeitnehmer", f["av-name"]]]});
 
     if (mitErl) P.spalten(VW.erlaeutert("av", o, f, gez, zahlen), {titel: "Erläuterungen zum Arbeitsvertrag", erl: true});
