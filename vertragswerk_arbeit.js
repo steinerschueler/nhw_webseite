@@ -10,7 +10,7 @@
   VW.ERL = VW.ERL || {};
 
   /* Grundfassung: die Vorwahl der Seite */
-  var GRUND = {rechtsform: "gmbh", lohnform: "monat", ferienlohn: "angespart", dreizehnter: "dezember", wochenstunden: 40,
+  var GRUND = {lohnform: "monat", ferienlohn: "angespart", dreizehnter: "dezember", wochenstunden: 40,
     ferien: "gav", ferienTage: 30, werkzeug: "inventar", ktg: "haelftig", probezeit: 0,
     kuendigung: "gesetz", kuendMonate: 3, kanton: "BE", jahr: new Date().getFullYear()};
 
@@ -72,8 +72,7 @@
   /* ---------- Vertragstext ---------- */
 
   function modell(o) {
-    var gmbh = o.rechtsform !== "ag", stunde = o.lohnform === "stunde";
-    var organ = gmbh ? "Geschäftsführer" : "Mitglied des Verwaltungsrats";
+    var stunde = o.lohnform === "stunde";
     var H = zahl(stundenTag(o));
     var inventar = o.werkzeug === "inventar";
     var ktgHalb = o.ktg !== "arbeitgeberin";
@@ -83,23 +82,17 @@
 
     ziffer("gegenstand", "Gegenstand und Vertragsteile", [
       b("a", "Die Arbeitgeberin stellt den Arbeitnehmer an, um ihn an Einsatzbetriebe zu verleihen: Personalverleih nach dem Arbeitsvermittlungsgesetz (AVG) in der Form der Leiharbeit nach Art. 27 Abs. 3 der Arbeitsvermittlungsverordnung (AVV). Einsatzbetrieb ist der Betrieb, dem sie den Arbeitnehmer nach einem Verleihvertrag verleiht (Art. 12 Abs. 1 AVG). Das Arbeitsverhältnis besteht unabhängig von den einzelnen Einsätzen. Die Arbeitgeberin verleiht nur ihren Inhaber und braucht dafür keine Bewilligung (Art. 28 Abs. 2 AVV)."),
-      b("b", "Der Arbeitsvertrag besteht aus dem Vertragsblatt und diesen Vertragsbedingungen. " + (gmbh
-        ? "Das Protokoll der Gesellschafterversammlung (Beilage) belegt die Festsetzung der Entschädigung und die Zustimmung zu diesem Vertrag; es ist nicht Vertragsbestandteil."
-        : "Das Protokoll des Beschlusses, mit dem die Arbeitgeberin diesem Vertrag zugestimmt hat (Beilage), ist nicht Vertragsbestandteil.")),
+      b("b", "Der Arbeitsvertrag besteht aus dem Vertragsblatt und diesen Vertragsbedingungen. Das Protokoll der Gesellschafterversammlung (Beilage) belegt die Festsetzung der Entschädigung und die Zustimmung zu diesem Vertrag; es ist nicht Vertragsbestandteil."),
       b("c", "Bei Widerspruch gilt diese Rangordnung: zwingendes Recht; die nach Art. 20 Abs. 1 AVG massgebenden Bestimmungen eines allgemeinverbindlich erklärten Gesamtarbeitsvertrags, namentlich des Gesamtarbeitsvertrags der Schweizerischen Elektrobranche (GAV), soweit dieser Vertrag nicht günstiger ist; Vertragsblatt; Vertragsbedingungen; im Übrigen das Gesetz."),
       b("werktag", "Arbeitstag ist jeder Tag, an dem der Arbeitnehmer arbeitet. Werktag ist Montag bis Freitag ohne die " + feiertageKanton(o) + ". Ferien, bezahlte Absenzen und Urlaube (Ziff. {R:verh.c}) werden in Werktagen bemessen; der GAV nennt sie Arbeitstage.")
     ], "Vertrag und Stellung");
 
     ziffer("stellung", "Stellung des Arbeitnehmers", [
-      b("a", gmbh
-        ? "Der Arbeitnehmer ist zugleich Alleingesellschafter und Geschäftsführer der Arbeitgeberin. Dieser Vertrag ist darum ein Vertrag zwischen der Gesellschaft und der Person, die sie vertritt; er ist schriftlich abgefasst (Art. 718b in Verbindung mit Art. 814 Abs. 4 OR)."
-        : "Der Arbeitnehmer ist zugleich Alleinaktionär und Mitglied des Verwaltungsrats der Arbeitgeberin. Dieser Vertrag ist darum ein Vertrag zwischen der Gesellschaft und der Person, die sie vertritt; er ist schriftlich abgefasst (Art. 718b OR)."),
-      b("b", gmbh
-        ? "Die Gesellschafterversammlung hat die Entschädigung des Geschäftsführers für seine Arbeit als Arbeitnehmer festgesetzt und diesem Vertrag zugestimmt (Art. 804 Abs. 2 Ziff. 6 OR; Beilage)."
-        : "Die Arbeitgeberin hat diesem Vertrag durch Beschluss des zuständigen Organs zugestimmt (Beilage)."),
-      b("c", "Die Parteien unterstellen ihr Verhältnis den Bestimmungen über den Einzelarbeitsvertrag (Art. 319 ff. OR) und Art. 19 AVG, soweit diese auf die Stellung des Arbeitnehmers als " + (gmbh ? "Alleingesellschafter" : "Alleinaktionär") + " anwendbar sind. Sozialversicherungs- und steuerrechtlich ist der Arbeitnehmer unselbständig erwerbend; sein Lohn ist massgebender Lohn."),
-      b("organ", (gmbh ? "Geschäftsführung und Verwaltung der Gesellschaft sind" : "Die Aufgaben des Verwaltungsrats sind") + " nicht Gegenstand dieses Vertrags. Der Arbeitnehmer erbringt sie als Organ der Gesellschaft unentgeltlich und ausserhalb der Arbeitszeit. Während der Arbeit handelt er als Arbeitnehmer nach den Weisungen des Einsatzbetriebs. Erklärungen zum Verleihvertrag gibt er als " + organ + " in der Form, die der jeweilige Verleihvertrag vorsieht."),
-      b("e", "Abberufung, Rücktritt oder Ablauf der Amtsdauer als " + organ + " berühren diesen Vertrag nicht; die Kündigung dieses Vertrags beendet die Organstellung nicht (Art. " + (gmbh ? "815" : "705") + " OR).")
+      b("a", "Der Arbeitnehmer ist zugleich Alleingesellschafter und Geschäftsführer der Arbeitgeberin. Dieser Vertrag ist darum ein Vertrag zwischen der Gesellschaft und der Person, die sie vertritt; er ist schriftlich abgefasst (Art. 718b in Verbindung mit Art. 814 Abs. 4 OR)."),
+      b("b", "Die Gesellschafterversammlung hat die Entschädigung des Geschäftsführers für seine Arbeit als Arbeitnehmer festgesetzt und diesem Vertrag zugestimmt (Art. 804 Abs. 2 Ziff. 6 OR; Beilage)."),
+      b("c", "Die Parteien unterstellen ihr Verhältnis den Bestimmungen über den Einzelarbeitsvertrag (Art. 319 ff. OR) und Art. 19 AVG, soweit diese auf die Stellung des Arbeitnehmers als Alleingesellschafter anwendbar sind. Sozialversicherungs- und steuerrechtlich ist der Arbeitnehmer unselbständig erwerbend; sein Lohn ist massgebender Lohn."),
+      b("organ", "Geschäftsführung und Verwaltung der Gesellschaft sind nicht Gegenstand dieses Vertrags. Der Arbeitnehmer erbringt sie als Organ der Gesellschaft unentgeltlich und ausserhalb der Arbeitszeit. Während der Arbeit handelt er als Arbeitnehmer nach den Weisungen des Einsatzbetriebs. Erklärungen zum Verleihvertrag gibt er als Geschäftsführer in der Form, die der jeweilige Verleihvertrag vorsieht."),
+      b("e", "Abberufung, Rücktritt oder Ablauf der Amtsdauer als Geschäftsführer berühren diesen Vertrag nicht; die Kündigung dieses Vertrags beendet die Organstellung nicht (Art. 815 OR).")
     ]);
 
     ziffer("art", "Art der Arbeit und Qualifikation", [
@@ -123,7 +116,7 @@
       b("c", "\"Fahrt zwischen Baustellen\" und \"Wartezeit während der Arbeit\" sind Arbeitszeit."),
       b("weg", "Wegzeit: Der Weg zwischen dem Wohnort des Arbeitnehmers und dem Sitz des Einsatzbetriebs ist Arbeitsweg und keine Arbeitszeit (Art. 27.2 GAV). Beginnt oder endet die Arbeit auf einer Baustelle, gilt die zeitliche Differenz, die diesen Arbeitsweg übersteigt, als Arbeitszeit (Art. 27.3 GAV)."),
       b("ueber", "Arbeit über die Stunden je Wochentag hinaus ordnet der Einsatzbetrieb im Rahmen von ArG und GAV an. Überstunden nach Art. 21 GAV sind die zwischen 6 und 23 Uhr geleisteten Stunden, die die Jahresbruttoarbeitszeit übersteigen; Ferien, Feiertage, bezahlte Absenzen und Zeit ohne Einsatz zählen mit den Stunden je Wochentag (Art. 20.1 und 21.1 GAV). Bis 100 Stunden werden sie innert Jahresfrist nach Art. 21.3 GAV ohne Lohnzuschlag durch Freizeit gleicher Dauer oder in Geld ausgeglichen; der Ausgleich wird schriftlich festgehalten. Weitere Stunden zahlt die Arbeitgeberin im Januar mit einem Lohnzuschlag von 25 % aus. Überzeit über die wöchentliche Höchstarbeitszeit hinaus zahlt die Arbeitgeberin bis zum Ende des folgenden Monats mit einem Lohnzuschlag von 25 % aus (Art. 22.2 GAV); wird für dieselben Stunden ein Lohnzuschlag nach Ziff. {R:lohn.zuschlag} bezahlt, entfällt der Überzeitzuschlag (Art. 22.3 GAV)."),
-      b("ohne", "Kann die Arbeitgeberin keinen Einsatz zuweisen oder beendet der Einsatzbetrieb die Arbeit vor Ablauf der Stunden je Wochentag, bleibt sie zur Lohnzahlung verpflichtet (Art. 324 OR). Diese Zeit ohne Einsatz gilt mit den Stunden je Wochentag, ohne Verleihvertrag mit " + H + " Stunden je Tag von Montag bis Freitag, als geleistet; sie wird nicht an Überstunden, Ferien oder Lohn angerechnet. Der Arbeitnehmer hält sich in dieser Zeit für Einsätze bereit; was er daneben als " + organ + " tut, bleibt Organtätigkeit (Ziff. {R:stellung.organ}) und ändert daran nichts. Bleibt er aus Gründen in seiner Person der Arbeit fern, gilt diese Zeit nicht als geleistet.")
+      b("ohne", "Kann die Arbeitgeberin keinen Einsatz zuweisen oder beendet der Einsatzbetrieb die Arbeit vor Ablauf der Stunden je Wochentag, bleibt sie zur Lohnzahlung verpflichtet (Art. 324 OR). Diese Zeit ohne Einsatz gilt mit den Stunden je Wochentag, ohne Verleihvertrag mit " + H + " Stunden je Tag von Montag bis Freitag, als geleistet; sie wird nicht an Überstunden, Ferien oder Lohn angerechnet. Der Arbeitnehmer hält sich in dieser Zeit für Einsätze bereit; was er daneben als Geschäftsführer tut, bleibt Organtätigkeit (Ziff. {R:stellung.organ}) und ändert daran nichts. Bleibt er aus Gründen in seiner Person der Arbeit fern, gilt diese Zeit nicht als geleistet.")
     ]);
 
     ziffer("rapport", "Wochenrapport", [
@@ -153,7 +146,7 @@
       b("c", "Die als provisorisch bezeichneten Abzüge ersetzt ein Nachtrag durch die definitiven, sobald " + (ktgHalb
         ? "die Einreihung durch den Unfallversicherer, die Police der Krankentaggeldversicherung der Arbeitgeberin und der Anschlussvertrag ihrer Vorsorgeeinrichtung vorliegen"
         : "die Einreihung durch den Unfallversicherer und der Anschlussvertrag der Vorsorgeeinrichtung der Arbeitgeberin vorliegen") +
-        "; er braucht " + (gmbh ? "keinen Beschluss der Gesellschafterversammlung" : "keinen Beschluss eines Organs") + ", solange der Lohn gleich bleibt (Ziff. {R:schluss.nachtrag}). Ein definitiver Abzug gilt bis zur nächsten Änderung durch den Versicherer oder die Vorsorgeeinrichtung. Die Arbeitgeberin teilt die definitiven Abzüge innert eines Monats schriftlich mit (Art. 19 Abs. 2 Bst. e AVG).")
+        "; er braucht keinen Beschluss der Gesellschafterversammlung, solange der Lohn gleich bleibt (Ziff. {R:schluss.nachtrag}). Ein definitiver Abzug gilt bis zur nächsten Änderung durch den Versicherer oder die Vorsorgeeinrichtung. Die Arbeitgeberin teilt die definitiven Abzüge innert eines Monats schriftlich mit (Art. 19 Abs. 2 Bst. e AVG).")
     ]);
 
     ziffer("spesen", "Spesen", [
@@ -221,9 +214,7 @@
 
     ziffer("gav", "Gesamtarbeitsvertrag und Treuepflicht", [
       b("a", "Der Arbeitnehmer hat den GAV eingesehen; dieser Vertrag nimmt ihn in der jeweils gültigen Fassung in Bezug. Untersteht ein Einsatzbetrieb diesem oder einem anderen allgemeinverbindlich erklärten Gesamtarbeitsvertrag, gewährt die Arbeitgeberin dem Arbeitnehmer dessen Lohn- und Arbeitszeitbestimmungen (Art. 20 Abs. 1 AVG, Art. 48a AVV), soweit sie günstiger sind als dieser Vertrag, und leistet den Weiterbildungs- und Vollzugskostenbeitrag anteilsmässig nach der Dauer des Einsatzes (Art. 20 Abs. 1 AVG, Art. 48b Abs. 1 AVV). Der Arbeitnehmer erteilt den paritätischen Organen des GAV Auskunft."),
-      b("b", "Ein Konkurrenzverbot nach Art. 340 ff. OR wird nicht vereinbart; die Pflichten des Arbeitnehmers " + (gmbh
-        ? "als Geschäftsführer und Gesellschafter (Art. 812 Abs. 3 OR, Statuten der Arbeitgeberin)"
-        : "als Mitglied des Verwaltungsrats (Art. 717 OR)") +
+      b("b", "Ein Konkurrenzverbot nach Art. 340 ff. OR wird nicht vereinbart; die Pflichten des Arbeitnehmers als Geschäftsführer und Gesellschafter (Art. 812 Abs. 3 OR, Statuten der Arbeitgeberin)" +
         " bleiben unberührt. Es gilt das Verbot der Schwarzarbeit nach Art. 14.3.1 GAV, im Übrigen bleibt seine Treuepflicht vorbehalten (Art. 321a Abs. 1 und 3 OR).")
     ]);
 
@@ -252,12 +243,10 @@
     ], "Dauer und Schluss");
 
     ziffer("schluss", "Schlussbestimmungen", [
-      b("nachtrag", "Änderungen und Ergänzungen dieses Vertrags bedürfen der Schriftform (Art. 12 und 16 OR); Nachträge werden fortlaufend nummeriert. " + (gmbh
-        ? "Ändert ein Nachtrag den Lohn, braucht er einen Beschluss der Gesellschafterversammlung (Art. 804 Abs. 2 Ziff. 6 OR)."
-        : "Ändert ein Nachtrag den Lohn, braucht er die Zustimmung des zuständigen Organs der Arbeitgeberin.")),
+      b("nachtrag", "Änderungen und Ergänzungen dieses Vertrags bedürfen der Schriftform (Art. 12 und 16 OR); Nachträge werden fortlaufend nummeriert. Ändert ein Nachtrag den Lohn, braucht er einen Beschluss der Gesellschafterversammlung (Art. 804 Abs. 2 Ziff. 6 OR)."),
       b("b", "Es gilt schweizerisches Recht, namentlich OR, AVG mit AVV und ArG."),
       b("c", "Für Streitigkeiten aus diesem Vertrag sind die Gerichte am Wohnsitz oder Sitz der beklagten Partei oder am Ort, an dem der Arbeitnehmer gewöhnlich die Arbeit verrichtet, zuständig (Art. 34 Abs. 1 der Zivilprozessordnung, ZPO); für Klagen des Arbeitnehmers, die sich auf das AVG stützen, zudem das Gericht am Ort der Geschäftsniederlassung der Arbeitgeberin (Art. 34 Abs. 2 ZPO). Der Arbeitnehmer kann auf diese Gerichtsstände nicht zum Voraus verzichten (Art. 35 Abs. 1 Bst. d ZPO)."),
-      b("d", "Dieser Vertrag wird in zwei Exemplaren ausgefertigt; je eines bleibt bei der Arbeitgeberin und beim Arbeitnehmer. Beilage: " + (gmbh ? "Protokoll der Gesellschafterversammlung" : "Protokoll des Beschlusses") + " (Ziff. {R:gegenstand.b}).")
+      b("d", "Dieser Vertrag wird in zwei Exemplaren ausgefertigt; je eines bleibt bei der Arbeitgeberin und beim Arbeitnehmer. Beilage: Protokoll der Gesellschafterversammlung (Ziff. {R:gegenstand.b}).")
     ]);
     return Z;
   }
@@ -269,7 +258,7 @@
   V.auswahl = function () {
     var radio = VW.radio, z = VW.zahl;
     return {
-      rechtsform: radio("av-rechtsform") || "gmbh", lohnform: radio("av-lohnform") || "monat",
+      lohnform: radio("av-lohnform") || "monat",
       ferienlohn: radio("av-ferienlohn") || "angespart",
       jahr: parseInt(VW.wert("av-beginn").slice(0, 4), 10) || new Date().getFullYear(),
       dreizehnter: radio("av-dreizehnter") || "dezember",
@@ -333,7 +322,7 @@
   /* ---------- PDF ---------- */
 
   V.pdf = function (JsPDF, o, f, gez, zahlen, mitErl) {
-    var P = VW.pdfNeu(JsPDF), d = P.d, gmbh = o.rechtsform !== "ag", stunde = o.lohnform === "stunde";
+    var P = VW.pdfNeu(JsPDF), d = P.d, stunde = o.lohnform === "stunde";
     f = f || {};
     function zif(id) { for (var i = 0; i < gez.length; i++) if (gez[i].id === id) return gez[i]; return null; }
     function ref(zid, pid) { var z = zif(zid); if (!z) return ""; for (var i = 0; i < z.abs.length; i++) if (z.abs[i].id === pid) return "Ziff. " + z.nr + (z.abs[i].bst ? " " + z.abs[i].bst : ""); return "Ziff. " + z.nr; }
@@ -360,7 +349,7 @@
     }
     function oder(w) { return betrag(w) !== null ? chf(w) : (w || "CHF ________"); }
 
-    P.titel("Arbeitsvertrag", null, "Einzelarbeitsvertrag nach dem Obligationenrecht (OR, Art. 319 ff.) für den Personalverleih nach dem Arbeitsvermittlungsgesetz (AVG, SR 823.11) in der Form der Leiharbeit; Vertrag zwischen der Gesellschaft und der Person, die sie vertritt (" + (gmbh ? "Art. 718b in Verbindung mit Art. 814 Abs. 4 OR" : "Art. 718b OR") + "). Vertragsblatt und Vertragsbedingungen regeln zusammen die Punkte nach Art. 19 Abs. 2 AVG. GAV ist der Gesamtarbeitsvertrag der Schweizerischen Elektrobranche.");
+    P.titel("Arbeitsvertrag", null, "Einzelarbeitsvertrag nach dem Obligationenrecht (OR, Art. 319 ff.) für den Personalverleih nach dem Arbeitsvermittlungsgesetz (AVG, SR 823.11) in der Form der Leiharbeit; Vertrag zwischen der Gesellschaft und der Person, die sie vertritt (Art. 718b in Verbindung mit Art. 814 Abs. 4 OR). Vertragsblatt und Vertragsbedingungen regeln zusammen die Punkte nach Art. 19 Abs. 2 AVG. GAV ist der Gesamtarbeitsvertrag der Schweizerischen Elektrobranche.");
 
     abschnitt("Arbeitgeberin");
     zeile("Firma", f["av-firma"]);
@@ -458,18 +447,11 @@
   };
 
   E.stellung = function (o) {
-    var gmbh = o.rechtsform !== "ag";
     return [
-      gmbh
-        ? "Der Inhaber steht auf beiden Seiten des Vertrags: Als Geschäftsführer vertritt er die GmbH, als Arbeitnehmer ist er ihr Vertragspartner. Ein solcher Vertrag muss schriftlich abgefasst werden (Art. 718b OR, für die GmbH über Art. 814 Abs. 4 OR). Die Entschädigung der Geschäftsführer setzt die Gesellschafterversammlung fest (Art. 804 Abs. 2 Ziff. 6 OR); ihr Beschluss liegt dem Vertrag als Protokoll bei (Ziff. {R:gegenstand.b})."
-        : "Der Inhaber steht auf beiden Seiten des Vertrags: Als Mitglied des Verwaltungsrats vertritt er die AG, als Arbeitnehmer ist er ihr Vertragspartner. Ein solcher Vertrag muss schriftlich abgefasst werden (Art. 718b OR). Welches Organ dem Vertrag zustimmt, richtet sich nach Gesetz und Statuten der AG; Bst. {B:stellung.b} hält nur fest, dass die Zustimmung vorliegt, und das Protokoll liegt bei.",
+      "Der Inhaber steht auf beiden Seiten des Vertrags: Als Geschäftsführer vertritt er die GmbH, als Arbeitnehmer ist er ihr Vertragspartner. Ein solcher Vertrag muss schriftlich abgefasst werden (Art. 718b OR, für die GmbH über Art. 814 Abs. 4 OR). Die Entschädigung der Geschäftsführer setzt die Gesellschafterversammlung fest (Art. 804 Abs. 2 Ziff. 6 OR); ihr Beschluss liegt dem Vertrag als Protokoll bei (Ziff. {R:gegenstand.b}).",
       "Bst. {B:stellung.organ} trennt die beiden Rollen: Die Führung der Gesellschaft ist Organtätigkeit ausserhalb der Arbeitszeit und nicht Teil des Lohns; auf der Baustelle gelten die Weisungen des Einsatzbetriebs. Der Verleihvertrag sagt dasselbe aus der Sicht des Einsatzbetriebs (Ziff. {R@vv:weisung.gf}).",
-      {beispiel: gmbh
-        ? "Die Amtsdauer als Geschäftsführer läuft nach den Statuten ab und wird nicht erneuert. Der Arbeitsvertrag läuft weiter; er endet nur durch Kündigung nach Ziff. {Z:kuend}."
-        : "Die Generalversammlung wählt den Inhaber nicht wieder in den Verwaltungsrat. Der Arbeitsvertrag läuft weiter; er endet nur durch Kündigung nach Ziff. {Z:kuend}."},
-      {quellen: gmbh
-        ? [q("Art. 718b OR", "OR", "718_b"), q("Art. 804 OR", "OR", "804"), q("Art. 814 OR", "OR", "814"), q("Art. 815 OR", "OR", "815")]
-        : [q("Art. 705 OR", "OR", "705"), q("Art. 718b OR", "OR", "718_b")]}
+      {beispiel: "Die Amtsdauer als Geschäftsführer läuft nach den Statuten ab und wird nicht erneuert. Der Arbeitsvertrag läuft weiter; er endet nur durch Kündigung nach Ziff. {Z:kuend}."},
+      {quellen: [q("Art. 718b OR", "OR", "718_b"), q("Art. 804 OR", "OR", "804"), q("Art. 814 OR", "OR", "814"), q("Art. 815 OR", "OR", "815")]}
     ];
   };
 
@@ -615,13 +597,10 @@
   };
 
   E.gav = function (o) {
-    var gmbh = o.rechtsform !== "ag";
     return [
       "Untersteht der Einsatzbetrieb einem allgemeinverbindlich erklärten Gesamtarbeitsvertrag, muss die Arbeitgeberin dessen Lohn- und Arbeitszeitbestimmungen einhalten (Art. 20 Abs. 1 AVG); welche das sind, zählt Art. 48a AVV auf. Der Weiterbildungs- und Vollzugskostenbeitrag ist ab dem ersten Arbeitstag geschuldet (Art. 48b AVV).",
-      "Ein Konkurrenzverbot gibt es nicht. " + (gmbh
-        ? "Als Geschäftsführer darf der Inhaber ohnehin keine konkurrenzierende Tätigkeit ausüben, soweit Statuten oder Gesellschafter nichts anderes zulassen (Art. 812 Abs. 3 OR)."
-        : "Als Mitglied des Verwaltungsrats wahrt der Inhaber ohnehin die Interessen der Gesellschaft in guten Treuen (Art. 717 OR)."),
-      {quellen: [q("Art. 20 AVG", "AVG", "20"), q("Art. 48a AVV", "AVV", "48_a"), q("Art. 48b AVV", "AVV", "48_b"), gmbh ? q("Art. 812 OR", "OR", "812") : q("Art. 717 OR", "OR", "717")]}
+      "Ein Konkurrenzverbot gibt es nicht. Als Geschäftsführer darf der Inhaber ohnehin keine konkurrenzierende Tätigkeit ausüben, soweit Statuten oder Gesellschafter nichts anderes zulassen (Art. 812 Abs. 3 OR).",
+      {quellen: [q("Art. 20 AVG", "AVG", "20"), q("Art. 48a AVV", "AVV", "48_a"), q("Art. 48b AVV", "AVV", "48_b"), q("Art. 812 OR", "OR", "812")]}
     ];
   };
 
@@ -653,9 +632,7 @@
 
   E.schluss = function (o) {
     return [
-      "Änderungen brauchen die Schriftform, weil schon der Vertrag sie braucht (Art. 19 Abs. 1 AVG, Art. 718b OR). " + (o.rechtsform !== "ag"
-        ? "Ändert ein Nachtrag den Lohn, entscheidet die Gesellschafterversammlung (Art. 804 Abs. 2 Ziff. 6 OR)."
-        : "Ändert ein Nachtrag den Lohn, stimmt das zuständige Organ der AG zu."),
+      "Änderungen brauchen die Schriftform, weil schon der Vertrag sie braucht (Art. 19 Abs. 1 AVG, Art. 718b OR). Ändert ein Nachtrag den Lohn, entscheidet die Gesellschafterversammlung (Art. 804 Abs. 2 Ziff. 6 OR).",
       "Den Gerichtsstand im Arbeitsrecht bestimmt die Zivilprozessordnung; der Arbeitnehmer kann nicht zum Voraus darauf verzichten (Art. 34 und 35 ZPO).",
       {quellen: [q("Art. 12 OR", "OR", "12"), q("Art. 16 OR", "OR", "16"), q("Art. 718b OR", "OR", "718_b"), {t: "Art. 34 und 35 ZPO"}]}
     ];
