@@ -17,6 +17,10 @@
   var RAYON_AB = {verleiher: "vom Sitz des Verleihers", einsatz: "vom Sitz des Einsatzbetriebs",
     beide: "vom Sitz des Verleihers oder vom Sitz des Einsatzbetriebs"};
   VW.RAYON_AB = RAYON_AB;
+  /* Ausgangspunkt der Wegzeit ausserhalb des Rayons: ganzer Weg hin und zurück */
+  var WEG_AB = {verleiher: "ab dem Sitz des Verleihers", einsatz: "ab dem Sitz des Einsatzbetriebs",
+    beide: "ab dem näheren der beiden Sitze"};
+  VW.WEG_AB = WEG_AB;
 
   function modell(o) {
     var tm = o.tagesmin;
@@ -61,7 +65,7 @@
       b("a", "Arbeitsort sind der Sitz des Einsatzbetriebs und seine Baustellen. Ausserhalb des Rayons braucht es die Zustimmung des Verleihers (E-Mail genügt)."),
       b("rayon", "Der Rayon umfasst die Orte, die " + RAYON_AB[o.rayon] + " in höchstens " + VW.zahlwort(o.rayonMin) + " Minuten mit dem Auto erreichbar sind" +
         (o.rayonKarte ? "; massgebend ist die Karte im Einsatzblatt." : ".") +
-        " Im Rayon ist die Wegzeit im Ansatz enthalten; ausserhalb wird sie als Arbeitszeit in Rechnung gestellt."),
+        " Im Rayon ist die Wegzeit im Ansatz enthalten; ausserhalb wird die ganze Wegzeit für Hin- und Rückweg " + WEG_AB[o.rayon] + " als Arbeitszeit in Rechnung gestellt."),
       b("unterkunft", "Bei Arbeit ohne Heimkehr am Abend kommen die Kosten für Unterkunft und Verpflegung dazu.")
     ], "Arbeitsort und Arbeitszeit");
 
@@ -295,7 +299,7 @@
       P.seite();
       P.schrift("bold", 13); P.farbe(P.INK); d.text("Einsatzblatt: Rayon", P.x, P.y); P.y += 6;
       P.schrift("normal", 9); P.farbe(P.GRAU);
-      var rz = d.splitTextToSize((VW.rayon && VW.rayon.gilt && VW.rayon.gilt(o, f) ? "Gemessene Karte des Rayons: " : "Karte des Rayons einfügen oder einzeichnen: ") + (o.rayon === "beide" ? "beide Sitze und die Grenzen ihrer Gebiete" : o.rayon === "einsatz" ? "Sitz des Einsatzbetriebs und Grenze des Rayons" : "Sitz des Verleihers und Grenze des Rayons") + " (Ziff. " + ref("ort", "rayon") + "). Im Rayon ist die Wegzeit im Ansatz enthalten, ausserhalb wird sie als Arbeitszeit in Rechnung gestellt.", P.B);
+      var rz = d.splitTextToSize((VW.rayon && VW.rayon.gilt && VW.rayon.gilt(o, f) ? "Gemessene Karte des Rayons: " : "Karte des Rayons einfügen oder einzeichnen: ") + (o.rayon === "beide" ? "beide Sitze und die Grenzen ihrer Gebiete" : o.rayon === "einsatz" ? "Sitz des Einsatzbetriebs und Grenze des Rayons" : "Sitz des Verleihers und Grenze des Rayons") + " (Ziff. " + ref("ort", "rayon") + "). Im Rayon ist die Wegzeit im Ansatz enthalten, ausserhalb wird die ganze Wegzeit für Hin- und Rückweg als Arbeitszeit in Rechnung gestellt.", P.B);
       d.text(rz, P.x, P.y); P.y += rz.length * 4 + 3;
       var kh = Math.min(P.B, P.UNTEN - P.y - 16);
       var gemessen = VW.rayon && VW.rayon.gilt && VW.rayon.gilt(o, f) ? VW.rayon.karte : null;
