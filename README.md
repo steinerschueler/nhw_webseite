@@ -147,8 +147,8 @@ sein, `w` darf fehlen; `neutral=0` schaltet den PDF-Schalter aus, der sonst an i
 ## Vertragswerk (`vertragswerk.html`, `vertragswerk*.js`)
 
 Neutrale Vorlagen für Elektroinstallateure, die sich über ihre eigene Firma verleihen
-(Selbstverleih), in vier Reitern (Anker `#verleihvertrag`, `#erlaeuterungen`,
-`#arbeitsvertrag`, `#begriffe`, ein Lexikon-Eintrag mit `#begriff-<id>`):
+(Selbstverleih), in fünf Reitern (Anker `#verleihvertrag`, `#erlaeuterungen`,
+`#arbeitsvertrag`, `#ueberlegungen`, `#begriffe`, ein Lexikon-Eintrag mit `#begriff-<id>`):
 
 - **Verleihvertrag:** A Auswahl, B Einsatzblatt (leere Felder bleiben im PDF als Linie), C
   Vertragsbedingungen (19 Ziffern in sechs Gruppen; Absätze, die von der Grundfassung abweichen,
@@ -157,7 +157,9 @@ Neutrale Vorlagen für Elektroinstallateure, die sich über ihre eigene Firma ve
   Rayon-Rechner), die Karte kommt ins Einsatzblatt.
 - **Erläuterungen:** entstehen aus der Auswahl beider Verträge (Grundtext je Ziffer, Baustein je
   Variante, Beispiele, Grundlagen); als Beilage an das PDF anhängbar.
-- **Arbeitsvertrag:** Vertrag zwischen der Firma und ihrem Inhaber (Art. 19 AVG), Vertragsblatt
+- **Überlegungen:** Interessen von Verleiher und Einsatzbetrieb mit den ausgleichenden Ziffern,
+  Zweck des Vertrags mit sich selbst; nicht Teil der PDF-Beilage.
+- **Arbeitsvertrag:** Vertrag zwischen der Ein-Personen-GmbH und ihrem Inhaber (Art. 19 AVG), Vertragsblatt
   und 18 Ziffern in fünf Gruppen.
 - **Rechtsbegriffe:** alphabetisches Lexikon mit Bedeutung, Abgrenzung und Quelle. Begriffe in
   Verträgen und Erläuterungen sind dezent unterstrichen: Bleibt die Maus kurz darauf stehen,
