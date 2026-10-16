@@ -1,0 +1,200 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Schema-Symbole · Naville Handwerk GmbH</title>
+<meta name="description" content="Schema-Symbole in Schweizer Form: Stromlaufschema, Installationsplan und HLK-Anlagenschema, mit den Hausschlüsseln von Siemens, elfero, Gilgien Uhlmann & Partner und Sauter 1974. Suchen, ansehen, als SVG, DXF oder Spickzettel-PDF herunterladen.">
+<link rel="stylesheet" href="basis.css">
+<style>
+body{line-height:1.55}
+.phead{padding-block:52px 4px}
+.phead h1{font-size:clamp(26px,3.8vw,40px);line-height:1.06;margin:0 0 14px}
+.phead .lead{font-size:17px;color:var(--ink2);max-width:66ch}
+section{padding:14px 0 8px}
+.introbox{background:#fff;border:1px solid var(--line);border-left:4px solid var(--red);border-radius:3px;padding:14px 18px;margin:12px 0 14px;color:var(--ink2);font-size:15px;line-height:1.55;max-width:940px}
+.introbox strong{color:var(--red)}
+.introbox2{border:1px solid var(--line);border-radius:3px;padding:12px 16px;margin:0 0 14px;font-size:14px;color:var(--ink2);line-height:1.55;max-width:940px}
+.introbox2 strong{color:var(--ink)}
+.calc-section{padding-top:6px}
+.calc-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:34px;align-items:start}
+.calc-main{min-width:0}
+h2{font-family:'Archivo',sans-serif;font-weight:600;font-size:18px;color:var(--ink);letter-spacing:-.01em;margin:1.6em 0 .5em;border-bottom:1px solid var(--line);padding-bottom:6px}
+.filter{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:flex-end}
+.filter label{display:flex;flex-direction:column;gap:4px;font-size:13.5px;color:var(--ink2);flex:1 1 180px;min-width:0}
+.filter label.such{flex:2 1 260px}
+.filter input[type=search],.filter select{padding:8px 10px;border:1px solid #D8D6D0;border-radius:3px;background:#F5F5F3;color:var(--ink);font-size:15px;font-family:inherit;min-width:0}
+.filter input[type=search]:focus,.filter select:focus{outline:none;border-color:var(--red);background:#fff}
+.schalter{display:flex;gap:9px;align-items:center;font-size:14px;color:var(--ink);margin:10px 0 2px}
+.treffer{color:var(--grey);font-size:13.5px;margin:8px 0 0}
+.raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:12px 0}
+.karte{border:1px solid var(--line);border-radius:3px;background:#fff;display:flex;flex-direction:column}
+.karte.gewaehlt{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+.k-bild{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;padding:12px 10px 6px;text-align:center;flex:1}
+.k-bild:focus-visible{outline:2px solid var(--red);outline-offset:-2px}
+.k-bild svg{width:100%;height:96px;color:var(--ink)}
+.k-bild[aria-expanded=true]{background:#F5F5F3}
+.k-name{font-size:13.5px;line-height:1.3;color:var(--ink);margin-top:8px}
+.k-sl{font-size:12px;color:var(--grey);margin-top:2px}
+.k-wahl{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--ink2);padding:6px 10px 8px;border-top:1px solid var(--line);cursor:pointer}
+.ohne-ans .ans{display:none}
+.detail{grid-column:1/-1;border:1px solid var(--ink);border-radius:3px;background:#fff;display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:20px;padding:16px 18px}
+.detail:focus{outline:none}
+.d-bild{background:#F5F5F3;border-radius:3px;display:flex;align-items:center;justify-content:center;padding:10px}
+.d-bild svg{width:100%;max-height:300px;color:var(--ink)}
+.d-text h3{font-family:'Archivo',sans-serif;font-weight:600;font-size:18px;margin:0 0 4px;color:var(--ink)}
+.d-text p{margin:0 0 8px;font-size:14.5px;color:var(--ink2)}
+.d-meta{color:var(--grey)!important;font-size:13px!important}
+.leer{color:var(--grey);grid-column:1/-1}
+button{background:var(--red);color:#fff;border:none;border-radius:3px;padding:11px 18px;font-size:.95em;font-weight:700;cursor:pointer;margin:8px 0 4px;font-family:inherit}
+button:hover{background:#a50f18}
+button:disabled{background:var(--grey);cursor:default}
+button.zweit{background:#fff;color:var(--ink);border:1.5px solid #cfc9bd}
+button.zweit:hover{background:#F5F5F3}
+button.zweit:disabled{color:var(--grey);background:#fff}
+.knopfreihe{display:flex;gap:10px;flex-wrap:wrap}
+.anzahl{font-size:14.5px;color:var(--ink2);margin:6px 0}
+.hint{color:#7a4718;background:#FBF1E7;border:1px solid #E7C9A3;border-radius:3px;padding:9px 13px;font-size:.88em;margin:8px 0}
+.hint[hidden]{display:none}
+.erkl{color:var(--ink2);font-size:.86em;line-height:1.5;margin:6px 0 0}
+.pdfvorschau{margin:12px 0 4px}
+.pdfvorschau[hidden]{display:none}
+.pdfvorschau iframe{width:100%;height:78vh;min-height:420px;border:1px solid var(--line);border-radius:3px;background:#fff;display:block}
+.side-box{background:#F5F5F3;border:1px solid var(--line);border-radius:3px;padding:15px 17px}
+.side-box h3{margin:0 0 9px;font-family:'Archivo';font-weight:600;font-size:16px;color:var(--ink)}
+.side-box p,.side-box li{margin:0 0 8px;font-size:.84em;color:var(--ink2);line-height:1.5}
+.side-box ul{margin:0;padding-left:18px}
+.side-box p:last-child{margin-bottom:0}
+.side-box a{color:var(--red);font-weight:600}
+.fbrand{margin-top:34px}
+@media(max-width:1100px){.calc-layout{grid-template-columns:1fr}.calc-side{position:static;max-height:none;overflow:visible;padding:0}}
+@media(max-width:700px){.detail{grid-template-columns:1fr}}
+@media(max-width:600px){
+.raster{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.k-bild svg{height:80px}
+.introbox,.introbox2,.side-box,.erkl{overflow-wrap:anywhere}
+button{max-width:100%;white-space:normal}
+}
+</style>
+<link rel="stylesheet" href="achse.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="bilder/favicon-32.png">
+<link rel="apple-touch-icon" href="bilder/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#FFFFFF">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Naville Handwerk GmbH">
+<meta property="og:locale" content="de_CH">
+<meta property="og:title" content="Schema-Symbole · Naville Handwerk GmbH">
+<meta property="og:description" content="Schema-Symbole in Schweizer Form für Stromlaufschema, Installationsplan und HLK, mit den Hausschlüsseln der Büros. Als SVG, DXF oder Spickzettel-PDF.">
+<meta property="og:url" content="https://naville-handwerk.ch/schema.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Schema-Symbole · Naville Handwerk GmbH">
+<meta name="twitter:description" content="Schema-Symbole in Schweizer Form für Stromlaufschema, Installationsplan und HLK, mit den Hausschlüsseln der Büros. Als SVG, DXF oder Spickzettel-PDF.">
+</head>
+<body>
+<div class="availbar" id="availbar" hidden>
+  <a class="availpill" href="index.html#kontakt">
+    <svg class="av-ic" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="3.2" stroke="#fff" stroke-width="2"/><path d="M3 9.5H21M8 2.5V6M16 2.5V6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+    <span id="availtext">Verfügbarkeit wird geladen …</span>
+  </a>
+</div>
+<div class="wire"></div>
+<header class="nav"><div class="wrap nav-in">
+  <a class="brand" href="index.html">naville <span class="red">handwerk</span></a>
+  <input type="checkbox" id="navtoggle" class="navtoggle" hidden>
+  <label for="navtoggle" class="burger" aria-label="Menü"><span></span><span></span><span></span></label>
+  <nav class="nav-links"><div class="ng"><button class="ng-t" type="button">Willkommen</button><div class="ng-p"><a href="index.html">Startseite</a><a href="index.html#wann">Wann ich einspringe</a><a href="index.html#firma">Zur Firma</a><a href="index.html#ueber">Über mich</a><a href="index.html#arbeit">Wie ich arbeite</a><a href="index.html#kontakt">Kontakt</a></div></div><div class="ng"><button class="ng-t" type="button">Infos</button><div class="ng-p"><a href="leistungen.html">Was du von mir hast</a><a href="faq.html">FAQ</a></div></div><div class="ng"><button class="ng-t" type="button">Werkzeuge</button><div class="ng-p"><a href="kalender.html">Kalender</a><a href="preisrechner.html">Preisrechner</a><a href="rayon.html">Rayon-Rechner</a><a href="vertragswerk.html">Vertragswerk</a><a href="schema.html">Schema-Symbole</a></div></div></nav>
+</div></header>
+
+<section class="wrap phead">
+  <div class="kick mono">Schema-Symbole</div>
+  <h1 class="disp">Schema-Symbole in Schweizer Form</h1>
+  <p class="lead">Wer ein älteres Steuerungs- oder Heizungsschema liest, trifft auf Zeichen in Schweizer Form und auf Hausschlüssel einzelner Büros: Kontakte mit Kreis am Drehpunkt, Steckdosen Typ 13 im Grundriss, die Pumpe, wie Siemens sie zeichnet. Hier stehen solche Symbole zum Nachschlagen, je mit der Vorlage, aus der sie abgezeichnet sind. Du kannst sie als SVG oder DXF herunterladen oder dir einen Spickzettel für die Baustelle drucken.</p>
+</section>
+
+<section class="intro">
+<div class="wrap achse">
+<div class="introbox">
+<strong>So geht es.</strong> Unter A suchst du nach Namen oder grenzt nach Bereich und Hausschlüssel ein. Unter B tippst du ein Symbol an: Es öffnet sich gross, mit den Anschlusspunkten und den Downloads. Mit "auswählen" sammelst du Symbole; unter C wird daraus ein Spickzettel als PDF oder eine DXF mit allen gewählten Symbolen.
+</div>
+<div class="introbox2">
+<strong>Hausschlüssel sind keine Norm.</strong> Viele Zeichen sind die Konvention des Büros, das ein Schema gezeichnet hat. Eine Pumpe sieht bei Siemens anders aus als bei elfero oder bei Gilgien, Uhlmann &amp; Partner, und ein Zeichen aus einem Schlüssel gilt auf dem Schema eines anderen Büros nicht. Darum steht bei jedem Symbol sein Hausschlüssel. Die Seite speichert nichts und setzt keine Cookies.
+</div>
+</div>
+</section>
+
+<section class="calc-section">
+<div class="calc-layout achse">
+<div class="calc-main">
+
+<h2><span class="st">A</span><span class="st-p"> · </span>Suchen</h2>
+<div class="filter">
+  <label class="such">Name<input id="suche" type="search" autocomplete="off" placeholder="z. B. Schliesser, Steckdose, Pumpe"></label>
+  <label>Bereich<select id="f-bereich"><option value="">alle</option></select></label>
+  <label>Hausschlüssel<select id="f-schluessel"><option value="">alle</option></select></label>
+</div>
+<label class="schalter"><input type="checkbox" id="anschluesse" checked><span>Anschlusspunkte zeigen</span></label>
+<p class="treffer" id="treffer" aria-live="polite"></p>
+
+<h2><span class="st">B</span><span class="st-p"> · </span>Symbole</h2>
+<div class="raster" id="raster"></div>
+
+<h2><span class="st">C</span><span class="st-p"> · </span>Auswahl herunterladen</h2>
+<p class="anzahl" id="anzahl"></p>
+<div class="knopfreihe">
+  <button id="alle" type="button" class="zweit">Alle angezeigten auswählen</button>
+  <button id="leeren" type="button" class="zweit" disabled>Auswahl leeren</button>
+</div>
+<div class="knopfreihe">
+  <button id="pdf" type="button" disabled>Spickzettel als PDF</button>
+  <button id="dxf" type="button" class="zweit" disabled>DXF der Auswahl</button>
+</div>
+<p class="erkl">Der Spickzettel zeigt die Symbole auf A4 in Originalgrösse (ein Raster = 5 mm), geordnet nach Bereich und Hausschlüssel; nur grosse Symbole werden verkleinert. Die DXF enthält je Symbol einen Block und legt alle nebeneinander in die Zeichnung.</p>
+<div class="hint" id="meldung" hidden></div>
+<div class="pdfvorschau" id="pdfvorschau" hidden>
+  <p class="erkl">Vorschau des PDF. Stimmt alles, lädst du es mit dem Knopf darunter herunter.</p>
+  <iframe id="pdfrahmen" title="Vorschau des PDF"></iframe>
+  <div class="knopfreihe">
+    <button id="pdfdown" type="button">PDF herunterladen</button>
+    <button id="pdftab" type="button" class="zweit">In neuem Tab öffnen</button>
+  </div>
+</div>
+
+</div>
+
+<aside class="calc-side">
+  <div class="side-box">
+    <h3>Was hier steht</h3>
+    <p>Eigene Zeichnungen der Symbole, die in den gängigen Bibliotheken fehlen oder dort nur in fremder Form stehen. Jedes ist neu gezeichnet, im Raster 5 mm, mit Anschlusspunkten auf dem Raster. Die Vorlage steht beim Symbol; abgebildet sind nur die Zeichen, keine Seiten aus den Vorlagen.</p>
+    <ul>
+      <li><strong>Stromlaufschema:</strong> Lehrmittel Brunner, Handbuch des Elektroinstallateurs (VSTEI 2015), ein Stromlaufschema der Fritz Sauter AG von 1974 in der alten Schweizer Form</li>
+      <li><strong>Installationsplan:</strong> Brunner und VSTEI 2015</li>
+      <li><strong>HLK-Anlagenschema:</strong> die Hausschlüssel von Siemens, elfero und Gilgien, Uhlmann &amp; Partner</li>
+    </ul>
+  </div>
+  <div class="side-box">
+    <h3>SVG und DXF</h3>
+    <p><strong>SVG</strong> in Millimetern, ohne Anschlusspunkte; für Pläne, Dokumente und Grafikprogramme.</p>
+    <p><strong>DXF</strong> im Format R12, das praktisch jedes CAD liest. Einheit Millimeter, ein Raster = 5 mm. Jedes Symbol ist ein Block mit dem Einfügepunkt im Ursprung; die Anschlusspunkte liegen auf dem eigenen Layer "ANSCHLUSS" und lassen sich ausblenden.</p>
+  </div>
+  <div class="side-box">
+    <h3>Lizenz</h3>
+    <p>Die Zeichnungen stehen unter <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.de" rel="noopener" target="_blank">CC BY-SA 4.0</a>: Du darfst sie verwenden, verändern und weitergeben, auch geschäftlich, mit Nennung der Herkunft (Naville Handwerk GmbH, naville-handwerk.ch) und unter derselben Lizenz. Ohne Gewähr: Prüfe jedes Zeichen gegen das Schema, auf dem du es verwendest.</p>
+  </div>
+</aside>
+</div>
+</section>
+
+<div class="fbrand">
+  <img src="bilder/emblem.png" alt="Naville Handwerk: Lastenvelo mit Anhänger und Firmenschild">
+  <p class="fc">Der <span class="red">Notstromer</span> für Berner Elektrikerfirmen</p>
+</div>
+<footer class="foot">Naville Handwerk GmbH · 3005 Bern · UID CHE-334.176.319 · <a href="mailto:info@naville-handwerk.ch">info@naville-handwerk.ch</a> · <a href="impressum.html">Impressum</a></footer>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="schema_symbole.js"></script>
+<script src="schema.js"></script>
+<script src="verfuegbarkeit.js"></script>
+<script src="hinweis.js"></script>
+<script src="nav.js"></script>
+<script src="banner.js"></script>
+<script src="achse.js"></script>
+</body></html>

@@ -33,12 +33,13 @@ Reines HTML/CSS/JS, kein Server nötig.
 - **Navigation** (Kopfzeile jeder Seite, `<nav class="nav-links">`): drei Gruppen mit ihren
   Seiten, in jeder Seite derselbe HTML-Block. **Willkommen**: Startseite und ihre Abschnitte
   (Wann ich einspringe, Zur Firma, Über mich, Wie ich arbeite, Kontakt) · **Infos**: Was du von
-  mir hast, FAQ (später Dokumente) · **Werkzeuge**: Kalender, Preisrechner, Rayon-Rechner, Vertragswerk.
+  mir hast, FAQ (später Dokumente) · **Werkzeuge**: Kalender, Preisrechner, Rayon-Rechner, Vertragswerk,
+  Schema-Symbole.
   Breit stehen die Gruppen in der Kopfzeile und klappen beim Schweben oder per Tastatur auf,
   schmal öffnet der Burger drei Kacheln mit allen Seiten; Regeln in `basis.css`. `nav.js`
-  markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller acht Seiten
-  (`index`, `leistungen`, `preisrechner`, `rayon`, `vertragswerk`, `faq`, `kalender`, `impressum`), sonst
-  nirgends.
+  markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller neun Seiten
+  (`index`, `leistungen`, `preisrechner`, `rayon`, `vertragswerk`, `schema`, `faq`, `kalender`,
+  `impressum`), sonst nirgends.
 - `index.html` — Startseite
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
@@ -52,6 +53,8 @@ Reines HTML/CSS/JS, kein Server nötig.
   «Rayon-Rechner» unten)
 - `vertragswerk.html` + `vertragswerk*.js` — Vertragswerk: Verleihvertrag, Erläuterungen, Arbeitsvertrag und
   Lexikon für den Selbstverleih im Elektrogewerbe (Abschnitt «Vertragswerk» unten)
+- `schema.html` + `schema.js` + `schema_symbole.js` — Schema-Symbole in Schweizer Form zum
+  Nachschlagen, mit Download als SVG, DXF und PDF-Spickzettel (Abschnitt «Schema-Symbole» unten)
 - `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Verfügbarkeit")
 - `kalender.html` — Jahreskalender (Verfügbarkeit; freie Tage per E-Mail anfragen, kein Backend)
 - `impressum.html` — Impressum / Datenschutz
@@ -187,6 +190,33 @@ Verweise sind Marken (`{Z:ziffer}`, `{B:ziffer.buchstabe}`, `{R:ziffer.buchstabe
 in den anderen Vertrag), damit sie auch nach dem Wegfall eines Buchstabens stimmen. Erläuterungen
 sind je Ziffer-ID eine Funktion der Auswahl. Alle Dateien laufen auch in Node (`require` in der
 Reihenfolge der Script-Tags); ein Verweis ohne Ziel erscheint als "?" und in `.fehlt`.
+
+## Schema-Symbole (`schema.html`, `schema.js`, `schema_symbole.js`)
+
+Nachschlagewerk für Schema-Symbole in Schweizer Form und in den Hausschlüsseln einzelner Büros:
+Stromlaufschema, Installationsplan, HLK-Anlagenschema. Suche und Filter nach Bereich und
+Hausschlüssel, grosse Ansicht mit Anschlusspunkten, Download je Symbol als SVG oder DXF, eine
+Auswahl als Spickzettel-PDF (A4, Originalgrösse, Vorschau wie im Rayon-Rechner) oder als eine DXF.
+`schema.html#<id>` öffnet ein Symbol, `?q=<text>` belegt die Suche vor. Keine fremden Dienste,
+nichts wird gespeichert.
+
+**Daten:** `schema_symbole.js` ist die massgebliche Quelle der Symbole, je Eintrag `id`, `name`,
+`bereich`, `schluessel`, `quelle` (öffentliche Angabe der Vorlage), `rahmen` und `formen`.
+Formen in Rastereinheiten (Raster 10, y nach unten, Ursprung = Einfügepunkt): `L` Linie
+(x1 y1 x2 y2 Strichart), `K` Kreis (cx cy r voll), `R` Rechteck (x y b h voll), `Z` Linienzug
+(Punkte, geschlossen, voll), `B` Bogen (cx cy r Start Winkel; Winkel wie Qt, 0 = rechts, positiv
+im Gegenuhrzeigersinn), `T` Text (x y Text Grösse in Punkt; Grundlinie links), `A` Anschluss
+(x y Richtung n/e/s/w). **Auf die Seite kommen nur eigene Zeichnungen**, je mit Quelle, ohne
+Anlagen, Kunden, Projekt- oder Blattnummern einer Anlage und ohne Begleittext aus den Vorlagen;
+keine Scans, keine Seiten oder Tabellen aus Lehrmitteln. Wer einen Eintrag ändert oder ergänzt,
+hält das ein.
+
+**Ausgaben:** SVG in Millimetern (1 Einheit = 0.5 mm, ein Raster = 5 mm), ohne Anschlusspunkte,
+Lizenzvermerk im Kommentar. DXF R12 in ANSI 1252 (Zeichen ausserhalb Latin-1 als `\U+XXXX`),
+Einheit mm, je Symbol ein Block mit dem Namen der `id`, Layer `SYMBOL` und `ANSCHLUSS`; gefüllte
+Kreise als breite Polylinie, gefüllte Flächen als SOLID. Im PDF setzt jsPDF Helvetica; Texte mit
+Zeichen ausserhalb Latin-1 (Δ, Σ, ϑ) setzt der Browser als kleines Bild. **Lizenz** der
+Zeichnungen: CC BY-SA 4.0, Nennung "Naville Handwerk GmbH, naville-handwerk.ch".
 
 ## Deployment (GitHub Pages)
 
