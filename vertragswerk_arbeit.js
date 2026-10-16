@@ -74,6 +74,9 @@
   function modell(o) {
     var stunde = o.lohnform === "stunde";
     var H = zahl(stundenTag(o));
+    /* Teilzeit: Grenzen des GAV sinken im Verhältnis der Wochenstunden zu 40 (PLK-FAQ zu Art. 21.3) */
+    var teil = o.wochenstunden < 40, verh = " im Verhältnis der wöchentlichen Arbeitszeit zu 40 Stunden";
+    var grenze = teil ? zahl(100 * o.wochenstunden / 40) + " Stunden (100 Stunden" + verh + ")" : "100 Stunden";
     var inventar = o.werkzeug === "inventar";
     var ktgHalb = o.ktg !== "arbeitgeberin";
     var Z = [];
@@ -110,12 +113,14 @@
 
     ziffer("zeit", "Arbeitszeit", [
       b("a", "Die wöchentliche Arbeitszeit steht im Vertragsblatt; sie verteilt sich im Durchschnitt auf " + H + " Stunden je Tag von Montag bis Freitag. Die Stunden je Wochentag richten sich nach dem jeweiligen Verleihvertrag; nennt er keine, gelten " + H + " Stunden je Tag von Montag bis Freitag. Innerhalb dieser Stunden teilt der Einsatzbetrieb die Arbeitszeit ein, im Rahmen des Arbeitsgesetzes (ArG) und des GAV. Nennt ein Verleihvertrag weniger Stunden, bleibt die Arbeitszeit nach dem Vertragsblatt geschuldet. Die Jahresbruttoarbeitszeit richtet sich nach Anhang 5c des GAV" +
-        (o.wochenstunden < 40 ? ", im Verhältnis der wöchentlichen Arbeitszeit zu 40 Stunden" : "") +
-        ", bei Beginn des Arbeitsverhältnisses im Lauf des Kalenderjahres anteilsmässig. Vorholzeit gibt es keine, solange die Arbeitgeberin sie nicht zu Beginn eines Jahres schriftlich festlegt (Art. 20.2 und 26.2 GAV)."),
+        (teil ? "," + verh : "") +
+        ", bei Beginn des Arbeitsverhältnisses im Lauf des Kalenderjahres anteilsmässig; sie ist die vertraglich festgelegte Jahresbruttoarbeitszeit nach Art. 21.1 GAV. Vorholzeit gibt es keine, solange die Arbeitgeberin sie nicht zu Beginn eines Jahres schriftlich festlegt (Art. 20.2 und 26.2 GAV)."),
       b("b", "Die wöchentliche Höchstarbeitszeit beträgt 50 Stunden (Art. 9 Abs. 1 Bst. b ArG). Pausen sind keine Arbeitszeit; die Mittagspause dauert 60 Minuten, bei höchstens neun Stunden Arbeit nach Vereinbarung 30 Minuten (Art. 28.1 bis 28.3 GAV). Bewilligungen für Nacht- und Sonntagsarbeit holt der Einsatzbetrieb ein; Nacht- und Sonntagsarbeit leistet der Arbeitnehmer nur mit seiner Zustimmung (Art. 17 Abs. 6 und 19 Abs. 5 ArG), Arbeit an Samstagen, Sonntagen und Feiertagen nur, wenn die Arbeitgeberin sie nach dem jeweiligen Verleihvertrag bestätigt hat. Die Arbeitgeberin sorgt über aufeinanderfolgende Einsätze für die Einhaltung des ArG (Höchstarbeitszeit, Ruhezeit, freier Sonntag, Ersatzruhe)."),
       b("c", "\"Fahrt zwischen Baustellen\" und \"Wartezeit während der Arbeit\" sind Arbeitszeit."),
       b("weg", "Wegzeit: Der Weg zwischen dem Wohnort des Arbeitnehmers und dem Sitz des Einsatzbetriebs ist Arbeitsweg und keine Arbeitszeit (Art. 27.2 GAV). Beginnt oder endet die Arbeit auf einer Baustelle, gilt die zeitliche Differenz, die diesen Arbeitsweg übersteigt, als Arbeitszeit (Art. 27.3 GAV)."),
-      b("ueber", "Arbeit über die Stunden je Wochentag hinaus ordnet der Einsatzbetrieb im Rahmen von ArG und GAV an. Überstunden nach Art. 21 GAV sind die zwischen 6 und 23 Uhr geleisteten Stunden, die die Jahresbruttoarbeitszeit übersteigen; Ferien, Feiertage, bezahlte Absenzen und Zeit ohne Einsatz zählen mit den Stunden je Wochentag (Art. 20.1 und 21.1 GAV). Bis 100 Stunden werden sie innert Jahresfrist nach Art. 21.3 GAV ohne Lohnzuschlag durch Freizeit gleicher Dauer oder in Geld ausgeglichen; der Ausgleich wird schriftlich festgehalten. Weitere Stunden zahlt die Arbeitgeberin im Januar mit einem Lohnzuschlag von 25 % aus. Überzeit über die wöchentliche Höchstarbeitszeit hinaus zahlt die Arbeitgeberin bis zum Ende des folgenden Monats mit einem Lohnzuschlag von 25 % aus (Art. 22.2 GAV); wird für dieselben Stunden ein Lohnzuschlag nach Ziff. {R:lohn.zuschlag} bezahlt, entfällt der Überzeitzuschlag (Art. 22.3 GAV)."),
+      b("ueber", "Arbeit über die Stunden je Wochentag hinaus ordnet der Einsatzbetrieb im Rahmen von ArG und GAV an. Überstunden nach Art. 21 GAV sind die zwischen 6 und 23 Uhr geleisteten Stunden, die die Jahresbruttoarbeitszeit übersteigen; Ferien, Feiertage, bezahlte Absenzen und Zeit ohne Einsatz zählen mit den Stunden je Wochentag (Art. 20.1 und 21.1 GAV). " + (stunde
+        ? "Beim Stundenlohn werden Überstunden nicht durch Freizeit ausgeglichen und nicht auf einen folgenden Einsatz übertragen: Nach dem Ende jedes Einsatzes, spätestens bei Ende des Arbeitsverhältnisses, vergleicht die Arbeitgeberin die geleisteten mit den geschuldeten Stunden und zahlt die Überstunden aus, bis zum Anteil der Einsatzdauer an " + grenze + " je Jahr ohne Lohnzuschlag, darüber mit einem Lohnzuschlag von 25 %. "
+        : "Bis " + grenze + " werden sie innert Jahresfrist nach Art. 21.3 GAV ohne Lohnzuschlag durch Freizeit gleicher Dauer oder in Geld ausgeglichen; der Ausgleich wird schriftlich festgehalten. Weitere Stunden zahlt die Arbeitgeberin im Januar mit einem Lohnzuschlag von 25 % aus. ") + "Überzeit über die wöchentliche Höchstarbeitszeit hinaus zahlt die Arbeitgeberin bis zum Ende des folgenden Monats mit einem Lohnzuschlag von 25 % aus (Art. 22.2 GAV); wird für dieselben Stunden ein Lohnzuschlag nach Ziff. {R:lohn.zuschlag} bezahlt, entfällt der Überzeitzuschlag (Art. 22.3 GAV)."),
       b("ohne", "Kann die Arbeitgeberin keinen Einsatz zuweisen oder beendet der Einsatzbetrieb die Arbeit vor Ablauf der Stunden je Wochentag, bleibt sie zur Lohnzahlung verpflichtet (Art. 324 OR). Diese Zeit ohne Einsatz gilt mit den Stunden je Wochentag, ohne Verleihvertrag mit " + H + " Stunden je Tag von Montag bis Freitag, als geleistet; sie wird nicht an Überstunden, Ferien oder Lohn angerechnet. Der Arbeitnehmer hält sich in dieser Zeit für Einsätze bereit; was er daneben als Geschäftsführer tut, bleibt Organtätigkeit (Ziff. {R:stellung.organ}) und ändert daran nichts. Bleibt er aus Gründen in seiner Person der Arbeit fern, gilt diese Zeit nicht als geleistet.")
     ]);
 
@@ -131,7 +136,9 @@
     ziffer("lohn", "Lohn", [
       b("a", stunde
         ? "Der Arbeitnehmer erhält für jede geleistete Arbeitsstunde den Stundengrundlohn nach dem Vertragsblatt. Dazu kommen nach Art. 35.4 und Anhang 6 GAV der Ferienzuschlag (Ziff. {R:ferien.a}), der Feiertagszuschlag (Ziff. {R:ferien.feiertage}) und der Anteil 13. Monatslohn (Bst. {B:lohn.dreizehn}); die Sätze stehen im Vertragsblatt. Der Stundengrundlohn liegt nicht unter dem Mindestlohn des GAV für die Qualifikation des Arbeitnehmers, geteilt durch 174 Stunden (Art. 16.3, 17 und Anhang 5c GAV)."
-        : "Der Monatslohn steht im Vertragsblatt. Er liegt nicht unter dem Mindestlohn des GAV für die Qualifikation des Arbeitnehmers (Art. 17 und Anhang 5c GAV)."),
+        : teil
+          ? "Der Monatslohn steht im Vertragsblatt. Er liegt nicht unter dem Mindestlohn des GAV für die Qualifikation des Arbeitnehmers," + verh + "; umgerechnet nach Art. 16.3 GAV liegt sein Stundenlohn nicht unter dem Mindestlohn geteilt durch 174 Stunden (Art. 16.3, 17 und Anhang 5c GAV)."
+          : "Der Monatslohn steht im Vertragsblatt. Er liegt nicht unter dem Mindestlohn des GAV für die Qualifikation des Arbeitnehmers (Art. 17 und Anhang 5c GAV)."),
       b("dreizehn", dreizehn),
       b("c", "Die Arbeitgeberin zahlt den Lohn am Monatsende auf das Lohnkonto nach dem Vertragsblatt (Art. 323 Abs. 1 OR). Mit jeder Zahlung erhält der Arbeitnehmer eine Lohnabrechnung über Lohn, Arbeitszeit, Vorholzeit, Überstunden, Ferien, Spesen, Lohnzuschläge, Familienzulagen und Abzüge (Art. 323b Abs. 1 OR, Art. 35.3 GAV)." + (stunde
         ? " Sie weist Stundengrundlohn, Ferienzuschlag, Feiertagszuschlag und Anteil 13. Monatslohn je mit Satz und Betrag aus" + (o.ferienlohn === "laufend" ? "." : ", dazu den Rückbehalt für das Ferienguthaben und dessen Stand.")
@@ -163,6 +170,7 @@
         ? "Der Ferienanspruch je Kalenderjahr steht im Vertragsblatt; er liegt über dem Anspruch nach Art. 29.1 und 29.3 GAV."
         : "Der Ferienanspruch je Kalenderjahr steht im Vertragsblatt (Art. 29.1 und 29.3 GAV).") +
         " Bei Beginn oder Beendigung des Arbeitsverhältnisses im Lauf des Kalenderjahres besteht er anteilsmässig. Der Arbeitnehmer bezieht die Ferien nach Vereinbarung mit der Arbeitgeberin und mit Rücksicht auf die laufenden Einsätze, mindestens zwei Wochen zusammenhängend (Art. 329c Abs. 1 OR). Feiertage in den Ferien zählen nicht als Ferien (Art. 31.2 GAV); bei ärztlich bescheinigter Arbeitsunfähigkeit in den Ferien gilt Art. 29.4 GAV. " +
+        (teil ? "Jeder Ferientag zählt mit " + H + " Stunden; eine Ferienwoche zählt fünf Werktage, auch wenn nach dem Verleihvertrag an weniger Tagen gearbeitet wird. " : "") +
         (!stunde
           ? "Während des Arbeitsverhältnisses werden die Ferien nicht in Geld abgegolten (Art. 329d Abs. 2 OR)."
           : o.ferienlohn === "laufend"
@@ -187,7 +195,7 @@
     ]);
 
     ziffer("vorsorge", "Berufliche Vorsorge", [
-      b("a", "Der Arbeitnehmer ist ab dem Beginn des Arbeitsverhältnisses bei der Vorsorgeeinrichtung der Arbeitgeberin für die Risiken Alter, Tod und Invalidität versichert (Bundesgesetz über die berufliche Vorsorge, BVG). Er anerkennt deren Reglement und Vorsorgeplan. Die Beiträge richten sich nach dem Reglement der Vorsorgeeinrichtung; der Beitrag der Arbeitgeberin ist mindestens gleich hoch wie der des Arbeitnehmers (Art. 66 Abs. 1 BVG). Der Arbeitnehmeranteil steht im Vertragsblatt.")
+      b("a", "Der Arbeitnehmer ist ab dem Beginn des Arbeitsverhältnisses bei der Vorsorgeeinrichtung der Arbeitgeberin für die Risiken Alter, Tod und Invalidität versichert (Bundesgesetz über die berufliche Vorsorge, BVG)" + (teil ? ", sofern sein Jahreslohn den Grenzbetrag nach Art. 7 BVG übersteigt oder das Reglement ihn auch darunter versichert" : "") + ". Er anerkennt deren Reglement und Vorsorgeplan. Die Beiträge richten sich nach dem Reglement der Vorsorgeeinrichtung; der Beitrag der Arbeitgeberin ist mindestens gleich hoch wie der des Arbeitnehmers (Art. 66 Abs. 1 BVG). Der Arbeitnehmeranteil steht im Vertragsblatt.")
     ]);
 
     var verlust = "Geht Werkzeug beim Einsatzbetrieb verloren oder wird es beschädigt, macht die Arbeitgeberin die Ansprüche aus dem jeweiligen Verleihvertrag für den Arbeitnehmer geltend und leitet Erhaltenes an ihn weiter.";
@@ -262,7 +270,7 @@
       ferienlohn: radio("av-ferienlohn") || "angespart",
       jahr: parseInt(VW.wert("av-beginn").slice(0, 4), 10) || new Date().getFullYear(),
       dreizehnter: radio("av-dreizehnter") || "dezember",
-      wochenstunden: radio("av-wochen") === "andere" ? Math.min(40, Math.max(1, Math.round(z("av-wochenstunden", 40) * 2) / 2)) : 40,
+      wochenstunden: radio("av-wochen") === "andere" ? Math.min(40, Math.max(8, Math.round(z("av-wochenstunden", 40) * 2) / 2)) : 40,
       ferien: radio("av-ferien") || "gav", ferienTage: Math.min(40, Math.max(28, Math.round(z("av-ferien-tage", 30)))),
       werkzeug: radio("av-werkzeug") || "inventar", ktg: radio("av-ktg") || "haelftig",
       probezeit: parseInt(radio("av-probezeit") || "0", 10),
@@ -478,10 +486,13 @@
       "Die wöchentliche Arbeitszeit beträgt nach dem Vertragsblatt " + String(w).replace(".", ",") + " Stunden" +
         (w === 40 ? ", wie die normale Arbeitszeit nach Art. 20.2 GAV." : ", weniger als die normale Arbeitszeit von 40 Stunden nach Art. 20.2 GAV (Beschäftigungsgrad " + grad(o) + " %). Die Jahresbruttoarbeitszeit sinkt im selben Verhältnis.") +
         " Für 2026 nennt Anhang 5c GAV eine Jahresbruttoarbeitszeit von 2088 Stunden bei 40 Stunden je Woche" + (w < 40 ? "; hier also rund " + Math.round(2088 * w / 40) + " Stunden." : "."),
-      "Überstunden zählt der GAV über das Jahr gegen die Jahresbruttoarbeitszeit (Art. 21 GAV). Überzeit sind Stunden über der wöchentlichen Höchstarbeitszeit von 50 Stunden (Art. 9 ArG, Art. 22 GAV).",
+      "Überstunden zählt der GAV über das Jahr gegen die vertraglich festgelegte Jahresbruttoarbeitszeit (Art. 21.1 GAV). Höchstens 100 Überstunden gehen ohne Zuschlag ins nächste Jahr (Art. 21.3 GAV)" +
+        (w < 40 ? "; bei Teilzeit sinkt die Grenze nach der Paritätischen Landeskommission (PLK) im Verhältnis zum Pensum, hier auf " + zahl(100 * w / 40) + " Stunden" : "") + ". " +
+        (o.lohnform === "stunde" ? "Beim Stundenlohn sieht die PLK keinen Ausgleich durch Freizeit vor; die Überstunden werden nach jedem Einsatz abgerechnet und ausbezahlt. " : "") +
+        "Überzeit sind Stunden über der wöchentlichen Höchstarbeitszeit von 50 Stunden (Art. 9 ArG, Art. 22 GAV).",
       "Zeit ohne Einsatz trägt die Arbeitgeberin: Kann sie keinen Einsatz zuweisen, schuldet sie den Lohn trotzdem (Art. 324 OR), und die Stunden gelten als geleistet (Bst. {B:zeit.ohne}).",
       {beispiel: "Der Einsatzbetrieb schickt den Arbeitnehmer um 14 Uhr heim, weil Material fehlt. Die restlichen Stunden des Tages gelten als geleistet, der Lohn bleibt gleich. Ob der Einsatzbetrieb diese Stunden bezahlt, regelt der Verleihvertrag (Ziff. {R@vv:ausfall.ausfall})."},
-      {quellen: [q("Art. 9 ArG", "ArG", "9"), q("Art. 324 OR", "OR", "324"), gav("Art. 20 bis 22, 27 und 28 GAV, Anhang 5c")]}
+      {quellen: [q("Art. 9 ArG", "ArG", "9"), q("Art. 324 OR", "OR", "324"), gav("Art. 20 bis 22, 27 und 28 GAV, Anhang 5c"), {t: "PLK Elektro, FAQ GAV Elektrobranche 2026 bis 2029, Art. 21", url: "https://www.plk-elektro.ch/documents/875/2026-2029_FAQ_GAV_ELEKT_DE_P3Dd9zy.pdf"}, {t: "PLK Elektro, Weisung Bezahlung/Kompensation von Überstunden/Überzeit, Ziff. 3.2 und 3.3", url: "https://www.plk-elektro.ch/documents/743/2026-2029_Bezahlung_Kompensation_von_%C3%9Cberstunden_%C3%9Cberzeit.pdf"}]}
     ];
   };
 
@@ -504,11 +515,11 @@
         ["Ferienzuschlag (" + t + " Werktage)", proz(FERIEN_PROZ[t]), ang ? "beim Bezug der Ferien" : "monatlich"],
         ["Feiertagszuschlag (" + (nf === null ? "Feiertage auf Werktagen" : zahl(nf) + " Feiertage auf Werktagen " + o.jahr) + ")", proz(feiertagSatz(o)), "monatlich"],
         ["13. Monatslohn, auf Grundlohn und beide Zuschläge", proz(DREIZEHN_PROZ), "monatlich"]]}});
-      aus.push("Der Feiertagszuschlag wechselt mit dem Kalender. Der GAV bezahlt neun Feiertage, aber nur, wenn sie auf einen Arbeitstag fallen (Art. 30.1 GAV); fallen der Bundesfeiertag oder der Stephanstag auf einen Samstag, sinkt der Satz nach der Tabelle in Anhang 6 GAV. 2026 sind es im Kanton Bern sieben Tage und 2,77 %.");
+      aus.push("Der Feiertagszuschlag wechselt mit dem Kalender. Der GAV bezahlt neun Feiertage, aber nur, wenn sie auf einen Werktag fallen (Art. 30.1 GAV); fallen der Bundesfeiertag oder der Stephanstag auf einen Samstag, sinkt der Satz nach der Tabelle in Anhang 6 GAV. 2026 sind es im Kanton Bern sieben Tage und 2,77 %.");
       aus.push({beispiel: "Stundengrundlohn " + chf(bsp) + ": Ferienzuschlag " + chf(r.ferien) + ", Feiertagszuschlag " + chf(r.feiertage) + ", Anteil 13. Monatslohn " + chf(r.dreizehn) + ", zusammen " + chf(r.total) + " je Stunde. " +
         (ang ? "Davon gehen " + chf(r.ferien) + " ins Ferienguthaben, " + chf(r.ausbezahlt) + " werden mit dem Monatslohn ausbezahlt, jeweils vor den Abzügen." : "Alles wird mit dem Monatslohn ausbezahlt.")});
     } else {
-      aus.push("Gewählt ist der Monatslohn. Er bleibt gleich, auch wenn die Stunden je Woche schwanken (Art. 35.2 GAV). Der Mindestlohn richtet sich nach der Qualifikation; für Elektroinstallateure EFZ nennt Anhang 5c GAV für 2026 CHF 4'500 je Monat nach dem EFZ und CHF 5'000 nach einem vollen Jahr Branchenerfahrung.");
+      aus.push("Gewählt ist der Monatslohn. Er bleibt gleich, auch wenn die Stunden je Woche schwanken (Art. 35.2 GAV). Der Mindestlohn richtet sich nach der Qualifikation; für Elektroinstallateure EFZ nennt Anhang 5c GAV für 2026 CHF 4'500 je Monat nach dem EFZ und CHF 5'000 nach einem vollen Jahr Branchenerfahrung." + (o.wochenstunden < 40 ? " Die Beträge gelten für 40 Stunden je Woche; bei Teilzeit gilt der entsprechende Teil, hier " + zahl(o.wochenstunden / 40 * 100) + " %. Ausdrücklich geregelt ist das im GAV nicht; er rechnet den Monatslohn über 174 Stunden in einen Stundenlohn um (Art. 16.3 GAV), und daran lässt sich jeder Lohn messen." : ""));
       aus.push(o.dreizehnter === "monatlich"
         ? "Der 13. Monatslohn wird monatlich zu einem Zwölftel ausbezahlt; das lässt Art. 18.2 GAV nach Absprache zu. Die Lohnabrechnung weist ihn getrennt aus."
         : "Der 13. Monatslohn beträgt 100 % des durchschnittlichen Monatslohns und wird mit dem Dezemberlohn ausbezahlt, in einem Jahr mit Beginn oder Ende anteilsmässig (Art. 18 GAV).");
@@ -554,7 +565,7 @@
         : o.ferienlohn === "laufend"
           ? "Gewählt ist, den Ferienzuschlag von " + proz(FERIEN_PROZ[t[0]]) + " mit jedem Lohn auszuzahlen; in den Ferien selbst fliesst dann kein Lohn. Das Gesetz verbietet, Ferien während des Arbeitsverhältnisses in Geld abzugelten (Art. 329d Abs. 2 OR). Das Bundesgericht lässt die laufende Auszahlung nur ausnahmsweise zu: bei unregelmässiger Beschäftigung, mit dem Satz im schriftlichen Vertrag und mit dem Betrag auf jeder Lohnabrechnung (BGE 129 III 493 E. 3.2 und 3.3). Bei voller Beschäftigung bei derselben Arbeitgeberin ist die Ausnahme ausgeschlossen (BGE 149 III 202 E. 2.2.3). Fehlt eine Voraussetzung, ist der Ferienlohn ein zweites Mal geschuldet. Die Wahl passt darum nur zu kurzen oder sehr unregelmässigen Einsätzen."
           : "Beim Stundenlohn wird der Ferienzuschlag von " + proz(FERIEN_PROZ[t[0]]) + " jeden Monat einem Ferienguthaben gutgeschrieben und erst beim Bezug der Ferien ausbezahlt. So halten es auch die Temporärfirmen bei längeren Einsätzen: Der Zuschlag zählt zum Bruttolohn, auf dem AHV und die übrigen Abzüge berechnet werden; danach wird er als Rückbehalt abgezogen. Das Ferienguthaben ist also ein Nettobetrag, beim Bezug fallen keine Abzüge mehr an. Den Ferienzuschlag mit jedem Lohn auszuzahlen, wäre bei voller Beschäftigung bei derselben Arbeitgeberin unzulässig (Art. 329d Abs. 2 OR; BGE 149 III 202 E. 2.2.3).",
-      "Bezahlt sind neun Feiertage nach dem Recht am Sitz der Arbeitgeberin" + (o.kanton === "BE" ? " im Kanton Bern" : ", hier im Kanton " + VW.kantonName(o.kanton)) + ", soweit sie auf einen Arbeitstag fallen (Art. 30 GAV). Ferien meldet der Arbeitnehmer früh genug, denn der Verleihvertrag verlangt eine Frist gegenüber dem Einsatzbetrieb (Ziff. {R@vv:verh.c}).",
+      "Bezahlt sind neun Feiertage nach dem Recht am Sitz der Arbeitgeberin" + (o.kanton === "BE" ? " im Kanton Bern" : ", hier im Kanton " + VW.kantonName(o.kanton)) + ", soweit sie auf einen Werktag von Montag bis Freitag fallen (Art. 30 GAV)" + (o.wochenstunden < 40 ? "; der GAV verlangt bei Teilzeit nur die Feiertage an gewöhnlichen Arbeitstagen (Art. 31.4 GAV), der Vertrag gibt mehr" : "") + ". Ferien meldet der Arbeitnehmer früh genug, denn der Verleihvertrag verlangt eine Frist gegenüber dem Einsatzbetrieb (Ziff. {R@vv:verh.c}).",
       {beispiel: "Wer im März 50 wird, hat schon im ganzen Kalenderjahr Anspruch auf " + t[1] + " Werktage."},
       {quellen: [q("Art. 329c OR", "OR", "329_c"), q("Art. 329d OR", "OR", "329_d"), gav("Art. 29 bis 31 GAV, Anhang 6")].concat(o.lohnform === "stunde" ? [bge("129 III 493"), bge("149 III 202")] : [])}
     ];
