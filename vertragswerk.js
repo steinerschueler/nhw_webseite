@@ -371,7 +371,7 @@
     gez.forEach(function (z) {
       var schon = {};
       if (z.teil) { var tt = document.createElement("div"); tt.className = "teil"; tt.textContent = z.teil; ziel.appendChild(tt); }
-      var h = document.createElement("h4"); h.textContent = z.nr + ". " + z.titel; ziel.appendChild(h);
+      var h = document.createElement("h4"); h.textContent = z.nr + ". " + z.titel; h.id = ziel.id + "-" + z.id; ziel.appendChild(h);
       z.abs.forEach(function (a) {
         var zeile = document.createElement("div"); zeile.className = "bst";
         var l = document.createElement("span"); l.textContent = a.bst ? a.bst + ")" : "";
@@ -458,12 +458,16 @@
     document.body.appendChild(karte);
   }
   function karteZeigen(sp) {
-    var e = VW.begriff(sp.getAttribute("data-b"));
-    if (!e) return;
     karte.textContent = "";
-    var h = document.createElement("strong"); h.textContent = e.wort; karte.appendChild(h);
-    var p = document.createElement("p"); p.textContent = e.kurz; karte.appendChild(p);
-    var s = document.createElement("span"); s.className = "mehr"; s.textContent = "Klick: mehr im Lexikon"; karte.appendChild(s);
+    if (sp.classList.contains("zh")) {
+      var hz = document.createElement("strong"); hz.textContent = sp.getAttribute("data-titel"); hz.style.margin = "0"; karte.appendChild(hz);
+    } else {
+      var e = VW.begriff(sp.getAttribute("data-b"));
+      if (!e) return;
+      var h = document.createElement("strong"); h.textContent = e.wort; karte.appendChild(h);
+      var p = document.createElement("p"); p.textContent = e.kurz; karte.appendChild(p);
+      var s = document.createElement("span"); s.className = "mehr"; s.textContent = "Klick: mehr im Lexikon"; karte.appendChild(s);
+    }
     karte.hidden = false;
     var r = sp.getBoundingClientRect(), kb = Math.min(340, window.innerWidth - 24);
     karte.style.maxWidth = kb + "px";
@@ -482,20 +486,22 @@
       if (kPos && Math.abs(ev.clientX - kPos.x) < 3 && Math.abs(ev.clientY - kPos.y) < 3) return;
       kPos = {x: ev.clientX, y: ev.clientY};
       karteWeg();
-      var sp = ev.target.closest ? ev.target.closest(".bg") : null;
-      if (sp) kTimer = setTimeout(function () { karteZeigen(sp); }, 450);
+      var sp = ev.target.closest ? ev.target.closest(".bg, .zh") : null;
+      if (sp) kTimer = setTimeout(function () { karteZeigen(sp); }, sp.classList.contains("zh") ? 250 : 450);
     });
     document.addEventListener("click", function (ev) {
-      var sp = ev.target.closest ? ev.target.closest(".bg") : null;
+      var sp = ev.target.closest ? ev.target.closest(".bg, .zh") : null;
       if (!sp) { karteWeg(); return; }
       ev.preventDefault();
       if (ev.pointerType === "touch" || (ev.sourceCapabilities && ev.sourceCapabilities.firesTouchEvents)) {
         if (kBegriff !== sp) { karteZeigen(sp); return; }
       }
-      karteWeg(); zumLexikon(sp.getAttribute("data-b"));
+      karteWeg();
+      if (sp.classList.contains("zh")) zurZiffer(sp); else zumLexikon(sp.getAttribute("data-b"));
     });
-    document.addEventListener("focusin", function (ev) { if (ev.target.classList && ev.target.classList.contains("bg")) karteZeigen(ev.target); });
-    document.addEventListener("focusout", function (ev) { if (ev.target.classList && ev.target.classList.contains("bg")) karteWeg(); });
+    function mitKarte(el) { return el.classList && (el.classList.contains("bg") || el.classList.contains("zh")); }
+    document.addEventListener("focusin", function (ev) { if (mitKarte(ev.target)) karteZeigen(ev.target); });
+    document.addEventListener("focusout", function (ev) { if (mitKarte(ev.target)) karteWeg(); });
     document.addEventListener("keydown", function (ev) {
       if (ev.key === "Escape") karteWeg();
       if ((ev.key === "Enter" || ev.key === " ") && ev.target.classList && ev.target.classList.contains("bg")) { ev.preventDefault(); karteWeg(); zumLexikon(ev.target.getAttribute("data-b")); }
@@ -566,8 +572,81 @@
       VW.erlZeigen(ez, VW.erlaeutert(art, s.o, s.f, s.gez, zahlen), "");
     });
     VW.stand = stand; VW.zahlen = zahlen;
+    Object.keys(stand).forEach(function (art) { wirkungZeigen(art, stand[art], zahlen); });
     VW.vorschauWeg();
   };
+
+  /* ---------- Wirkung der Auswahl ----------
+     Jede Frage unter A bekommt Hochzeichen mit den Nummern der Ziffern, die sich ändern, wenn man dort
+     anders wählt. Die Seite probiert dazu jede andere Wahl der Frage aus (Feld kurz umstellen, Auswahl
+     lesen, zurückstellen) und vergleicht den Text jeder Ziffer mit dem aktuellen. Klick springt zur
+     Ziffer in der Vorschau, das Kärtchen zeigt ihren Titel. */
+  var PANEL = {vv: "p-verleihvertrag", av: "p-arbeitsvertrag"};
+  function zifferTexte(gez) {
+    var k = {};
+    gez.forEach(function (z) { k[z.id] = z.titel + "|" + z.abs.map(VW.vergleichstext).join("|"); });
+    return k;
+  }
+  /* andere Wahlen einer Frage: je [umstellen, zurückstellen] */
+  function varianten(fr) {
+    var v = [], gesehen = {};
+    Array.prototype.forEach.call(fr.querySelectorAll("input, select"), function (el) {
+      if (el.type === "radio") {
+        if (gesehen[el.name]) return;
+        gesehen[el.name] = true;
+        var gruppe = fr.querySelectorAll("input[type=radio][name=\"" + el.name + "\"]");
+        var an = Array.prototype.filter.call(gruppe, function (r) { return r.checked; })[0];
+        Array.prototype.forEach.call(gruppe, function (r) {
+          if (r !== an) v.push([function () { r.checked = true; }, function () { if (an) an.checked = true; else r.checked = false; }]);
+        });
+      } else if (el.type === "checkbox") {
+        v.push([function () { el.checked = !el.checked; }, function () { el.checked = !el.checked; }]);
+      } else if (el.tagName === "SELECT") {
+        var alt = Array.prototype.filter.call(el.options, function (op) { return op.value !== el.value; })[0];
+        if (alt) { var w0 = el.value; v.push([function () { el.value = alt.value; }, function () { el.value = w0; }]); }
+      } else if (el.type === "number") {
+        var w = el.value, n = parseFloat(w) || 0, max = el.max === "" ? Infinity : parseFloat(el.max);
+        v.push([function () { el.value = String(n + 1 > max ? n - 1 : n + 1); }, function () { el.value = w; }]);
+      }
+    });
+    return v;
+  }
+  function wirkungZeigen(art, s, zahlen) {
+    var panel = $(PANEL[art]), V = s.V;
+    if (!panel || !$(V.vorschauId)) return;
+    var jetzt = zifferTexte(s.gez), nach = {};
+    s.gez.forEach(function (z) { nach[z.id] = z; });
+    Array.prototype.forEach.call(panel.querySelectorAll(".calc-main .frage"), function (fr) {
+      var ids = {};
+      varianten(fr).forEach(function (va) {
+        va[0]();
+        var o2 = V.auswahl();
+        va[1]();
+        var g2 = zifferTexte(VW.gezaehlt(V.modell(o2, s.f), art, JSON.parse(JSON.stringify(zahlen))));
+        Object.keys(jetzt).forEach(function (id) { if (g2[id] !== jetzt[id]) ids[id] = true; });
+      });
+      var f = fr.querySelector(".f"), alt = f && f.querySelector(".zhs");
+      if (alt) alt.remove();
+      var liste = Object.keys(ids).map(function (id) { return nach[id]; }).sort(function (a, b) { return a.nr - b.nr; });
+      if (!f || !liste.length) return;
+      var box = document.createElement("span"); box.className = "zhs";
+      liste.forEach(function (z) {
+        var a = document.createElement("a"); a.className = "zh"; a.href = "#" + V.vorschauId + "-" + z.id;
+        a.textContent = z.nr; a.setAttribute("data-ziel", V.vorschauId + "-" + z.id);
+        a.setAttribute("data-titel", "Ziff. " + z.nr + " " + z.titel);
+        a.setAttribute("aria-label", "Ziff. " + z.nr + " " + z.titel);
+        box.appendChild(a);
+      });
+      f.insertBefore(box, f.querySelector("small"));
+    });
+  }
+  function zurZiffer(a) {
+    var h = $(a.getAttribute("data-ziel"));
+    if (!h) return;
+    h.scrollIntoView({behavior: "smooth", block: "start"});
+    h.classList.remove("ziel"); void h.offsetWidth; h.classList.add("ziel");
+    setTimeout(function () { h.classList.remove("ziel"); }, 1800);
+  }
 
   /* ---------- PDF-Vorschau ---------- */
 
