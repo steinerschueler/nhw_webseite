@@ -54,10 +54,12 @@
 .cal-month{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 12px 14px;box-shadow:0 6px 18px rgba(34,36,42,.05);scroll-margin-top:150px}
 .cal-month h4{font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:baseline}
 .cal-month h4 .yr{font-size:11px;color:var(--grey);font-weight:600}
-.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px}
+.cal-dow{display:grid;grid-template-columns:1.6rem repeat(7,1fr);gap:3px;margin-bottom:4px}
 .cal-dow span{text-align:center;font-size:10px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.4px}
 .cal-dow span.we{color:#B7B2A6}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-grid{display:grid;grid-template-columns:1.6rem repeat(7,1fr);gap:3px}
+/* Kalenderwoche (ISO 8601) vor jeder Zeile */
+.cal-kw{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--grey)}
 .cal-day{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:2.35rem;border-radius:6px;padding:3px 1px;overflow:hidden;user-select:none}
 .dnum{font-size:12.5px;font-weight:700;line-height:1}
 .dcap{font-size:8px;font-weight:700;line-height:1.05;margin-top:1px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase;letter-spacing:.2px;opacity:.95}
@@ -301,21 +303,37 @@
 
   function el(tag,cls,txt){ var e=document.createElement(tag); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e; }
 
+  /* ISO-8601-Kalenderwoche (Woche mit dem ersten Donnerstag = KW 1). */
+  function isoWeek(d){
+    var t = new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+    t.setUTCDate(t.getUTCDate()+3-(t.getUTCDay()+6)%7);          // Donnerstag derselben Woche
+    var j = new Date(Date.UTC(t.getUTCFullYear(),0,4));
+    return 1+Math.round(((t-j)/86400000-3+(j.getUTCDay()+6)%7)/7);
+  }
+  function kwCell(d){
+    var w = isoWeek(d), c = el("span","cal-kw",String(w));
+    c.title = "Kalenderwoche "+w; c.setAttribute("aria-label","Kalenderwoche "+w);
+    return c;
+  }
+
   function buildMonth(year,month){
     var m = el("div","cal-month"); m.id = "m-"+year+"-"+month;
     var h = el("h4"); h.appendChild(el("span",null,MONTHS[month])); h.appendChild(el("span","yr",String(year)));
     m.appendChild(h);
     var dow = el("div","cal-dow");
+    dow.appendChild(el("span",null,"KW"));
     DOW.forEach(function(w,idx){ dow.appendChild(el("span",idx>4?"we":null,w)); });
     m.appendChild(dow);
     var grid = el("div","cal-grid");
     var first = new Date(year,month,1);
     var lead = (first.getDay()+6)%7;                 // Montag = 0
+    if(lead) grid.appendChild(kwCell(first));
     for(var i=0;i<lead;i++) grid.appendChild(el("div","cal-day d-empty"));
     var dim = new Date(year,month+1,0).getDate();
     for(var day=1;day<=dim;day++){
       var d = new Date(year,month,day);
       var k = iso(d);
+      if(d.getDay()===1) grid.appendChild(kwCell(d));
       var s = stateFor(d);
       var past = k < todayISO;
       var cell = el("div","cal-day "+s.cls+(past?" is-past":"")+(k===todayISO?" is-today":""));
