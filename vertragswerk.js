@@ -237,13 +237,45 @@
     };
 
     /* Zweispaltiger Text mit Ziffern, Buchstaben und Zwischentiteln; danach Unterschriften.
-       gez = gezählter Vertrag; opts: {titel, schluss, parteien: [[Rolle, Name]], erl: true für Erläuterungen} */
+       gez = gezählter Vertrag; opts: {titel, schluss, parteien: [[Rolle, Firma, Unterzeichner]], erl: true für Erläuterungen}.
+       Ein Vertrag (ohne erl) trägt oben rechts den Stand (Datum der Erstellung) und unter dem Titel ein
+       Verzeichnis der Zwischentitel mit ihren Ziffern. */
     P.spalten = function (gez, opts) {
       P.seite();
-      P.schrift("bold", 13); P.farbe(INK); d.text(opts.titel, P.x, P.y); P.y += 7;
-      var GAP = 6, CB = (P.B - GAP) / 2, col = 0, oben = P.y, ZH = 4.13, EIN = 5.2, GR = 9.8;
-      /* Unterschriftenblock: Linien für Ort und Datum, Unterschrift (mit mehr Raum darüber), Name; UH = Höhe des Blocks */
-      var LINIEN = [9, 25, 35], UH = 50;
+      var GAP = 6, CB = (P.B - GAP) / 2, col = 0, ZH = 4.13, EIN = 5.2, GR = 9.8;
+      /* Abstände: vor einem Zwischentitel, nach ihm, vor einer Ziffer, nach ihrem Titel, zwischen Buchstaben */
+      var VOR_TEIL = 2.6, NACH_TEIL = 3.1, VOR_ZIFFER = 1.6, NACH_TITEL = 1.5, ZW_BST = 1.8;
+      if (!opts.erl) {
+        var heute = new Date(), zwei = function (n) { return (n < 10 ? "0" : "") + n; };
+        P.schrift("normal", 8); P.farbe(GRAU);
+        d.text("Stand " + zwei(heute.getDate()) + "." + zwei(heute.getMonth() + 1) + "." + heute.getFullYear(), P.rechts, P.y - 6, {align: "right"});
+      }
+      P.schrift("bold", 15); P.farbe(INK); d.text(opts.titel, P.x, P.y); P.y += 8;
+      if (!opts.erl) {
+        /* Verzeichnis: je Zwischentitel eine Zeile mit den Ziffern, in Textgrösse, darunter eine Linie */
+        var gruppen = [];
+        gez.forEach(function (z) {
+          if (z.teil || !gruppen.length) gruppen.push({teil: z.teil, ziffern: []});
+          gruppen[gruppen.length - 1].ziffern.push(z.nr + " " + z.titel);
+        });
+        P.schrift("bold", GR);
+        var LB = Math.max.apply(null, gruppen.map(function (g) { return d.getTextWidth(g.teil); })) + 5;
+        gruppen.forEach(function (g) {
+          P.schrift("normal", GR);
+          var zl = d.splitTextToSize(g.ziffern.join(" · "), P.B - LB);
+          P.platz(zl.length * ZH);
+          P.schrift("bold", GR); P.farbe(INK); d.text(g.teil, P.x, P.y);
+          P.schrift("normal", GR); d.text(zl, P.x + LB, P.y, {lineHeightFactor: 1.2});
+          P.y += zl.length * ZH + 1.6;
+        });
+        P.y += 0.6;
+        d.setDrawColor(LINIE[0], LINIE[1], LINIE[2]); d.setLineWidth(0.25); d.line(P.x, P.y - 2.4, P.rechts, P.y - 2.4);
+        P.y += 4.5;
+      }
+      var oben = P.y;
+      /* Unterschriftenblock: Linie für Ort und Datum, dann die Unterschriftslinie mit dem gedruckten Namen
+         darunter; ohne bekannten Unterzeichner eine Linie für den Namen in Druckschrift. UH = Höhe des Blocks */
+      function uh(p) { return p[2] ? 37 : 46; }
       function sx() { return P.x + col * (CB + GAP); }
       P.platz = function (h) {
         if (P.y + h <= P.UNTEN) return;
@@ -283,9 +315,12 @@
         if (!abs[0].t.length) return;
         P.schrift("bold", 9.8);
         var tz = d.splitTextToSize((opts.erl ? "Ziff. " + z.nr + " " : z.nr + ". ") + z.titel, CB);
-        P.platz(tz.length * 4.2 + 1.4 + 2 * ZH + (z.teil ? 6 : 0));
-        if (z.teil) { P.schrift("bold", 8); P.farbe(GRAU); d.text(z.teil.toUpperCase(), sx(), P.y, {charSpace: 0.35}); P.y += 4.4; }
-        P.schrift("bold", 9.8); P.farbe(INK); d.text(tz, sx(), P.y); P.y += tz.length * 4.2 + 0.8;
+        P.platz(tz.length * 4.2 + NACH_TITEL + 2 * ZH + (z.teil ? VOR_TEIL + 5 + NACH_TEIL : 0));
+        if (z.teil) {
+          if (P.y > oben) P.y += VOR_TEIL;
+          P.schrift("bold", 12); P.farbe(INK); d.text(z.teil, sx(), P.y); P.y += 5 + NACH_TEIL;
+        }
+        P.schrift("bold", 9.8); P.farbe(INK); d.text(tz, sx(), P.y); P.y += tz.length * 4.2 + NACH_TITEL;
         abs.forEach(function (a, ai) {
           var ein = a.bst ? EIN : 0, erste = {ja: true};
           /* Unterschriften nie allein: der letzte Absatz, der Schlusssatz und alle Unterschriftenblöcke
@@ -293,12 +328,12 @@
           if (opts.parteien && z === gez[gez.length - 1] && ai === abs.length - 1) {
             P.schrift("normal", GR);
             var hAbs = a.t.reduce(function (h, teil) { return h + (typeof teil === "string" ? d.splitTextToSize(teil, CB - ein).length * ZH : 0); }, 0.7);
-            P.platz(hAbs + d.splitTextToSize(opts.schluss, CB).length * ZH + 6 + opts.parteien.length * UH);
+            P.platz(hAbs + d.splitTextToSize(opts.schluss, CB).length * ZH + 6 + opts.parteien.reduce(function (s, p) { return s + uh(p); }, 0));
           }
           a.t.forEach(function (teil) { teilText(teil, ein, a.bst, erste); if (opts.erl) P.y += 1; });
-          P.y += 0.7;
+          P.y += ai < abs.length - 1 ? ZW_BST : 0.7;
         });
-        P.y += 1.5;
+        P.y += VOR_ZIFFER + 1.5;
       });
       if (opts.parteien) {
         P.schrift("normal", GR);
@@ -306,15 +341,17 @@
         P.platz(schluss.length * ZH + 4);
         P.y += 2; P.farbe(INK); d.text(schluss, sx(), P.y); P.y += schluss.length * ZH + 4;
         opts.parteien.forEach(function (p) {
-          P.platz(UH - 1);
+          P.platz(uh(p) - 1);
           P.schrift("bold", 10.6); P.farbe(INK); d.text(p[0], sx(), P.y);
           if (p[1]) { P.schrift("normal", 8.5); P.farbe(GRAU); d.text(d.splitTextToSize(p[1], CB - 30)[0], sx() + 30, P.y); }
-          ["Ort, Datum", "Unterschrift", "Name in Druckschrift"].forEach(function (l, i) {
-            var ly = P.y + LINIEN[i];
+          var linien = p[2] ? [[9, "Ort, Datum"], [23, "Unterschrift · " + p[2]]]
+            : [[9, "Ort, Datum"], [23, "Unterschrift"], [32, "Name in Druckschrift"]];
+          linien.forEach(function (l) {
+            var ly = P.y + l[0];
             d.setDrawColor(INK[0], INK[1], INK[2]); d.setLineWidth(0.3); d.line(sx(), ly, sx() + CB, ly);
-            P.schrift("normal", 8.5); P.farbe(GRAU); d.text(l, sx(), ly + 3.6);
+            P.schrift("normal", 8.5); P.farbe(GRAU); d.text(d.splitTextToSize(l[1], CB)[0], sx(), ly + 3.6);
           });
-          P.y += UH;
+          P.y += uh(p);
         });
       }
       P.platz = function (h) { if (P.y + h > P.UNTEN) { d.addPage(); P.y = 22; } };

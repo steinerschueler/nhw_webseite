@@ -316,7 +316,7 @@
 
     P.spalten(gez, {titel: "Vertragsbedingungen zum Verleihvertrag",
       schluss: "Mit ihrer Unterschrift bestätigen die Parteien das Einsatzblatt und diese Vertragsbedingungen. Jede Partei erhält ein unterzeichnetes Exemplar.",
-      parteien: [["Verleiher", f["v-firma"]], ["Einsatzbetrieb", f["e-firma"]]]});
+      parteien: [["Verleiher", f["v-firma"], f["v-vertreten"]], ["Einsatzbetrieb", f["e-firma"]]]});
 
     if (mitErl) P.spalten(VW.erlaeutert("vv", o, f, gez, zahlen), {titel: "Erläuterungen zum Verleihvertrag", erl: true});
 

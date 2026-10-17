@@ -413,7 +413,7 @@
 
     P.spalten(gez, {titel: "Vertragsbedingungen zum Arbeitsvertrag",
       schluss: "Mit ihrer Unterschrift bestätigen die Parteien das Vertragsblatt und diese Vertragsbedingungen (Ziff. 1 bis " + gez.length + ") als Bestandteile dieses Vertrags.",
-      parteien: [["Arbeitgeberin", f["av-firma"]], ["Arbeitnehmer", f["av-name"]]]});
+      parteien: [["Arbeitgeberin", f["av-firma"], f["av-vertreten"]], ["Arbeitnehmer", f["av-name"], f["av-name"]]]});
 
     if (mitErl) P.spalten(VW.erlaeutert("av", o, f, gez, zahlen), {titel: "Erläuterungen zum Arbeitsvertrag", erl: true});
     P.fuss("Arbeitsvertrag" + (f["av-name"] ? " · " + f["av-name"] : ""));
