@@ -1,0 +1,246 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+<title>Schema zeichnen · Naville Handwerk GmbH</title>
+<meta name="description" content="Stromlaufschema im Browser zeichnen: Symbole in Schweizer Form und nach IEC setzen, rechtwinklig verbinden, beschriften. A4 quer oder hochkant, Ausgabe als PDF, DXF und SVG. Ohne Anmeldung, ohne Cookies.">
+<link rel="stylesheet" href="basis.css">
+<style>
+body{line-height:1.55}
+.phead{padding-block:52px 4px}
+.phead h1{font-size:clamp(26px,3.8vw,40px);line-height:1.06;margin:0 0 14px}
+.phead .lead{font-size:17px;color:var(--ink2);max-width:70ch}
+section{padding:14px 0 8px}
+.introbox{background:#fff;border:1px solid var(--line);border-left:4px solid var(--red);border-radius:3px;padding:14px 18px;margin:12px 0 14px;color:var(--ink2);font-size:15px;line-height:1.55;max-width:940px}
+.introbox strong{color:var(--red)}
+.introbox2{border:1px solid var(--line);border-radius:3px;padding:12px 16px;margin:0 0 14px;font-size:14px;color:var(--ink2);line-height:1.55;max-width:940px}
+.introbox2 strong{color:var(--ink)}
+h2{font-family:'Archivo',sans-serif;font-weight:600;font-size:18px;color:var(--ink);letter-spacing:-.01em;margin:1.6em 0 .5em;border-bottom:1px solid var(--line);padding-bottom:6px}
+.werk-main{min-width:0}
+button{background:var(--red);color:#fff;border:none;border-radius:3px;padding:10px 16px;font-size:.93em;font-weight:700;cursor:pointer;margin:6px 0 4px;font-family:inherit}
+button:hover{background:#a50f18}
+button:disabled{background:var(--grey);cursor:default}
+button.zweit{background:#fff;color:var(--ink);border:1.5px solid #cfc9bd}
+button.zweit:hover{background:#F5F5F3}
+button.zweit:disabled{color:#b9b3a7;background:#fff;border-color:#e2ded6}
+.knopfreihe{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+/* Werkstatt */
+.werkstatt{border:1px solid var(--line);border-radius:3px;background:#fff}
+.leiste{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);background:#F5F5F3}
+.leiste button{margin:0;padding:7px 11px;font-size:13.5px;font-weight:600;background:#fff;color:var(--ink);border:1.5px solid #cfc9bd}
+.leiste button:hover{background:#fff;border-color:var(--ink2)}
+.leiste button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.leiste button:disabled{color:#b9b3a7;border-color:#e2ded6}
+.leiste .trenn{width:1px;height:24px;background:var(--line);margin:0 4px}
+.stand{margin-left:auto;font-size:13px;color:var(--grn)}
+.stand.offen{color:#7a4718}
+.bereich{display:grid;grid-template-columns:230px minmax(0,1fr) 240px;min-height:620px}
+.palette{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;max-height:76vh}
+.palette input{margin:8px;padding:7px 9px;border:1px solid #D8D6D0;border-radius:3px;background:#F5F5F3;font:inherit;font-size:14px}
+.palette input:focus{outline:none;border-color:var(--red);background:#fff}
+.p-liste{overflow-y:auto;padding:0 6px 8px}
+.p-gruppe{font-size:12px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.05em;margin:10px 4px 4px}
+.p-sym{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;padding:4px 6px;border-radius:3px;cursor:pointer;font-size:13px;line-height:1.25;color:var(--ink)}
+.p-sym:hover{background:#F5F5F3}
+.p-sym:focus-visible{outline:2px solid var(--red);outline-offset:-2px}
+.p-sym.an{background:var(--ink);color:#fff}
+.p-sym svg{width:38px;height:38px;flex:none}
+.p-leer{font-size:13px;color:var(--grey);margin:8px}
+.flaeche{position:relative;min-width:0;background:#E9E6E0}
+#blatt{width:100%;height:76vh;min-height:520px;display:block;touch-action:none;outline:none;cursor:default;color:#1B1A17}
+#blatt[data-werkzeug=leiter],#blatt[data-werkzeug=text]{cursor:crosshair}
+#blatt .papier{fill:#fff;stroke:#cfc9bd;stroke-width:.6}
+#blatt .raster{fill:url(#rasterpunkte)}
+#blatt .rahmen{stroke:#1B1A17;stroke-width:.5;fill:none}
+#blatt .rahmen text{fill:#1B1A17;font-family:Arial,Helvetica,sans-serif}
+#blatt .element{stroke:currentColor;stroke-width:.6;stroke-linecap:round;stroke-linejoin:round;fill:none;font-family:Arial,Helvetica,sans-serif}
+#blatt .element.gew,#blatt .freitext.gew,#blatt .leiter.gew polyline:first-child{color:var(--red);stroke:var(--red)}
+#blatt .treff{fill:transparent;stroke:transparent}
+#blatt .leiter polyline{fill:none;stroke:#1B1A17;stroke-width:.6;stroke-linejoin:round}
+#blatt .leiter .treff{stroke:transparent;stroke-width:6;pointer-events:stroke}
+#blatt .knoten .punkt{fill:#1B1A17}
+#blatt .knoten.gew .punkt,#blatt .knoten.gew .treff{fill:var(--red)}
+#blatt .freitext text{font-family:Arial,Helvetica,sans-serif}
+#blatt .geist{opacity:.55;stroke:var(--red);color:var(--red);stroke-width:.6;fill:none;pointer-events:none}
+#blatt .entwurf{fill:none;stroke:var(--red);stroke-width:.6;stroke-dasharray:2 1.5;pointer-events:none}
+#blatt .fangpunkt{fill:none;stroke:#9a958b;stroke-width:.5;pointer-events:none}
+#blatt .fangpunkt.treffer{stroke:var(--red);stroke-width:.8}
+#blatt .band{fill:rgba(193,18,28,.06);stroke:var(--red);stroke-width:.4;stroke-dasharray:2 1.5;pointer-events:none}
+#blatt .ans{pointer-events:none}
+.eigen{border-left:1px solid var(--line);padding:10px 12px;font-size:14px}
+.eigen h3{font-family:'Archivo',sans-serif;font-weight:600;font-size:15.5px;margin:2px 0 6px;color:var(--ink)}
+.e-meta{color:var(--grey);font-size:12.5px;margin:0 0 10px;line-height:1.4}
+.e-feld{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--ink2);margin:0 0 9px}
+.e-feld input,.e-feld select{padding:7px 9px;border:1px solid #D8D6D0;border-radius:3px;background:#F5F5F3;font:inherit;font-size:14px;color:var(--ink);min-width:0}
+.e-feld input:focus,.e-feld select:focus{outline:none;border-color:var(--red);background:#fff}
+.e-knoepfe{display:flex;flex-direction:column;gap:6px}
+.e-knoepfe button{margin:0;padding:8px 10px;font-size:13.5px}
+.hint{color:#7a4718;background:#FBF1E7;border:1px solid #E7C9A3;border-radius:3px;padding:9px 13px;font-size:.88em;margin:8px 0}
+.hint[hidden]{display:none}
+.klein-hinweis{display:none}
+.erkl{color:var(--ink2);font-size:.86em;line-height:1.5;margin:6px 0 0}
+.pdfvorschau{margin:12px 0 4px}
+.pdfvorschau[hidden]{display:none}
+.pdfvorschau iframe{width:100%;height:78vh;min-height:420px;border:1px solid var(--line);border-radius:3px;background:#fff;display:block}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:8px}
+.side-box{background:#F5F5F3;border:1px solid var(--line);border-radius:3px;padding:15px 17px}
+.side-box h3{margin:0 0 9px;font-family:'Archivo';font-weight:600;font-size:16px;color:var(--ink)}
+.side-box p,.side-box li{margin:0 0 6px;font-size:.84em;color:var(--ink2);line-height:1.5}
+.side-box ul{margin:0;padding-left:18px}
+.side-box a{color:var(--red);font-weight:600}
+kbd{font-family:inherit;font-size:.9em;border:1px solid #cfc9bd;border-bottom-width:2px;border-radius:3px;padding:0 4px;background:#fff}
+.fbrand{margin-top:34px}
+@media(max-width:1100px){.bereich{grid-template-columns:200px minmax(0,1fr)}.eigen{grid-column:1/-1;border-left:none;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0 14px}.eigen h3,.eigen .e-meta,.eigen .e-knoepfe{grid-column:1/-1}.e-knoepfe{flex-direction:row;flex-wrap:wrap}}
+@media(max-width:760px){
+.bereich{grid-template-columns:1fr}
+.palette{border-right:none;border-bottom:1px solid var(--line);max-height:220px}
+#blatt{height:60vh;min-height:360px}
+.klein-hinweis{display:block}
+.introbox,.introbox2,.side-box,.erkl{overflow-wrap:anywhere}
+}
+</style>
+<link rel="stylesheet" href="achse.css">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="bilder/favicon-32.png">
+<link rel="apple-touch-icon" href="bilder/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#FFFFFF">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Naville Handwerk GmbH">
+<meta property="og:locale" content="de_CH">
+<meta property="og:title" content="Schema zeichnen · Naville Handwerk GmbH">
+<meta property="og:description" content="Stromlaufschema im Browser zeichnen, A4 quer oder hochkant, Ausgabe als PDF, DXF und SVG. Ohne Anmeldung, ohne Cookies.">
+<meta property="og:url" content="https://naville-handwerk.ch/schema_zeichnen.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Schema zeichnen · Naville Handwerk GmbH">
+<meta name="twitter:description" content="Stromlaufschema im Browser zeichnen, A4 quer oder hochkant, Ausgabe als PDF, DXF und SVG. Ohne Anmeldung, ohne Cookies.">
+</head>
+<body>
+<div class="availbar" id="availbar" hidden>
+  <a class="availpill" href="index.html#kontakt">
+    <svg class="av-ic" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="3.2" stroke="#fff" stroke-width="2"/><path d="M3 9.5H21M8 2.5V6M16 2.5V6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+    <span id="availtext">Verfügbarkeit wird geladen …</span>
+  </a>
+</div>
+<div class="wire"></div>
+<header class="nav"><div class="wrap nav-in">
+  <a class="brand" href="index.html">naville <span class="red">handwerk</span></a>
+  <input type="checkbox" id="navtoggle" class="navtoggle" hidden>
+  <label for="navtoggle" class="burger" aria-label="Menü"><span></span><span></span><span></span></label>
+  <nav class="nav-links"><div class="ng"><button class="ng-t" type="button">Willkommen</button><div class="ng-p"><a href="index.html">Startseite</a><a href="index.html#wann">Wann ich einspringe</a><a href="index.html#firma">Zur Firma</a><a href="index.html#ueber">Über mich</a><a href="index.html#arbeit">Wie ich arbeite</a><a href="index.html#kontakt">Kontakt</a></div></div><div class="ng"><button class="ng-t" type="button">Infos</button><div class="ng-p"><a href="leistungen.html">Was du von mir hast</a><a href="faq.html">FAQ</a></div></div><div class="ng"><button class="ng-t" type="button">Werkzeuge</button><div class="ng-p"><a href="kalender.html">Kalender</a><a href="preisrechner.html">Preisrechner</a><a href="rayon.html">Rayon-Rechner</a><a href="vertragswerk.html">Vertragswerk</a><a href="schema.html">Schema-Symbole</a><a href="schema_zeichnen.html">Schema zeichnen</a></div></div></nav>
+</div></header>
+
+<section class="wrap phead">
+  <div class="kick mono">Schema zeichnen</div>
+  <h1 class="disp">Stromlaufschema zeichnen</h1>
+  <p class="lead">Ein Blatt A4 im Raster 5 mm: Du setzt Symbole aus der Bibliothek, verbindest sie mit rechtwinkligen Leitungen und beschriftest sie. Das Ergebnis lädst du als PDF im Massstab 1:1, als DXF für das CAD oder als SVG herunter. Die Symbole kommen aus dem <a href="schema.html">Nachschlagewerk der Schema-Symbole</a>.</p>
+</section>
+
+<section class="intro">
+<div class="wrap achse">
+<div class="introbox">
+<strong>So geht es.</strong> Links tippst du ein Symbol an und setzt es mit einem Klick aufs Blatt. Mit dem Werkzeug "Leitung" klickst du auf einen Anschluss (rote Punkte) und dann auf den nächsten; ein Klick auf freie Fläche setzt einen Knick, ein Klick auf eine bestehende Leitung einen Abzweig. Rechts änderst du das Kennzeichen eines Symbols oder, wenn nichts gewählt ist, das Schriftfeld.
+</div>
+<div class="introbox2">
+<strong>Gespeichert wird nur als Datei.</strong> Die Seite legt im Browser nichts ab und setzt keine Cookies. Mit "Projekt herunterladen" erhältst du eine Datei .schema.json; mit "Projekt öffnen" arbeitest du später daran weiter. Schliesst du die Seite ohne Herunterladen, ist die Zeichnung weg.
+</div>
+</div>
+</section>
+
+<section class="wrap">
+<div class="werk-main achse">
+<h2><span class="st">A</span><span class="st-p"> · </span>Zeichnen</h2>
+<p class="hint klein-hinweis">Auf dem Telefon kannst du eine Zeichnung öffnen und ansehen. Zum Zeichnen braucht es einen grösseren Bildschirm, am besten mit Maus oder Stift.</p>
+<div class="werkstatt" id="werkstatt">
+  <div class="leiste" role="toolbar" aria-label="Werkzeuge">
+    <button type="button" data-werkzeug="wahl" aria-pressed="true" title="Auswählen und verschieben (V)">Auswahl</button>
+    <button type="button" data-werkzeug="leiter" aria-pressed="false" title="Leitung zeichnen (L)">Leitung</button>
+    <button type="button" data-werkzeug="text" aria-pressed="false" title="Text setzen (T)">Text</button>
+    <span class="trenn" aria-hidden="true"></span>
+    <button type="button" id="z-zurueck" title="Rückgängig (Strg+Z)">Rückgängig</button>
+    <button type="button" id="z-vor" title="Wiederholen (Strg+Y)">Wiederholen</button>
+    <span class="trenn" aria-hidden="true"></span>
+    <button type="button" id="z-minus" title="Verkleinern" aria-label="Verkleinern">−</button>
+    <button type="button" id="z-plus" title="Vergrössern" aria-label="Vergrössern">+</button>
+    <button type="button" id="z-ganz" title="Ganzes Blatt zeigen">Ganzes Blatt</button>
+    <span class="stand" id="stand" aria-live="polite"></span>
+  </div>
+  <div class="bereich">
+    <div class="palette">
+      <input id="p-suche" type="search" placeholder="Symbol suchen" autocomplete="off" aria-label="Symbol suchen">
+      <div class="p-liste" id="p-liste"></div>
+    </div>
+    <div class="flaeche">
+      <svg id="blatt" tabindex="0" aria-label="Zeichenblatt" xmlns="http://www.w3.org/2000/svg"></svg>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><pattern id="rasterpunkte" x="20" y="20" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="0" cy="0" r=".45" fill="#bdb7ac"/></pattern></defs></svg>
+    </div>
+    <div class="eigen" id="eigen" aria-live="polite"></div>
+  </div>
+</div>
+
+<h2><span class="st">B</span><span class="st-p"> · </span>Projekt und Ausgabe</h2>
+<div class="knopfreihe">
+  <button type="button" id="speichern">Projekt herunterladen</button>
+  <button type="button" id="oeffnen" class="zweit">Projekt öffnen</button>
+  <button type="button" id="neu" class="zweit">Neues Blatt</button>
+  <input type="file" id="datei" accept=".json,application/json" hidden>
+</div>
+<div class="knopfreihe">
+  <button type="button" id="aus-pdf">PDF erstellen</button>
+  <button type="button" id="aus-dxf" class="zweit">DXF herunterladen</button>
+  <button type="button" id="aus-svg" class="zweit">SVG herunterladen</button>
+</div>
+<p class="erkl">Das PDF zeigt das Blatt im Massstab 1:1 mit Rahmen und Schriftfeld, ohne Raster und Anschlusspunkte. Die DXF (R12, Millimeter) trennt Rahmen, Leitungen, Symbole und Texte in eigene Layer. "Neues Blatt" lässt sich mit Rückgängig zurückholen.</p>
+<div class="hint" id="meldung" hidden></div>
+<div class="pdfvorschau" id="pdfvorschau" hidden>
+  <p class="erkl">Vorschau des PDF. Stimmt alles, lädst du es mit dem Knopf darunter herunter.</p>
+  <iframe id="pdfrahmen" title="Vorschau des PDF"></iframe>
+  <div class="knopfreihe">
+    <button id="pdfdown" type="button">PDF herunterladen</button>
+    <button id="pdftab" type="button" class="zweit">In neuem Tab öffnen</button>
+  </div>
+</div>
+
+<h2><span class="st">C</span><span class="st-p"> · </span>Bedienung</h2>
+<div class="info">
+  <div class="side-box">
+    <h3>Tasten</h3>
+    <ul>
+      <li><kbd>V</kbd> Auswahl, <kbd>L</kbd> Leitung, <kbd>T</kbd> Text</li>
+      <li><kbd>R</kbd> drehen, <kbd>M</kbd> spiegeln, auch beim Setzen</li>
+      <li><kbd>Entf</kbd> löschen, Pfeiltasten verschieben um 2.5 mm</li>
+      <li><kbd>Esc</kbd> bricht ab, <kbd>Strg</kbd>+<kbd>Z</kbd> und <kbd>Strg</kbd>+<kbd>Y</kbd></li>
+      <li><kbd>Shift</kbd> beim Klicken: mehrere wählen; beim Setzen: dasselbe Symbol nochmals</li>
+    </ul>
+  </div>
+  <div class="side-box">
+    <h3>Ansicht</h3>
+    <p>Mausrad zoomt um den Zeiger, rechte oder mittlere Maustaste verschiebt das Blatt. Auf dem Tablet verschiebt ein Finger auf freier Fläche das Blatt, zwei Finger zoomen. Ein Rahmen über freie Fläche wählt alles darin.</p>
+  </div>
+  <div class="side-box">
+    <h3>Leitungen</h3>
+    <p>Eine Leitung führt rechtwinklig von Anschluss zu Anschluss und folgt der Richtung der Anschlüsse. Wo sie anders laufen soll, setzt du Knicke: Klick auf freie Fläche, dann weiter zum Ziel. Ab drei Leitungen zeigt ein Knoten einen Punkt. Verschiebst du ein Symbol, ziehen die Leitungen mit.</p>
+  </div>
+  <div class="side-box">
+    <h3>Symbole und Lizenz</h3>
+    <p>Die Symbole stehen mit Vorlage und Hausschlüssel im <a href="schema.html">Nachschlagewerk</a>. Sie sind eigene Zeichnungen unter <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.de" rel="noopener" target="_blank">CC BY-SA 4.0</a>; das Schriftfeld nennt die Herkunft. Deine Zeichnung gehört dir. Ohne Gewähr: Prüfe jedes Schema vor dem Gebrauch.</p>
+  </div>
+</div>
+</div>
+</section>
+
+<div class="fbrand">
+  <img src="bilder/emblem.png" alt="Naville Handwerk: Lastenvelo mit Anhänger und Firmenschild">
+  <p class="fc">Der <span class="red">Notstromer</span> für Berner Elektrikerfirmen</p>
+</div>
+<footer class="foot">Naville Handwerk GmbH · 3005 Bern · UID CHE-334.176.319 · <a href="mailto:info@naville-handwerk.ch">info@naville-handwerk.ch</a> · <a href="impressum.html">Impressum</a></footer>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="schema_symbole.js"></script>
+<script src="schema_kern.js"></script>
+<script src="schema_symbole_iec.js"></script>
+<script src="schema_zeichnen.js"></script>
+<script src="verfuegbarkeit.js"></script>
+<script src="hinweis.js"></script>
+<script src="nav.js"></script>
+<script src="banner.js"></script>
+<script src="achse.js"></script>
+</body></html>

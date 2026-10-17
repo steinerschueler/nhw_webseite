@@ -34,12 +34,12 @@ Reines HTML/CSS/JS, kein Server nötig.
   Seiten, in jeder Seite derselbe HTML-Block. **Willkommen**: Startseite und ihre Abschnitte
   (Wann ich einspringe, Zur Firma, Über mich, Wie ich arbeite, Kontakt) · **Infos**: Was du von
   mir hast, FAQ (später Dokumente) · **Werkzeuge**: Kalender, Preisrechner, Rayon-Rechner, Vertragswerk,
-  Schema-Symbole.
+  Schema-Symbole, Schema zeichnen.
   Breit stehen die Gruppen in der Kopfzeile und klappen beim Schweben oder per Tastatur auf,
   schmal öffnet der Burger drei Kacheln mit allen Seiten; Regeln in `basis.css`. `nav.js`
-  markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller neun Seiten
-  (`index`, `leistungen`, `preisrechner`, `rayon`, `vertragswerk`, `schema`, `faq`, `kalender`,
-  `impressum`), sonst nirgends.
+  markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller zehn Seiten
+  (`index`, `leistungen`, `preisrechner`, `rayon`, `vertragswerk`, `schema`, `schema_zeichnen`,
+  `faq`, `kalender`, `impressum`), sonst nirgends.
 - `index.html` — Startseite
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
@@ -53,8 +53,11 @@ Reines HTML/CSS/JS, kein Server nötig.
   «Rayon-Rechner» unten)
 - `vertragswerk.html` + `vertragswerk*.js` — Vertragswerk: Verleihvertrag, Erläuterungen, Arbeitsvertrag und
   Lexikon für den Selbstverleih im Elektrogewerbe (Abschnitt «Vertragswerk» unten)
-- `schema.html` + `schema.js` + `schema_symbole.js` — Schema-Symbole in Schweizer Form zum
-  Nachschlagen, mit Download als SVG, DXF und PDF-Spickzettel (Abschnitt «Schema-Symbole» unten)
+- `schema.html` + `schema.js` + `schema_symbole.js` + `schema_symbole_iec.js` + `schema_kern.js` —
+  Schema-Symbole in Schweizer Form zum Nachschlagen, mit Download als SVG, DXF und
+  PDF-Spickzettel (Abschnitt «Schema-Symbole» unten)
+- `schema_zeichnen.html` + `schema_zeichnen.js` — Stromlaufschema im Browser zeichnen, mit
+  denselben Symbolen und demselben Kern (Abschnitt «Schema zeichnen» unten)
 - `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Verfügbarkeit")
 - `kalender.html` — Jahreskalender (Verfügbarkeit; freie Tage per E-Mail anfragen, kein Backend)
 - `impressum.html` — Impressum / Datenschutz
@@ -200,8 +203,13 @@ Auswahl als Spickzettel-PDF (A4, Originalgrösse, Vorschau wie im Rayon-Rechner)
 `schema.html#<id>` öffnet ein Symbol, `?q=<text>` belegt die Suche vor. Keine fremden Dienste,
 nichts wird gespeichert.
 
-**Daten:** `schema_symbole.js` ist die massgebliche Quelle der Symbole, je Eintrag `id`, `name`,
-`bereich`, `schluessel`, `quelle` (öffentliche Angabe der Vorlage), `rahmen` und `formen`.
+**Daten:** `schema_symbole.js` und `schema_symbole_iec.js` sind die massgeblichen Quellen der
+Symbole, je Eintrag `id`, `name`, `bereich`, `schluessel`, `quelle` (öffentliche Angabe der
+Vorlage), `rahmen` und `formen`. `schema_symbole_iec.js` hält den Grundsatz in IEC-Form für das
+Stromlaufschema (Schlüssel "IEC-Form", nach den Symbolblättern des VSTEI-Handbuchs 2015), von
+Hand gepflegt und lesbar geschrieben; den Umriss rechnet es beim Laden, darum steht es nach
+`schema_kern.js`. Gemeinsame Routinen (Drehen und Spiegeln, SVG, DXF, PDF) liegen in
+`schema_kern.js` (`window.SchemaKern`), genutzt von beiden Schema-Seiten.
 Formen in Rastereinheiten (Raster 10, y nach unten, Ursprung = Einfügepunkt): `L` Linie
 (x1 y1 x2 y2 Strichart), `K` Kreis (cx cy r voll), `R` Rechteck (x y b h voll), `Z` Linienzug
 (Punkte, geschlossen, voll), `B` Bogen (cx cy r Start Winkel; Winkel wie Qt, 0 = rechts, positiv
@@ -217,6 +225,32 @@ Einheit mm, je Symbol ein Block mit dem Namen der `id`, Layer `SYMBOL` und `ANSC
 Kreise als breite Polylinie, gefüllte Flächen als SOLID. Im PDF setzt jsPDF Helvetica; Texte mit
 Zeichen ausserhalb Latin-1 (Δ, Σ, ϑ) setzt der Browser als kleines Bild. **Lizenz** der
 Zeichnungen: CC BY-SA 4.0, Nennung "Naville Handwerk GmbH, naville-handwerk.ch".
+
+## Schema zeichnen (`schema_zeichnen.html`, `schema_zeichnen.js`)
+
+Ein Blatt A4 quer oder hochkant (Rand 10 mm, Schriftfeld 170 x 25 mm mit Projekt, Zeichnung,
+Gezeichnet, Datum, Blatt), Raster 5 mm, Fangraster 2.5 mm. Die Palette zeigt die
+Stromlauf-Symbole (IEC-Form, VSTEI 2015, Brunner, Sauter 1974). Symbole setzen, verschieben,
+drehen (90°), spiegeln, löschen; Kennzeichen je Symbol (beim Setzen ein Vorschlag nach dem
+Symbolnamen, frei änderbar), freier Text in drei Grössen; Rückgängig und Wiederholen
+(100 Schritte); Rahmenauswahl; Zoom mit Mausrad oder zwei Fingern.
+
+**Leitungen** haben nur zwei Enden (Anschluss eines Symbols oder Knoten); ihr Weg wird jedes Mal
+rechtwinklig aus den Enden und der Richtung der Anschlüsse gerechnet (gerade, L- oder Z-Form).
+Ein Klick auf freie Fläche setzt einen Knoten (Knick) und zeichnet weiter, ein Klick auf eine
+Leitung teilt sie mit einem Knoten (Abzweig). Ab drei Leitungen zeigt ein Knoten einen Punkt;
+Knoten ohne Leitung fallen weg. Löschen nimmt die angeschlossenen Leitungen mit.
+
+**Speichern nur als Datei:** "Projekt herunterladen" schreibt `<projekt>_<datum>.schema.json`
+(Format `naville-schema`, Version 1; Aufbau im Kopf von `schema_zeichnen.js`), samt den Formen
+der verwendeten Symbole, damit eine Datei auch nach einer Änderung der Bibliothek vollständig
+bleibt; "Projekt öffnen" liest sie wieder ein (FileReader, nichts geht an einen Server). Kein
+localStorage, keine Cookies; vor dem Schliessen mit ungespeicherten Änderungen fragt der Browser
+nach (`beforeunload`).
+
+**Ausgaben:** PDF im Massstab 1:1 mit Rahmen und Schriftfeld (Vorschau wie im Rayon-Rechner),
+DXF R12 mit den Layern `RAHMEN`, `LEITER`, `SYMBOL`, `TEXT` (die Symbole aufgelöst, nicht als
+Block), SVG in Millimetern. Das Schriftfeld nennt die Herkunft der Symbole (CC BY-SA 4.0).
 
 ## Deployment (GitHub Pages)
 

@@ -102,13 +102,13 @@ button{max-width:100%;white-space:normal}
   <a class="brand" href="index.html">naville <span class="red">handwerk</span></a>
   <input type="checkbox" id="navtoggle" class="navtoggle" hidden>
   <label for="navtoggle" class="burger" aria-label="Menü"><span></span><span></span><span></span></label>
-  <nav class="nav-links"><div class="ng"><button class="ng-t" type="button">Willkommen</button><div class="ng-p"><a href="index.html">Startseite</a><a href="index.html#wann">Wann ich einspringe</a><a href="index.html#firma">Zur Firma</a><a href="index.html#ueber">Über mich</a><a href="index.html#arbeit">Wie ich arbeite</a><a href="index.html#kontakt">Kontakt</a></div></div><div class="ng"><button class="ng-t" type="button">Infos</button><div class="ng-p"><a href="leistungen.html">Was du von mir hast</a><a href="faq.html">FAQ</a></div></div><div class="ng"><button class="ng-t" type="button">Werkzeuge</button><div class="ng-p"><a href="kalender.html">Kalender</a><a href="preisrechner.html">Preisrechner</a><a href="rayon.html">Rayon-Rechner</a><a href="vertragswerk.html">Vertragswerk</a><a href="schema.html">Schema-Symbole</a></div></div></nav>
+  <nav class="nav-links"><div class="ng"><button class="ng-t" type="button">Willkommen</button><div class="ng-p"><a href="index.html">Startseite</a><a href="index.html#wann">Wann ich einspringe</a><a href="index.html#firma">Zur Firma</a><a href="index.html#ueber">Über mich</a><a href="index.html#arbeit">Wie ich arbeite</a><a href="index.html#kontakt">Kontakt</a></div></div><div class="ng"><button class="ng-t" type="button">Infos</button><div class="ng-p"><a href="leistungen.html">Was du von mir hast</a><a href="faq.html">FAQ</a></div></div><div class="ng"><button class="ng-t" type="button">Werkzeuge</button><div class="ng-p"><a href="kalender.html">Kalender</a><a href="preisrechner.html">Preisrechner</a><a href="rayon.html">Rayon-Rechner</a><a href="vertragswerk.html">Vertragswerk</a><a href="schema.html">Schema-Symbole</a><a href="schema_zeichnen.html">Schema zeichnen</a></div></div></nav>
 </div></header>
 
 <section class="wrap phead">
   <div class="kick mono">Schema-Symbole</div>
   <h1 class="disp">Schema-Symbole in Schweizer Form</h1>
-  <p class="lead">Wer ein älteres Steuerungs- oder Heizungsschema liest, trifft auf Zeichen in Schweizer Form und auf Hausschlüssel einzelner Büros: Kontakte mit Kreis am Drehpunkt, Steckdosen Typ 13 im Grundriss, die Pumpe, wie Siemens sie zeichnet. Hier stehen solche Symbole zum Nachschlagen, je mit der Vorlage, aus der sie abgezeichnet sind. Du kannst sie als SVG oder DXF herunterladen oder dir einen Spickzettel für die Baustelle drucken.</p>
+  <p class="lead">Wer ein älteres Steuerungs- oder Heizungsschema liest, trifft auf Zeichen in Schweizer Form und auf Hausschlüssel einzelner Büros: Kontakte mit Kreis am Drehpunkt, Steckdosen Typ 13 im Grundriss, die Pumpe, wie Siemens sie zeichnet. Hier stehen solche Symbole zum Nachschlagen, je mit der Vorlage, aus der sie abgezeichnet sind. Du kannst sie als SVG oder DXF herunterladen, dir einen Spickzettel für die Baustelle drucken oder mit ihnen <a href="schema_zeichnen.html">ein Stromlaufschema zeichnen</a>.</p>
 </section>
 
 <section class="intro">
@@ -166,7 +166,7 @@ button{max-width:100%;white-space:normal}
     <h3>Was hier steht</h3>
     <p>Eigene Zeichnungen der Symbole, die in den gängigen Bibliotheken fehlen oder dort nur in fremder Form stehen. Jedes ist neu gezeichnet, im Raster 5 mm, mit Anschlusspunkten auf dem Raster. Die Vorlage steht beim Symbol; abgebildet sind nur die Zeichen, keine Seiten aus den Vorlagen.</p>
     <ul>
-      <li><strong>Stromlaufschema:</strong> Lehrmittel Brunner, Handbuch des Elektroinstallateurs (VSTEI 2015), ein Stromlaufschema der Fritz Sauter AG von 1974 in der alten Schweizer Form</li>
+      <li><strong>Stromlaufschema:</strong> ein Grundsatz in IEC-Form (Kontakte, Taster, Schutzorgane, Spulen, Motor, Transformator, Erde) und die Schweizer Praxisformen aus dem Handbuch des Elektroinstallateurs (VSTEI 2015), dazu das Lehrmittel Brunner und ein Stromlaufschema der Fritz Sauter AG von 1974 in der alten Schweizer Form</li>
       <li><strong>Installationsplan:</strong> Brunner und VSTEI 2015</li>
       <li><strong>HLK-Anlagenschema:</strong> die Hausschlüssel von Siemens, elfero und Gilgien, Uhlmann &amp; Partner</li>
     </ul>
@@ -191,6 +191,8 @@ button{max-width:100%;white-space:normal}
 <footer class="foot">Naville Handwerk GmbH · 3005 Bern · UID CHE-334.176.319 · <a href="mailto:info@naville-handwerk.ch">info@naville-handwerk.ch</a> · <a href="impressum.html">Impressum</a></footer>
 <script src="vendor/jspdf.umd.min.js"></script>
 <script src="schema_symbole.js"></script>
+<script src="schema_kern.js"></script>
+<script src="schema_symbole_iec.js"></script>
 <script src="schema.js"></script>
 <script src="verfuegbarkeit.js"></script>
 <script src="hinweis.js"></script>
