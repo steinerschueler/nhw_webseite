@@ -6,11 +6,12 @@
    Projekt (Datei .schema.json):
      {format: "naville-schema", version: 1, blatt: {lage: "quer"|"hoch"},
       kopf: {projekt, zeichnung, zeichner, datum, blatt},
-      elemente: [{id, sym, x, y, dreh, spiegel, kz}],      Symbol am Einfügepunkt (x, y), gedreht, gespiegelt
+      elemente: [{id, sym, x, y, dreh, spiegel, kz, bet, rast}],   Symbol am Einfügepunkt (x, y), gedreht,
+                                                          gespiegelt; bet/rast: gewählte Betätigung eines Kontakts
       knoten:   [{id, x, y}],                             Abzweig oder Knick einer Leitung
       leiter:   [{id, a, b}],                             Enden: {el, an} (Anschluss Nr. an) oder {kn}
       texte:    [{id, x, y, text, gr}],
-      symbole:  {sym: {name, quelle, formen}}}            Formen der verwendeten Symbole, damit die Datei
+      symbole:  {sym: {name, quelle, formen, betaetigung}}}   Formen der verwendeten Symbole, damit die Datei
                                                           auch ohne diese Seite vollständig bleibt
    Koordinaten in Rastereinheiten wie die Symbole (1 Einheit = 0.5 mm). Der Weg einer Leitung wird
    aus ihren Enden gerechnet (rechtwinklig, nach der Richtung der Anschlüsse); Knicks und Abzweige
@@ -26,7 +27,8 @@
 
   /* Bibliothek: Stromlauf-Symbole, IEC-Grundsatz zuerst */
   var REIHE = ["IEC-Form", "VSTEI 2015", "Brunner", "Sauter 1974"];
-  var BIB = (window.SCHEMA_SYMBOLE || []).filter(function (s) { return s.bereich === "Stromlaufschema"; })
+  var BET = window.SCHEMA_BETAETIGUNG;
+  var BIB = (window.SCHEMA_SYMBOLE || []).filter(function (s) { return s.bereich === "Stromlaufschema" && !s.nurNachschlagen; })
     .map(function (s, i) { s.nr = i; return s; })
     .sort(function (a, b) { return (REIHE.indexOf(a.schluessel) - REIHE.indexOf(b.schluessel)) || (a.nr - b.nr); });
   var BIB_ID = {};
@@ -34,7 +36,7 @@
 
   /* Vorschlag für das Kennzeichen beim Setzen (frei änderbar) */
   var KZ = [[/spule/, "-K"], [/lampe|glimm|meldeleuchte/, "-H"], [/motor(?!schutz)/, "-M"], [/klemme/, "-X"],
-    [/sicherung|leitungsschutz|motorschutz|fi_|fehlerstrom/, "-F"], [/trafo|transformator/, "-T"], [/taster|schalter/, "-S"]];
+    [/sicherung|leitungsschutz|motorschutz|thermorelais|fi_|fehlerstrom/, "-F"], [/trafo|transformator/, "-T"], [/taster|schalter|not_aus/, "-S"]];
 
   function $(id) { return document.getElementById(id); }
   function zeige(el, an) { el.hidden = !an; }
@@ -71,7 +73,9 @@
   function formenVon(e) {
     var s = sym(e.sym);
     if (!s) return [];
-    return K.verschiebe(K.transformiere(s.formen, e.dreh, e.spiegel), e.x, e.y);
+    var f = s.formen;
+    if (e.bet && s.betaetigung && BET) f = f.concat(BET.formen(e.bet, e.rast || "", s.betaetigung));
+    return K.verschiebe(K.transformiere(f, e.dreh, e.spiegel), e.x, e.y);
   }
   function anschluesseVon(e) { return K.anschluesse(formenVon(e)); }
   function ende(en) {   /* [x, y, richtung oder null] */
@@ -493,6 +497,12 @@
     return '<label class="e-feld">' + titel + '<input id="' + id + '" type="' + (art || "text") + '" value="' + esc(wert || "") + '" autocomplete="off"></label>';
   }
 
+  function auswahlFeld(id, titel, optionen, wert, aus) {
+    return '<label class="e-feld">' + titel + '<select id="' + id + '"' + (aus ? " disabled" : "") + ">" + optionen.map(function (o) {
+      return '<option value="' + o[0] + '"' + (o[0] === wert ? " selected" : "") + ">" + esc(o[1]) + "</option>";
+    }).join("") + "</select></label>";
+  }
+
   function eigenschaften() {
     var o = [], els = gewaehlt("el"), txs = gewaehlt("tx");
     if (auswahl.length === 1 && els.length === 1) {
@@ -500,6 +510,10 @@
       o.push("<h3>" + esc(s ? s.name : e.sym) + "</h3>");
       if (s) o.push('<p class="e-meta">' + esc(s.schluessel || "") + (s.quelle ? " · " + esc(s.quelle) : "") + "</p>");
       o.push(feld("e-kz", "Kennzeichen", e.kz));
+      if (s && s.betaetigung && BET) {
+        o.push(auswahlFeld("e-bet", "Betätigung", [["", "keine"]].concat(BET.arten), e.bet || ""));
+        o.push(auswahlFeld("e-rast", "Wirkungsweise", [["", "tastend"]].concat(BET.rast), e.rast || "", !e.bet));
+      }
       o.push('<div class="e-knoepfe"><button type="button" class="zweit" data-tat="drehen">Drehen (R)</button><button type="button" class="zweit" data-tat="spiegeln">Spiegeln (M)</button><button type="button" class="zweit" data-tat="loeschen">Löschen (Entf)</button></div>');
     } else if (auswahl.length === 1 && txs.length === 1) {
       var t = txs[0];
@@ -535,6 +549,12 @@
     var t = ev.target;
     if (t.matches("input") && feldStand && feldStand !== JSON.stringify(P)) { zurueck.push(feldStand); vor = []; feldStand = JSON.stringify(P); }
     if (t.id === "e-gr") { merken(); gewaehlt("tx")[0].gr = +t.value; zeichnen(); }
+    if (t.id === "e-bet" || t.id === "e-rast") {
+      var e = gewaehlt("el")[0]; merken();
+      if (t.id === "e-bet") { if (t.value) e.bet = t.value; else { delete e.bet; delete e.rast; } }
+      else if (t.value) e.rast = t.value; else delete e.rast;
+      zeichnen(); eigenschaften();
+    }
     if (t.id === "b-lage") { merken(); P.blatt.lage = t.value; ansicht = null; zeichnen(); }
   });
   $("eigen").addEventListener("click", function (ev) {
@@ -567,7 +587,11 @@
 
   function projektDatei() {
     var p = JSON.parse(JSON.stringify(P)); p.symbole = {};
-    P.elemente.forEach(function (e) { var s = sym(e.sym); if (s) p.symbole[e.sym] = {name: s.name, quelle: s.quelle, formen: s.formen}; });
+    P.elemente.forEach(function (e) {
+      var s = sym(e.sym); if (!s) return;
+      p.symbole[e.sym] = {name: s.name, quelle: s.quelle, formen: s.formen};
+      if (s.betaetigung) p.symbole[e.sym].betaetigung = s.betaetigung;
+    });
     return JSON.stringify(p, null, 1);
   }
 

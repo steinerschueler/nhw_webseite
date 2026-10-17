@@ -206,9 +206,13 @@ nichts wird gespeichert.
 **Daten:** `schema_symbole.js` und `schema_symbole_iec.js` sind die massgeblichen Quellen der
 Symbole, je Eintrag `id`, `name`, `bereich`, `schluessel`, `quelle` (öffentliche Angabe der
 Vorlage), `rahmen` und `formen`. `schema_symbole_iec.js` hält den Grundsatz in IEC-Form für das
-Stromlaufschema (Schlüssel "IEC-Form", nach den Symbolblättern des VSTEI-Handbuchs 2015), von
-Hand gepflegt und lesbar geschrieben; den Umriss rechnet es beim Laden, darum steht es nach
-`schema_kern.js`. Gemeinsame Routinen (Drehen und Spiegeln, SVG, DXF, PDF) liegen in
+Stromlaufschema (Schlüssel "IEC-Form", nach den Symbolblättern des VSTEI-Handbuchs 2015 und dem
+Lehrmittel Brunner), von Hand gepflegt und lesbar geschrieben; den Umriss rechnet es beim Laden,
+darum steht es nach `schema_kern.js`. Dort stehen auch die **Betätigungen** (Hand, Drücken,
+Drehen, Schlüssel, Pilztaster, Bimetall, Thermostat … , je tastend, einrastend oder einklinkend,
+`window.SCHEMA_BETAETIGUNG`): Kontakte mit dem Feld `betaetigung` (Ansatzpunkt am Schaltglied)
+nehmen sie im Zeichenblatt als Eigenschaft an; Einträge mit `nurNachschlagen` zeigen sie im
+Nachschlagewerk und fehlen in der Palette. Gemeinsame Routinen (Drehen und Spiegeln, SVG, DXF, PDF) liegen in
 `schema_kern.js` (`window.SchemaKern`), genutzt von beiden Schema-Seiten.
 Formen in Rastereinheiten (Raster 10, y nach unten, Ursprung = Einfügepunkt): `L` Linie
 (x1 y1 x2 y2 Strichart), `K` Kreis (cx cy r voll), `R` Rechteck (x y b h voll), `Z` Linienzug
@@ -232,7 +236,8 @@ Ein Blatt A4 quer oder hochkant (Rand 10 mm, Schriftfeld 170 x 25 mm mit Projekt
 Gezeichnet, Datum, Blatt), Raster 5 mm, Fangraster 2.5 mm. Die Palette zeigt die
 Stromlauf-Symbole (IEC-Form, VSTEI 2015, Brunner, Sauter 1974). Symbole setzen, verschieben,
 drehen (90°), spiegeln, löschen; Kennzeichen je Symbol (beim Setzen ein Vorschlag nach dem
-Symbolnamen, frei änderbar), freier Text in drei Grössen; Rückgängig und Wiederholen
+Symbolnamen, frei änderbar), bei Schliesser, Öffner, Umschalter und Hauptkontakten die
+Betätigung und ihre Wirkungsweise (Element-Felder `bet`, `rast`); freier Text in drei Grössen; Rückgängig und Wiederholen
 (100 Schritte); Rahmenauswahl; Zoom mit Mausrad oder zwei Fingern.
 
 **Leitungen** haben nur zwei Enden (Anschluss eines Symbols oder Knoten); ihr Weg wird jedes Mal
