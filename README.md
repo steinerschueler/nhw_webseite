@@ -238,7 +238,7 @@ Stromlauf-Symbole (IEC-Form, VSTEI 2015, Brunner, Sauter 1974). Symbole setzen, 
 drehen (90°), spiegeln, löschen; Kennzeichen je Symbol (beim Setzen ein Vorschlag nach dem
 Symbolnamen, frei änderbar), bei Schliesser, Öffner, Umschalter und Hauptkontakten die
 Betätigung und ihre Wirkungsweise (Element-Felder `bet`, `rast`); freier Text in drei Grössen; Rückgängig und Wiederholen
-(100 Schritte); Rahmenauswahl; Zoom mit Mausrad oder zwei Fingern.
+(100 Schritte); Rahmenauswahl; Ansicht wie in Zeichenprogrammen: Rad oder zwei Finger auf dem Touchpad verschieben, Strg+Rad oder Spreizen zoomt, dazu Leertaste+Ziehen, Werkzeug "Hand" (H) und Ziehen mit rechter oder mittlerer Maustaste.
 
 **Leitungen** haben nur zwei Enden (Anschluss eines Symbols oder Knoten); ihr Weg wird jedes Mal
 rechtwinklig aus den Enden und der Richtung der Anschlüsse gerechnet (gerade, L- oder Z-Form).

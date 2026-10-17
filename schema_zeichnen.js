@@ -293,21 +293,30 @@
   }
   function ganzesBlatt() { var g = groesse(); ansicht = [-10, -10, g[0] + 20, g[1] + 20]; svg.setAttribute("viewBox", ansicht.join(" ")); }
 
+  /* Wie in Zeichenprogrammen üblich: Rad bzw. zwei Finger auf dem Touchpad verschieben das Blatt
+     (Shift: seitwärts), Strg+Rad und das Spreizen auf dem Touchpad (meldet der Browser als
+     Strg+Rad) zoomen um den Zeiger. */
   svg.addEventListener("wheel", function (ev) {
-    ev.preventDefault(); zoom(ev.deltaY > 0 ? 1.15 : 1 / 1.15, punktAus(ev));
+    ev.preventDefault();
+    var zeile = ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? 400 : 1, dx = ev.deltaX * zeile, dy = ev.deltaY * zeile;
+    if (ev.ctrlKey || ev.metaKey) { zoom(Math.exp(Math.max(-50, Math.min(50, dy)) * 0.004), punktAus(ev)); return; }
+    if (ev.shiftKey && !dx) { dx = dy; dy = 0; }
+    var k = ansicht[2] / svg.getBoundingClientRect().width;
+    ansicht = [ansicht[0] + dx * k, ansicht[1] + dy * k, ansicht[2], ansicht[3]];
+    svg.setAttribute("viewBox", ansicht.join(" "));
   }, {passive: false});
 
   /* ---------- Zeiger ---------- */
 
-  var druck = null, rahmenZug = null, zeiger = {};
+  var druck = null, rahmenZug = null, zeiger = {}, leertaste = false;   /* Leertaste gehalten: Ziehen verschiebt das Blatt */
 
   svg.addEventListener("pointerdown", function (ev) {
     zeiger[ev.pointerId] = [ev.clientX, ev.clientY];
     var p = punktAus(ev); maus = p;
     svg.setPointerCapture(ev.pointerId);
     if (Object.keys(zeiger).length === 2) { druck = {art: "zwei", ansicht: ansicht.slice(), start: zweiStand()}; return; }
-    if (ev.button === 1 || ev.button === 2 || (ev.pointerType === "touch" && werkzeug === "wahl" && !treffer(ev))) {
-      druck = {art: "schieben", start: [ev.clientX, ev.clientY], ansicht: ansicht.slice()}; return;
+    if (ev.button === 1 || ev.button === 2 || werkzeug === "hand" || leertaste || (ev.pointerType === "touch" && werkzeug === "wahl" && !treffer(ev))) {
+      druck = {art: "schieben", start: [ev.clientX, ev.clientY], ansicht: ansicht.slice()}; svg.classList.add("greift"); return;
     }
     if (ev.button !== 0) return;
     if (setzen) { druck = {art: "setzen"}; return; }
@@ -370,7 +379,7 @@
   }
 
   function los(ev) {
-    delete zeiger[ev.pointerId];
+    delete zeiger[ev.pointerId]; svg.classList.remove("greift");
     var d = druck; druck = null;
     if (!d) return;
     var p = punktAus(ev);
@@ -407,7 +416,7 @@
     }
   }
   svg.addEventListener("pointerup", los);
-  svg.addEventListener("pointercancel", function (ev) { delete zeiger[ev.pointerId]; druck = null; rahmenZug = null; ueberlagerung(); });
+  svg.addEventListener("pointercancel", function (ev) { delete zeiger[ev.pointerId]; druck = null; rahmenZug = null; svg.classList.remove("greift"); ueberlagerung(); });
   svg.addEventListener("contextmenu", function (ev) { ev.preventDefault(); });
 
   /* Führt eine Änderung aus und merkt sie nur, wenn sich das Projekt wirklich geändert hat */
@@ -445,6 +454,7 @@
     if (strg && k === "z" && !ev.shiftKey) { ev.preventDefault(); rueckgaengig(); }
     else if (strg && (k === "y" || (k === "z" && ev.shiftKey))) { ev.preventDefault(); wiederholen(); }
     else if (strg) return;
+    else if (k === " ") { ev.preventDefault(); if (!leertaste) { leertaste = true; svg.classList.add("hand"); } }
     else if (k === "r") drehen();
     else if (k === "m") spiegeln();
     else if (k === "delete" || k === "backspace") { ev.preventDefault(); loeschen(); }
@@ -452,12 +462,17 @@
     else if (k === "l") waehleWerkzeug("leiter");
     else if (k === "t") waehleWerkzeug("text");
     else if (k === "v") waehleWerkzeug("wahl");
+    else if (k === "h") waehleWerkzeug("hand");
     else if (k.indexOf("arrow") === 0 && auswahl.length) {
       ev.preventDefault(); merken();
       verschieben(k === "arrowleft" ? -FANG : k === "arrowright" ? FANG : 0, k === "arrowup" ? -FANG : k === "arrowdown" ? FANG : 0);
       zeichnen();
     }
   });
+
+  function leertasteLos() { leertaste = false; svg.classList.remove("hand"); }
+  document.addEventListener("keyup", function (ev) { if (ev.key === " ") leertasteLos(); });
+  window.addEventListener("blur", leertasteLos);
 
   /* ---------- Werkzeuge, Palette, Eigenschaften ---------- */
 

@@ -48,6 +48,8 @@ button.zweit:disabled{color:#b9b3a7;background:#fff;border-color:#e2ded6}
 .flaeche{position:relative;min-width:0;background:#E9E6E0}
 #blatt{width:100%;height:76vh;min-height:520px;display:block;touch-action:none;outline:none;cursor:default;color:#1B1A17}
 #blatt[data-werkzeug=leiter],#blatt[data-werkzeug=text]{cursor:crosshair}
+#blatt[data-werkzeug=hand],#blatt.hand{cursor:grab}
+#blatt.greift{cursor:grabbing}
 #blatt .papier{fill:#fff;stroke:#cfc9bd;stroke-width:.6}
 #blatt .raster{fill:url(#rasterpunkte)}
 #blatt .rahmen{stroke:#1B1A17;stroke-width:.5;fill:none}
@@ -155,6 +157,7 @@ kbd{font-family:inherit;font-size:.9em;border:1px solid #cfc9bd;border-bottom-wi
     <button type="button" data-werkzeug="wahl" aria-pressed="true" title="Auswählen und verschieben (V)">Auswahl</button>
     <button type="button" data-werkzeug="leiter" aria-pressed="false" title="Leitung zeichnen (L)">Leitung</button>
     <button type="button" data-werkzeug="text" aria-pressed="false" title="Text setzen (T)">Text</button>
+    <button type="button" data-werkzeug="hand" aria-pressed="false" title="Blatt verschieben (H, oder Leertaste halten)">Hand</button>
     <span class="trenn" aria-hidden="true"></span>
     <button type="button" id="z-zurueck" title="Rückgängig (Strg+Z)">Rückgängig</button>
     <button type="button" id="z-vor" title="Wiederholen (Strg+Y)">Wiederholen</button>
@@ -205,7 +208,8 @@ kbd{font-family:inherit;font-size:.9em;border:1px solid #cfc9bd;border-bottom-wi
   <div class="side-box">
     <h3>Tasten</h3>
     <ul>
-      <li><kbd>V</kbd> Auswahl, <kbd>L</kbd> Leitung, <kbd>T</kbd> Text</li>
+      <li><kbd>V</kbd> Auswahl, <kbd>L</kbd> Leitung, <kbd>T</kbd> Text, <kbd>H</kbd> Hand</li>
+      <li><kbd>Leertaste</kbd> halten und ziehen: Blatt verschieben</li>
       <li><kbd>R</kbd> drehen, <kbd>M</kbd> spiegeln, auch beim Setzen</li>
       <li><kbd>Entf</kbd> löschen, Pfeiltasten verschieben um 2.5 mm</li>
       <li><kbd>Esc</kbd> bricht ab, <kbd>Strg</kbd>+<kbd>Z</kbd> und <kbd>Strg</kbd>+<kbd>Y</kbd></li>
@@ -214,7 +218,7 @@ kbd{font-family:inherit;font-size:.9em;border:1px solid #cfc9bd;border-bottom-wi
   </div>
   <div class="side-box">
     <h3>Ansicht</h3>
-    <p>Mausrad zoomt um den Zeiger, rechte oder mittlere Maustaste verschiebt das Blatt. Auf dem Tablet verschiebt ein Finger auf freier Fläche das Blatt, zwei Finger zoomen. Ein Rahmen über freie Fläche wählt alles darin.</p>
+    <p>Verschieben: zwei Finger auf dem Touchpad oder das Mausrad (mit <kbd>Shift</kbd> seitwärts), Ziehen mit der rechten oder mittleren Maustaste, Ziehen mit gehaltener Leertaste oder mit dem Werkzeug "Hand". Zoomen: Finger auf dem Touchpad spreizen oder <kbd>Strg</kbd> und Mausrad, beides um den Zeiger; dazu die Knöpfe − und +. Auf dem Tablet verschiebt ein Finger auf freier Fläche das Blatt, zwei Finger zoomen. Ein Rahmen über freie Fläche wählt alles darin.</p>
   </div>
   <div class="side-box">
     <h3>Leitungen</h3>
