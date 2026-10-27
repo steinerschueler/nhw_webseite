@@ -33,13 +33,13 @@ Reines HTML/CSS/JS, kein Server nötig.
 - **Navigation** (Kopfzeile jeder Seite, `<nav class="nav-links">`): drei Gruppen mit ihren
   Seiten, in jeder Seite derselbe HTML-Block. **Willkommen**: Startseite und ihre Abschnitte
   (Wann ich einspringe, Zur Firma, Über mich, Wie ich arbeite, Kontakt) · **Infos**: Was du von
-  mir hast, FAQ (später Dokumente) · **Werkzeuge**: Kalender, Preisrechner, Rayon-Rechner, Vertragswerk,
+  mir hast, FAQ, Dokumente · **Werkzeuge**: Kalender, Preisrechner, Rayon-Rechner, Vertragswerk,
   Schema-Symbole, Schema zeichnen.
   Breit stehen die Gruppen in der Kopfzeile und klappen beim Schweben oder per Tastatur auf,
   schmal öffnet der Burger drei Kacheln mit allen Seiten; Regeln in `basis.css`. `nav.js`
-  markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller zehn Seiten
+  markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller elf Seiten
   (`index`, `leistungen`, `preisrechner`, `rayon`, `vertragswerk`, `schema`, `schema_zeichnen`,
-  `faq`, `kalender`, `impressum`), sonst nirgends.
+  `faq`, `dokumente`, `kalender`, `impressum`), sonst nirgends.
 - `index.html` — Startseite
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
@@ -59,6 +59,7 @@ Reines HTML/CSS/JS, kein Server nötig.
 - `schema_zeichnen.html` + `schema_zeichnen.js` — Stromlaufschema im Browser zeichnen, mit
   denselben Symbolen und demselben Kern (Abschnitt «Schema zeichnen» unten)
 - `faq.html` — Häufige Fragen (nach Themen gegliedert; Kapitel „Verfügbarkeit")
+- `dokumente.html` + `dokumente/` — Dokumente zum Herunterladen und Verlinken: Tätigkeitsbeschrieb der GmbH (ohne Unterschrift; Quelle und Bauweg privat im Daten-Repo; der Dateiname bleibt bei neuen Fassungen gleich, damit Links halten), SECO-Weisungen (amtlich, Art. 5 URG); Gesetze und GAV nur als Links
 - `kalender.html` — Jahreskalender (Verfügbarkeit; freie Tage per E-Mail anfragen, kein Backend)
 - `impressum.html` — Impressum / Datenschutz
 - `verfuegbarkeit.js` — Datum, ab dem wieder Tage buchbar sind; **wird vom Admin-Toolkit
