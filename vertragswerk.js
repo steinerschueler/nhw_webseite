@@ -252,23 +252,21 @@
       }
       P.schrift("bold", 15); P.farbe(INK); d.text(opts.titel, P.x, P.y); P.y += 8;
       if (!opts.erl) {
-        /* Verzeichnis: je Zwischentitel eine Zeile mit den Ziffern, in Textgrösse, darunter eine Linie */
-        var gruppen = [];
-        gez.forEach(function (z) {
-          if (z.teil || !gruppen.length) gruppen.push({teil: z.teil, ziffern: []});
-          gruppen[gruppen.length - 1].ziffern.push(z.nr + " " + z.titel);
+        /* Verzeichnis: Liste in drei Kolumnen, von oben nach unten nummeriert, in Textgrösse, darunter eine Linie.
+           Die Nummer steht in einer eigenen Spalte, damit umbrochene Titel auf derselben Kante bleiben. */
+        var KOLUMNEN = 3, KOL_GAP = 5, NR_B = 6.5, KOL_B = (P.B - (KOLUMNEN - 1) * KOL_GAP) / KOLUMNEN;
+        var JE_KOLUMNE = Math.ceil(gez.length / KOLUMNEN), startY = P.y, tiefste = P.y;
+        P.schrift("normal", GR); P.farbe(INK);
+        gez.forEach(function (z, i) {
+          var k = Math.floor(i / JE_KOLUMNE), kx = P.x + k * (KOL_B + KOL_GAP);
+          if (i % JE_KOLUMNE === 0) P.y = startY;
+          var zl = d.splitTextToSize(z.titel, KOL_B - NR_B);
+          d.text(z.nr + ".", kx, P.y);
+          zl.forEach(function (t, j) { d.text(t, kx + NR_B, P.y + j * ZH); });
+          P.y += zl.length * ZH + 0.5;
+          tiefste = Math.max(tiefste, P.y);
         });
-        P.schrift("bold", GR);
-        var LB = Math.max.apply(null, gruppen.map(function (g) { return d.getTextWidth(g.teil); })) + 5;
-        gruppen.forEach(function (g) {
-          P.schrift("normal", GR);
-          var zl = d.splitTextToSize(g.ziffern.join(" · "), P.B - LB);
-          P.platz(zl.length * ZH);
-          P.schrift("bold", GR); P.farbe(INK); d.text(g.teil, P.x, P.y);
-          P.schrift("normal", GR); d.text(zl, P.x + LB, P.y, {lineHeightFactor: 1.2});
-          P.y += zl.length * ZH + 1.6;
-        });
-        P.y += 0.6;
+        P.y = tiefste + 1.6;
         d.setDrawColor(LINIE[0], LINIE[1], LINIE[2]); d.setLineWidth(0.25); d.line(P.x, P.y - 2.4, P.rechts, P.y - 2.4);
         P.y += 4.5;
       }
