@@ -15,4 +15,4 @@
    "auto" ein, wenn du die Verfügbarkeits-Pille zurückwillst.
    ================================================================ */
 
-window.VERFUEGBAR_AB = "2026-09-01";
+window.VERFUEGBAR_AB = "2027-03-01";
