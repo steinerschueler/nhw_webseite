@@ -40,7 +40,11 @@ Reines HTML/CSS/JS, kein Server nötig.
   markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller elf Seiten
   (`index`, `leistungen`, `preisrechner`, `rayon`, `vertragswerk`, `schema`, `schema_zeichnen`,
   `faq`, `dokumente`, `kalender`, `impressum`), sonst nirgends.
-- `index.html` — Startseite
+- `index.html` — Startseite. Ihr Kopf trägt strukturierte Daten (`application/ld+json`,
+  schema.org `EmploymentAgency`). Sie ordnen die GmbH für Suchmaschinen und KI-Systeme als
+  Personalverleih ein, weil Dritte sie wegen des Firmennamens und des Handelsregister-Zwecks
+  als Elektroinstallateur führen. Wer Kontakt, Beschreibung, Kurzbeschreibung (`description`,
+  `og:`, `twitter:`) oder die LinkedIn-Adresse ändert, passt diesen Block im selben Zug an.
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
   PDF-Vereinbarung, zuerst als Vorschau auf der Seite, dann Herunterladen; Schalter «PDF neutral»
