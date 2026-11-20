@@ -15,6 +15,10 @@
 .cal-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 17px;box-shadow:0 6px 18px rgba(34,36,42,.05)}
 .cal-card h3{font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;margin-bottom:6px;display:flex;align-items:center;gap:7px}
 .cal-card p{font-size:13.5px;color:var(--ink2);margin:0}
+.cal-abo{padding-block:8px 28px}
+.cal-abo .cal-card{max-width:44rem}
+.cal-abo .cal-card p+p{margin-top:10px}
+.cal-abo code{font-size:13px;background:#F5F5F3;border:1px solid var(--line);border-radius:3px;padding:3px 6px;display:inline-block;user-select:all}
 .cc-sw{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none}
 
 /* ---- Sticky-Leiste: Legende + Auswahl ---- */
@@ -184,6 +188,16 @@
 </section>
 
 <div class="wrap cal-main" id="calmain" role="region" aria-label="Jahreskalender"></div>
+
+<section class="wrap achse cal-abo" id="abo">
+  <div class="cal-card">
+    <h3>In deinem eigenen Kalender</h3>
+    <p>Abonniere meine belegten Tage in deinem Kalender, auf dem iPhone, in Outlook oder in Google. Werktage ohne Eintrag sind frei; anfragen kannst du weiterhin hier. Dein Kalender holt Änderungen selbst, je nach Programm alle paar Stunden bis einmal am Tag.</p>
+    <p class="abo-act"><a class="cal-btn" href="webcal://naville-handwerk.ch/kalender.ics">Kalender abonnieren</a></p>
+    <p>Klappt der Knopf nicht, füg diese Adresse in deinem Kalender als Abo ein (Outlook: «Kalender hinzufügen», Google: «Weitere Kalender», «Per URL»):</p>
+    <p class="abo-url"><code>https://naville-handwerk.ch/<wbr>kalender.ics</code></p>
+  </div>
+</section>
 
 </main>
 

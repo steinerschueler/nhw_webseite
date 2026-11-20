@@ -110,6 +110,19 @@ verfügbar"). Die belegten Einsatztage
 stehen in `kalender.js` (gleicher Notweg möglich; der nächste Toolkit-Export überschreibt
 Handeinträge).
 
+### Kalender-Abo (`kalender.ics`)
+
+Betriebe können Erics belegte Tage in ihrem eigenen Kalender abonnieren (Kasten «In deinem eigenen Kalender»
+unter dem Jahreskalender, Knopf mit `webcal://`, Adresse `https://naville-handwerk.ch/kalender.ics`).
+`kalender.ics` wird nie von Hand geändert: `scripts/build_calendar_feed.py` erzeugt sie aus `kalender.js` und
+`verfuegbarkeit.js`, und der pre-commit-Hook `kalender-abo` ruft das Skript bei jedem Commit auf, der eine dieser
+Dateien ändert. Ist die Datei danach neu, bricht der Commit ab; `git add kalender.ics` und nochmals committen.
+
+Das Abo zeigt nur belegte Tage, mit denselben Wörtern wie der Kalender (Einsatz, Einsatz extern, krank / Unfall,
+Ferien, Kurs/Messe, Termin). Die Tage vor `VERFUEGBAR_AB` sind ein einziger Eintrag «nicht buchbar, wieder ab …»
+ab dem ersten Kalendereintrag; Einträge ganz darin fallen weg. Feiertage und die festen Sperrtage der Seite
+(`SPERR` in `kalender.html`) stehen nicht im Abo. Tests: `python3 -m unittest discover -s scripts`.
+
 ## Rayon-Rechner (`rayon.html`, `rayon.js`)
 
 Die Seite misst die Fahrzeit mit dem Auto zur Baustelle und wertet sie getrennt nach den zwei

@@ -8,3 +8,11 @@ repos:
         entry: gitleaks protect --staged --redact --no-banner
         pass_filenames: false
         stages: [pre-commit]
+      # Rebuilds the subscribable calendar feed whenever the calendar data changes (README, "Kalender-Abo").
+      - id: kalender-abo
+        name: Kalender-Abo aus kalender.js
+        language: system
+        entry: python3 scripts/build_calendar_feed.py
+        files: ^(kalender\.js|verfuegbarkeit\.js|kalender\.ics|scripts/build_calendar_feed\.py)$
+        pass_filenames: false
+        stages: [pre-commit]
