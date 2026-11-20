@@ -18,9 +18,8 @@ body{counter-reset:abschnitt}
 .wrap,.nav-in,.calc-layout{max-width:1160px;margin-inline:auto;padding-inline:var(--rand)}
 .nav{background:rgba(255,255,255,.93)}
 .fbrand{background:#F5F5F3;margin-top:0}
-.card,.callout,.photoph{border-radius:3px}
+.card,.callout{border-radius:3px}
 .contact{border-radius:4px}
-.photoph{background:#F7F7F5}
 .cal-toolbar{background:rgba(255,255,255,.96)}
 .fb-card,.note,.introbox2,.gavbox,.disc,.side-box{background:#F5F5F3}
 :root{--edit:#F5F5F3;--editbd:#D8D6D0}                           /* Eingabefelder des Preisrechners ohne Cremeton */
