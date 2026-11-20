@@ -73,6 +73,9 @@ Reines HTML/CSS/JS, kein Server nötig.
   fasst diese Datei nie an. `banner.js` rendert den Balken.
 - `kalender.js` — belegte Tage; **wird vom Admin-Toolkit generiert**; die Logik liegt in `kalender.html`
 - `bilder/` — die von der Seite **ausgelieferten** Bilder: Kopf-Emblem (`emblem.png`) + Favicon-Satz.
+  `linkvorschau.png` (1200 × 630) ist das Vorschaubild, das LinkedIn, WhatsApp und Teams beim Teilen eines
+  Links zeigen; jede Seite nennt es im Kopf (`og:image` samt Grösse und Alternativtext, `twitter:image`), eine neue
+  Seite übernimmt diese Zeilen. Gerendert aus einer HTML-Vorlage im Stil des LinkedIn-Titelbilds.
   Die **Design-Quellen** (Logos, Merch, Visitenkarte) liegen privat im Marken-Hub des
   Daten-Repos — **nicht** in diesem öffentlichen Repo.
 - `fonts/archivo-600.woff2` (+ `OFL.txt`) — Display-Schrift (self-hosted)
