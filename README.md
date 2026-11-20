@@ -119,9 +119,12 @@ unter dem Jahreskalender, Knopf mit `webcal://`, Adresse `https://naville-handwe
 Dateien ändert. Ist die Datei danach neu, bricht der Commit ab; `git add kalender.ics` und nochmals committen.
 
 Das Abo zeigt nur belegte Tage, mit denselben Wörtern wie der Kalender (Einsatz, Einsatz extern, krank / Unfall,
-Ferien, Kurs/Messe, Termin). Die Tage vor `VERFUEGBAR_AB` sind ein einziger Eintrag «nicht buchbar, wieder ab …»
-ab dem ersten Kalendereintrag; Einträge ganz darin fallen weg. Feiertage und die festen Sperrtage der Seite
-(`SPERR` in `kalender.html`) stehen nicht im Abo. Tests: `python3 -m unittest discover -s scripts`.
+Ferien, Kurs/Messe, Termin); steht ein Tag in zwei Listen, gilt das Wort, das auch die Seite zeigt. Die Tage vor
+`VERFUEGBAR_AB` sind ein einziger Eintrag «nicht buchbar, wieder ab …» ab dem 1. Januar des Vorjahres; belegte
+Tage darin fallen weg. Feiertage und die festen Sperrtage der Seite (`SPERR` in `kalender.html`) stehen nicht im
+Abo, darum nennt es die Seite als massgeblich. Die Einträge sind «transparent»: Sie zeigen Erics Zeit und
+blockieren nicht die Verfügbarkeit des Abonnenten. `.gitattributes` schützt die Zeilenenden der Datei.
+Tests: `python3 -m unittest discover -s scripts`.
 
 ## Rayon-Rechner (`rayon.html`, `rayon.js`)
 

@@ -9,10 +9,11 @@ The admin toolkit writes kalender.js and verfuegbarkeit.js; this script turns th
 file that Outlook, Apple Calendar or Google Calendar can subscribe to. It runs as a pre-commit hook whenever one
 of these files changes, so the feed never lags behind the calendar page.
 
-The feed lists busy days only, with the same words as the calendar page. Weekdays without an entry are free.
-Not in the feed: public holidays (every calendar shows its own) and the fixed yearly blocks of kalender.html.
-Days before VERFUEGBAR_AB become one event "nicht buchbar" that starts with the first entry of the calendar;
-entries that lie completely inside it are left out, so a subscriber does not see the same days twice.
+The feed lists busy days only, with the same words as the calendar page; a day listed twice gets the word that
+wins on the page. Not in the feed: public holidays (every calendar shows its own) and the fixed yearly blocks of
+kalender.html, so the feed description points to the page as the reference. Days before VERFUEGBAR_AB become one
+event "nicht buchbar" from 1 January of the year before; busy days inside it are left out, so a subscriber does
+not see the same days twice. Events are transparent: they show Eric's time, not the subscriber's.
 
 The output depends on the input only (no clock), so the hook can tell whether the committed feed is current.
 
@@ -26,6 +27,7 @@ import re
 import sys
 from pathlib import Path
 
+ONE_DAY = dt.timedelta(days=1)
 ROOT = Path(__file__).resolve().parent.parent
 CALENDAR_JS = ROOT / "kalender.js"
 AVAILABILITY_JS = ROOT / "verfuegbarkeit.js"
@@ -35,7 +37,7 @@ PAGE_URL = "https://naville-handwerk.ch/kalender.html"
 UID_DOMAIN = "naville-handwerk.ch"
 NAME = "Eric Naville"
 
-# Same order and words as stateFor() in kalender.html; the first kind wins on a day listed twice.
+# Same order and words as stateFor() in kalender.html; on a day listed twice the earlier kind wins.
 KINDS = [
     ("normal", "Einsatz"),
     ("extern", "Einsatz extern"),
@@ -61,7 +63,11 @@ def parse_calendar(text):
         found = re.search(r"\b%s\s*:\s*\[(.*?)\]" % kind, body, re.S)
         if not found:
             raise CalendarDataError("kalender.js: list '%s' missing" % kind)
-        ranges[kind] = [parse_range(entry) for entry in re.findall(r'"([^"]*)"', found.group(1))]
+        inner = found.group(1)
+        # Anything besides double-quoted strings and commas (single quotes, comments) would otherwise be skipped
+        if re.sub(r'"[^"]*"|[\s,]', "", inner):
+            raise CalendarDataError("kalender.js: list '%s' has something other than double-quoted dates" % kind)
+        ranges[kind] = [parse_range(entry) for entry in re.findall(r'"([^"]*)"', inner)]
     return ranges
 
 
@@ -91,23 +97,38 @@ def parse_available_from(text):
         raise CalendarDataError("verfuegbarkeit.js: '%s': %s" % (value, error)) from None
 
 
-def build_events(ranges, available_from):
-    """Return the feed's events as (first_day, last_day, title, uid_key), sorted by date."""
-    events = []
-    block = None
-    starts = [first for kind_ranges in ranges.values() for first, _ in kind_ranges]
-    if available_from and starts:
-        block_start = min(starts)
-        block_end = available_from - dt.timedelta(days=1)
-        if block_start <= block_end:
-            block = (block_start, block_end)
-            title = "nicht buchbar, wieder ab %d.%d.%d" % (available_from.day, available_from.month, available_from.year)
-            events.append((block_start, block_end, title, "gesperrt"))
-    for kind, title in KINDS:
+def busy_days(ranges):
+    """Return {day: kind}, every day of every range; on a day listed twice the earlier kind in KINDS wins."""
+    days = {}
+    for kind, _ in KINDS:
         for first, last in ranges[kind]:
-            if block and block[0] <= first and last <= block[1]:
-                continue
-            events.append((first, last, title, kind))
+            day = first
+            while day <= last:
+                days.setdefault(day, kind)
+                day += ONE_DAY
+    return days
+
+
+def build_events(ranges, available_from):
+    """Return the feed's events as (first_day, last_day, title, kind), sorted by date."""
+    events = []
+    days = busy_days(ranges)
+    if available_from:
+        title = "nicht buchbar, wieder ab %d.%d.%d" % (available_from.day, available_from.month, available_from.year)
+        events.append((dt.date(available_from.year - 1, 1, 1), available_from - ONE_DAY, title, "gesperrt"))
+        days = {day: kind for day, kind in days.items() if day >= available_from}
+    titles = dict(KINDS)
+    run = None  # [first_day, last_day, kind] of the stretch being collected
+    for day in sorted(days):
+        kind = days[day]
+        if run and run[2] == kind and run[1] + ONE_DAY == day:
+            run[1] = day
+            continue
+        if run:
+            events.append((run[0], run[1], titles[run[2]], run[2]))
+        run = [day, day, kind]
+    if run:
+        events.append((run[0], run[1], titles[run[2]], run[2]))
     events.sort(key=lambda event: (event[0], event[1], event[3]))
     return events
 
@@ -144,21 +165,22 @@ def render_feed(events):
         "X-WR-CALNAME:" + escape_text(NAME + " · belegt"),
         "X-WR-CALDESC:" + escape_text(
             "Belegte Tage von " + NAME + " (Naville Handwerk GmbH, Personalverleih). Werktage ohne Eintrag "
-            "sind frei. Anfragen: " + PAGE_URL),
+            "sind frei, Feiertage ausgenommen; massgeblich ist der Kalender auf der Website: " + PAGE_URL),
         "X-WR-TIMEZONE:Europe/Zurich",
         "REFRESH-INTERVAL;VALUE=DURATION:PT6H",
         "X-PUBLISHED-TTL:PT6H",
     ]
-    for first, last, title, uid_key in events:
+    for first, last, title, kind in events:
         lines += [
             "BEGIN:VEVENT",
-            "UID:%s-%s@%s" % (first.strftime("%Y%m%d"), uid_key, UID_DOMAIN),
+            # A changed stretch gets a new UID, so no client keeps the old end date under the same UID
+            "UID:%s-%s-%s@%s" % (first.strftime("%Y%m%d"), last.strftime("%Y%m%d"), kind, UID_DOMAIN),
             # DTSTAMP is required; tied to the event so the file stays the same for the same data
             "DTSTAMP:%sT000000Z" % first.strftime("%Y%m%d"),
             "DTSTART;VALUE=DATE:" + first.strftime("%Y%m%d"),
             "DTEND;VALUE=DATE:" + (last + dt.timedelta(days=1)).strftime("%Y%m%d"),
             "SUMMARY:" + escape_text(NAME + ": " + title),
-            "TRANSP:OPAQUE",
+            "TRANSP:TRANSPARENT",
             "URL:" + PAGE_URL,
             "END:VEVENT",
         ]

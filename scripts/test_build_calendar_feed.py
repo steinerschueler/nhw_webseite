@@ -5,6 +5,7 @@
 """Tests for build_calendar_feed.py. Run: python3 -m unittest discover -s scripts"""
 
 import datetime as dt
+import re
 import unittest
 
 import build_calendar_feed as feed
@@ -25,14 +26,23 @@ class BuildEventsTest(unittest.TestCase):
     def events(self, available_from):
         return feed.build_events(feed.parse_calendar(CALENDAR), available_from)
 
-    def test_days_before_available_from_become_one_block_from_the_first_entry(self):
+    def test_days_before_available_from_become_one_block_from_january_of_the_year_before(self):
         block = self.events(D(2027, 3, 1))[0]
-        self.assertEqual(block[:2], (D(2026, 9, 1), D(2027, 2, 28)))
+        self.assertEqual(block[:2], (D(2026, 1, 1), D(2027, 2, 28)))
         self.assertEqual(block[2], "nicht buchbar, wieder ab 1.3.2027")
 
-    def test_entries_inside_the_block_are_left_out_and_later_ones_keep_the_page_words(self):
+    def test_busy_days_inside_the_block_are_left_out_and_later_ones_keep_the_page_words(self):
         titles = [(event[0], event[2]) for event in self.events(D(2027, 3, 1))[1:]]
-        self.assertEqual(titles, [(D(2027, 2, 25), "Termin"), (D(2027, 3, 8), "Einsatz"), (D(2027, 4, 2), "Ferien")])
+        self.assertEqual(titles, [(D(2027, 3, 1), "Termin"), (D(2027, 3, 8), "Einsatz"), (D(2027, 4, 2), "Ferien")])
+
+    def test_a_day_in_two_lists_appears_once_with_the_word_the_page_shows(self):
+        calendar = CALENDAR.replace('ferien:       ["2027-04-02"]', 'ferien:       ["2027-03-08/2027-03-09"]')
+        events = feed.build_events(feed.parse_calendar(calendar), None)
+        self.assertEqual([event[2] for event in events if event[0] >= D(2027, 3, 8)], ["Einsatz"])
+
+    def test_without_entries_the_block_still_covers_the_days_before_available_from(self):
+        empty = re.sub(r'\[[^\]]*\]', '[]', CALENDAR)
+        self.assertEqual(feed.build_events(feed.parse_calendar(empty), D(2027, 3, 1))[0][:2], (D(2026, 1, 1), D(2027, 2, 28)))
 
     def test_without_available_from_every_entry_is_its_own_event(self):
         self.assertEqual(len(self.events(None)), 5)
@@ -40,6 +50,12 @@ class BuildEventsTest(unittest.TestCase):
     def test_a_single_day_ends_the_next_day_in_the_feed(self):
         text = feed.render_feed([(D(2027, 4, 2), D(2027, 4, 2), "Ferien", "ferien")])
         self.assertIn("DTSTART;VALUE=DATE:20270402\r\nDTEND;VALUE=DATE:20270403\r\n", text)
+
+    def test_a_longer_stretch_gets_a_new_uid(self):
+        short = feed.render_feed([(D(2027, 3, 8), D(2027, 3, 12), "Einsatz", "normal")])
+        longer = feed.render_feed([(D(2027, 3, 8), D(2027, 3, 19), "Einsatz", "normal")])
+        uid = lambda text: re.search(r"UID:(.*)", text).group(1)
+        self.assertNotEqual(uid(short), uid(longer))
 
     def test_same_data_gives_the_same_file(self):
         self.assertEqual(feed.render_feed(self.events(D(2027, 3, 1))), feed.render_feed(self.events(D(2027, 3, 1))))
@@ -60,6 +76,10 @@ class BadDataTest(unittest.TestCase):
     def test_missing_list_is_reported(self):
         with self.assertRaises(feed.CalendarDataError):
             feed.parse_calendar(CALENDAR.replace("termin:", "terminx:"))
+
+    def test_entry_in_single_quotes_is_reported_not_skipped(self):
+        with self.assertRaises(feed.CalendarDataError):
+            feed.parse_calendar(CALENDAR.replace('"2027-04-02"', "'2027-04-02'"))
 
     def test_invalid_date_is_reported(self):
         with self.assertRaises(feed.CalendarDataError):
