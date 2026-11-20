@@ -40,6 +40,9 @@ Reines HTML/CSS/JS, kein Server nötig.
   markiert die aktuelle Seite. Eine neue Seite kommt in den Block aller elf Seiten
   (`index`, `leistungen`, `preisrechner`, `rayon`, `vertragswerk`, `schema`, `schema_zeichnen`,
   `faq`, `dokumente`, `kalender`, `impressum`), sonst nirgends.
+- **Sprunglink:** Jede Seite beginnt mit «Zum Inhalt» (sichtbar erst, wenn er per Tastatur den Fokus
+  bekommt) und fasst alles zwischen Kopfzeile und Fusszeile in `<main id="inhalt">`. Bildschirmleser und
+  Tastatur springen so an der Navigation vorbei; eine neue Seite übernimmt beides. Regeln in `basis.css`.
 - `index.html` — Startseite. Ihr Kopf trägt strukturierte Daten (`application/ld+json`,
   schema.org `EmploymentAgency`). Sie ordnen die GmbH für Suchmaschinen und KI-Systeme als
   Personalverleih ein, weil Dritte sie wegen des Firmennamens und des Handelsregister-Zwecks
