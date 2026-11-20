@@ -48,6 +48,10 @@ Reines HTML/CSS/JS, kein Server nötig.
   Personalverleih ein, weil Dritte sie wegen des Firmennamens und des Handelsregister-Zwecks
   als Elektroinstallateur führen. Wer Kontakt, Beschreibung, Kurzbeschreibung (`description`,
   `og:`, `twitter:`) oder die LinkedIn-Adresse ändert, passt diesen Block im selben Zug an.
+- `contact_card.js` — Knopf «Kontakt speichern» im Kontaktteil der Startseite. Er baut die Kontaktdatei
+  (vCard) im Browser aus den strukturierten Daten im Kopf und dem Telefon-Link des Kontaktteils; wer dort
+  etwas ändert, ändert die Kontaktdatei mit. Die Telefonnummer steht so nur einmal im Repo: gitleaks
+  (Regel `telefon-ch`) lässt keine neue Kopie zu. Ohne JavaScript bleibt der Knopf verborgen.
 - `leistungen.html` — Was du von mir hast (✓/✗)
 - `preisrechner.html` — Stundenansatz-Rechner (Felder verlinkt/rückwärts rechenbar; erzeugt eine
   PDF-Vereinbarung, zuerst als Vorschau auf der Seite, dann Herunterladen; Schalter «PDF neutral»
