@@ -133,7 +133,7 @@ button{max-width:100%;white-space:normal}
 <strong>Extreme Preistransparenz.</strong> Jeder andere zeigt nur den Endpreis. Ich zeige dir die komplette Zusammenstellung der Rechnung, damit du siehst, wofür du zahlst und dass mein Ansatz fair kalkuliert ist. Du erkennst sofort: Der grösste Teil sind echte Kosten (Lohn, Sozialabgaben, Betriebskosten), meine Marge ist überschaubar.
 </div>
 <div class="introbox2">
-<strong>Alle Felder sind frei editierbar:</strong> Trag deine eigenen Werte ein; die hervorgehobenen Felder werden aus Kanton und Alter mit hinterlegten Richtwerten vorbefüllt. <strong>Der Rechner recherchiert nichts automatisch:</strong> GAV-Mindestlöhne, FAK-, BVG- und Feiertagswerte sind gespeicherte Richtwerte (Stand 2025/2026); massgebende Sätze bitte selber nachschauen, die Quellen sind unter "Quellen &amp; Referenzen" verlinkt. Auf Knopfdruck entsteht eine Vereinbarung als PDF zum Ausdrucken und Unterschreiben.
+<strong>Alle Felder sind frei editierbar:</strong> Trag deine eigenen Werte ein; die hervorgehobenen Felder werden aus Kanton und Alter mit hinterlegten Richtwerten vorbefüllt. <strong>Der Rechner recherchiert nichts automatisch:</strong> GAV-Mindestlöhne, FAK-, BVG- und Feiertagswerte sind gespeicherte Richtwerte (Stand 2025 bis 2027, je Wert angegeben); massgebende Sätze bitte selber nachschauen, die Quellen sind unter "Quellen &amp; Referenzen" verlinkt. Auf Knopfdruck entsteht eine Vereinbarung als PDF zum Ausdrucken und Unterschreiben.
 </div>
 
 </div>
@@ -170,7 +170,7 @@ button{max-width:100%;white-space:normal}
 <h2><span class="st">D</span><span class="st-p"> · </span>Arbeitgeberkosten GmbH</h2>
 <div class="row"><label>AHV/IV/EO (AG)<sup class="fn"><a href="#r8">8</a></sup><small>eidgenössisch</small></label><input id="ahv" type="number" step="0.01" value="5.30"><span class="unit">%</span></div>
 <div class="row"><label>ALV (AG)<sup class="fn"><a href="#r9">9</a></sup><small>eidgenössisch, bis CHF 148'200</small></label><input id="alv" type="number" step="0.01" value="1.10"><span class="unit">%</span></div>
-<div class="row"><label>FAK (Familienausgleichskasse)<sup class="fn"><a href="#r10">10</a></sup><small>kantonaler Richtwert (vorbefüllt), exakten Satz bei der Kasse nachschauen; auch ohne Kinder</small></label><input id="fak" class="auto" type="number" step="0.01" value="1.60"><span class="unit">%</span></div>
+<div class="row"><label>FAK (Familienausgleichskasse)<sup class="fn"><a href="#r10">10</a></sup><small>kantonaler Richtwert (vorbefüllt), exakten Satz bei der Kasse nachschauen; auch ohne Kinder</small></label><input id="fak" class="auto" type="number" step="0.005" value="1.50"><span class="unit">%</span></div>
 <div class="row"><label>UVG Berufsunfall (BU)<sup class="fn"><a href="#r11">11</a></sup><small>AG zahlt; NBU via SUVA (Lohnabzug AN)</small></label><input id="uvg" type="number" step="0.01" value="0.50"><span class="unit">%</span></div>
 <div class="row"><label>Verwaltungskosten<sup class="fn"><a href="#r12">12</a></sup><small>max. 5 % der AHV-Beiträge</small></label><input id="vwk" type="number" step="0.01" value="0.30"><span class="unit">%</span></div>
 <div class="row"><label>BVG / Pensionskasse (AG)<sup class="fn"><a href="#r13">13</a></sup><small>nur AG-Anteil (mind. die Hälfte); Richtwert nach Alter vorbefüllt, exakten Satz bei der Pensionskasse nachschauen</small></label><input id="bvg" class="auto" type="number" step="0.01" value="4.00"><span class="unit">%</span></div>
@@ -249,7 +249,7 @@ button{max-width:100%;white-space:normal}
 <p><b>Selbstkosten vs. Marge:</b> Selbstkosten = Bruttolohn (inkl. Temporär-Zuschläge) + Arbeitgeberkosten + anteilige Betriebskosten. Der <b>Deckungsbeitrag</b> ist der Aufschlag darauf, kein reiner Gewinn (davon gehen noch Gewinnsteuer, unternehmerisches Risiko und Reserven ab).</p>
 <p><b>MWST</b> kommt oben drauf und ist marge-neutral: Der Einsatzbetrieb zieht sie als Vorsteuer wieder ab.</p>
 <p><b>GAV-Bezug:</b> Für eine bewilligungsfreie Ein-Personen-GmbH (Art. 28 Abs. 2 AVV) gilt der GAV Personalverleih vermutlich nicht; bei Verleih in einen Betrieb mit AVE-Branchen-GAV greift Equal-Pay. Die Berufs-/GAV-Auswahl zeigt den Mindestlohn nur als Referenz.</p>
-<p class="muted">Alle hinterlegten Werte sind Richtwerte (Stand 2025/2026), nicht automatisch nachgeführt; kein Rechts- oder Steuerrat.</p>
+<p class="muted">Alle hinterlegten Werte sind Richtwerte (Stand 2025 bis 2027), nicht automatisch nachgeführt; kein Rechts- oder Steuerrat.</p>
 </div>
 
 <div class="side-box">
@@ -264,10 +264,10 @@ button{max-width:100%;white-space:normal}
 <li id="r7"><b>13. Monatslohn:</b> 1/12 = 8,33 %; GAV Personalverleih. <a href="https://gav-service.ch/gav/815001" target="_blank">gav-service.ch/gav/815001</a></li>
 <li id="r8"><b>AHV/IV/EO 5,30 % (AG):</b> AHVG/IVG/EOG, Total 10,60 % paritätisch. ahv-iv.ch 2.01. <a href="https://www.ahv-iv.ch/p/2.01.d" target="_blank">www.ahv-iv.ch/p/2.01.d</a></li>
 <li id="r9"><b>ALV 1,10 % (AG):</b> AVIG, Total 2,2 % je hälftig bis CHF 148'200/J. SECO, ahv-iv.ch 2.08. <a href="https://www.ahv-iv.ch/p/2.08.d" target="_blank">www.ahv-iv.ch/p/2.08.d</a></li>
-<li id="r10"><b>FAK (kantonal):</b> FamZG + kant. Recht; reiner Arbeitgeberbeitrag, auch ohne Kinder geschuldet. Satz je Kanton/Kasse unterschiedlich; Richtwerte. BSV, kant. Ausgleichskassen. <a href="https://www.ahv-iv.ch/p/6.08.d" target="_blank">www.ahv-iv.ch/p/6.08.d</a></li>
+<li id="r10"><b>FAK (kantonal):</b> FamZG + kant. Recht; reiner Arbeitgeberbeitrag, auch ohne Kinder geschuldet. Satz je Kanton/Kasse unterschiedlich; vorbefüllt ist der Satz der kantonalen Familienausgleichskasse nach BSV, Stand 2026 (Verbands- und Branchenkassen können abweichen). <a href="https://www.bsv.admin.ch/dam/de/sd-web/acU7RgJgeisY/Arten%20und%20Ans%C3%A4tze%20der%20Familienzulagen_2026.pdf" target="_blank">BSV, Familienzulagen 2026</a> · <a href="https://www.ahv-iv.ch/p/6.08.d" target="_blank">www.ahv-iv.ch/p/6.08.d</a></li>
 <li id="r11"><b>UVG Berufsunfall (AG):</b> UVG; Bau/Elektro/Personalverleih obligatorisch SUVA (Art. 66 UVG). NBU trägt AN (≥ 8 Std/Wo). suva.ch. <a href="https://www.ahv-iv.ch/p/6.05.d" target="_blank">www.ahv-iv.ch/p/6.05.d</a></li>
 <li id="r12"><b>Verwaltungskosten:</b> AHVG Art. 69, max. 5 % der AHV/IV/EO-Beiträge (≈ 0,1–0,5 % der Lohnsumme). <a href="https://www.ahv-iv.ch/p/2.01.d" target="_blank">www.ahv-iv.ch/p/2.01.d</a></li>
-<li id="r13"><b>BVG (altersabhängig):</b> Altersgutschrift Art. 16 BVG: 25–34 = 7 %, 35–44 = 10 %, 45–54 = 15 %, 55–65 = 18 % des koord. Lohns; AG mind. die Hälfte. Eintrittsschwelle CHF 22'680. BSV. <a href="https://www.bsv.admin.ch/de/altersvorsorge-beruflichen-vorsorge" target="_blank">www.bsv.admin.ch/de/altersvorsorge-beruflichen-vorsorge</a></li>
+<li id="r13"><b>BVG (altersabhängig):</b> Altersgutschrift Art. 16 BVG: 25–34 = 7 %, 35–44 = 10 %, 45–54 = 15 %, 55–65 = 18 % des koord. Lohns; AG mind. die Hälfte. Eintrittsschwelle CHF 23'040 ab 2027 (2026: 22'680). BSV. <a href="https://www.bsv.admin.ch/de/altersvorsorge-beruflichen-vorsorge" target="_blank">www.bsv.admin.ch/de/altersvorsorge-beruflichen-vorsorge</a></li>
 <li id="r14"><b>Werkzeug-Abschreibung:</b> Anschaffung verteilt auf Nutzungsdauer (ESTV-Abschreibungssätze). <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
 <li id="r15"><b>Werkzeug-Unterhalt:</b> Betriebsaufwand. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
 <li id="r16"><b>Transport/Fahrzeug:</b> Abschreibung &amp; Unterhalt. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
@@ -280,7 +280,7 @@ button{max-width:100%;white-space:normal}
 <li id="r23"><b>Endkundensatz:</b> branchenüblicher Stundenansatz, den der Einsatzbetrieb seinem Endkunden verrechnet, je nach Beruf und Region (Richtwert, keine gesetzliche Grösse). <i>(Marktwert, keine Rechtsgrundlage)</i></li>
 <li id="r24"><b>MWST 8,1 %:</b> MWSTG Art. 25; Pflicht ab CHF 100'000 (Art. 10); Saldosteuersatz 6,8 % (Art. 37). <a href="https://www.fedlex.admin.ch/eli/cc/2009/615/de#art_25" target="_blank">www.fedlex.admin.ch/eli/cc/2009/615/de#art_25</a></li>
 <li id="r25"><b>Zivilstand &amp; Kinder:</b> beeinflussen persönliche Einkommenssteuer/Kinderzulagen, nicht den Stundenansatz. FAK bleibt auch ohne Kinder geschuldet. <a href="https://www.ahv-iv.ch/p/6.08.d" target="_blank">www.ahv-iv.ch/p/6.08.d</a></li>
-<li id="r26"><b>Beruf-/GAV-Referenz:</b> Mindestlöhne aus offiziellen GAV (gav-service.ch, servizio-ccl.ch, swissstaffing); nur Referenz, nicht verbindlich übernommen. Equal-Pay: bei Verleih in einen Betrieb mit allgemeinverbindlichem Branchen-GAV gelten dessen Lohnbedingungen. Stand 2025/2026; bei region-/erfahrungsabhängigen Stufen sind mehrere Werte angegeben (übernommen wird der erste/höchste). <a href="https://www.gav-service.ch" target="_blank">www.gav-service.ch</a></li>
+<li id="r26"><b>Beruf-/GAV-Referenz:</b> Mindestlöhne aus offiziellen GAV (gav-service.ch, servizio-ccl.ch, swissstaffing); nur Referenz, nicht verbindlich übernommen. Equal-Pay: bei Verleih in einen Betrieb mit allgemeinverbindlichem Branchen-GAV gelten dessen Lohnbedingungen. Stand je Zeile (2025 bis 2027); bei region-/erfahrungsabhängigen Stufen sind mehrere Werte angegeben (übernommen wird der erste/höchste). <a href="https://www.gav-service.ch" target="_blank">www.gav-service.ch</a></li>
 <li id="r27"><b>Deckungsbeitrag (Aufschlag auf die Selbstkosten):</b> die Differenz zwischen deinem Ansatz und den Selbstkosten je Stunde. <i>Kein</i> reiner Gewinn: Davon gehen noch Gewinnsteuer, unternehmerisches Risiko (Leerzeiten, Krankheit) und Reserven ab. Nicht vergleichbar mit der Netto-Marge eines Temporärbüros.</li>
 <li id="r28"><b>Telefon, IT, Bank &amp; Marketing:</b> Geschäftsanteil Telefon, Software/Cloud, Bankspesen (KMU-Konto), Drucksachen/Werbung, GAV-Vollzugsbeitrag. <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
 <li id="r29"><b>Geschätzte Gewinnmarge:</b> Jahres-Deckungsbeitrag abzüglich des Lohns für bezahlte, aber nicht verrechenbare Stunden (Jahreslohn inkl. 13. ML und Arbeitgeberkosten minus der über die verrechenbaren Stunden gedeckten Lohnkosten) und abzüglich ~1 % Debitorenrisiko, geteilt durch den Jahresumsatz. Vor Gewinnsteuer, ohne Reserven: ein Schätzwert; der grösste Hebel ist die Auslastung (verrechenbare Stunden). <i>(betriebswirtschaftlicher Wert, keine Rechtsgrundlage)</i></li>
@@ -297,14 +297,14 @@ var GAVDATA=[
 {b:"Personalverleih (Auffang-GAV)",e:"Ungelernt",w:"21.22 (Normal) / 22.39 (Hoch) / 18.92 (TI) CHF/h",g:"GAV Personalverleih 2024–2027",ave:true,y:2026,r:"Hochlohngebiet = Agglo Bern, Arc lémanique, BS, BL, ZH, GE",src:"https://gav-service.ch/gav/815001"},
 {b:"Personalverleih (Auffang-GAV)",e:"Angelernt (mit Berufserfahrung)",w:"22.76 / 24.30 / 21.15 CHF/h (Normal/Hoch/TI)",g:"GAV Personalverleih 2024–2027",ave:true,y:2026,r:"Normal/Hoch/Tessin",src:"https://gav-service.ch/gav/815001"},
 {b:"Personalverleih (Auffang-GAV)",e:"Gelernt (EFZ)",w:"25.86 / 27.62 / 24.03 CHF/h (Normal/Hoch/TI)",g:"GAV Personalverleih 2024–2027",ave:true,y:2026,r:"Normal/Hoch/Tessin",src:"https://gav-service.ch/gav/815001"},
-{b:"Elektro & Telekom (EIT.swiss)",e:"Elektroinstallateur EFZ",w:"CHF 4'500/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2026,r:"CH (exkl. GE/VS Mindestlohn)",src:"https://gav-service.ch/gav/300001"},
-{b:"Elektro & Telekom (EIT.swiss)",e:"Elektroinstallateur EFZ + 1 J. Erfahrung",w:"CHF 5'000/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2026,r:"CH",src:"https://gav-service.ch/gav/300001"},
-{b:"Elektro & Telekom (EIT.swiss)",e:"Montage-Elektriker EFZ",w:"CHF 4'300/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2026,r:"CH",src:"https://gav-service.ch/gav/300001"},
-{b:"Elektro & Telekom (EIT.swiss)",e:"Montage-Elektriker EFZ + 1 J.",w:"CHF 4'700/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2026,r:"CH",src:"https://gav-service.ch/gav/300001"},
-{b:"Elektro & Telekom (EIT.swiss)",e:"Gebäudeinformatiker/Telematiker EFZ",w:"CHF 4'770/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2026,r:"CH",src:"https://gav-service.ch/gav/300001"},
-{b:"Elektro & Telekom (EIT.swiss)",e:"Ohne Berufsausbildung",w:"CHF 4'200/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2026,r:"CH",src:"https://gav-service.ch/gav/300001"},
-{b:"Elektro & Telekom (EIT.swiss)",e:"Ohne Ausbildung, nach 2 J. Erfahrung",w:"CHF 4'500/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2026,r:"CH",src:"https://gav-service.ch/gav/300001"},
-{b:"Elektro & Telekom (EIT.swiss)",e:"Teamleiter (Zertifikat EIT)",w:"CHF 5'600/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2026,r:"CH",src:"https://gav-service.ch/gav/300001"},
+{b:"Elektro & Telekom (EIT.swiss)",e:"Elektroinstallateur EFZ",w:"CHF 4'600/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2027,r:"CH (exkl. GE/VS Mindestlohn)",src:"https://gav-service.ch/gav/300001"},
+{b:"Elektro & Telekom (EIT.swiss)",e:"Elektroinstallateur EFZ + 1 J. Erfahrung",w:"CHF 5'100/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2027,r:"CH",src:"https://gav-service.ch/gav/300001"},
+{b:"Elektro & Telekom (EIT.swiss)",e:"Montage-Elektriker EFZ",w:"CHF 4'400/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2027,r:"CH",src:"https://gav-service.ch/gav/300001"},
+{b:"Elektro & Telekom (EIT.swiss)",e:"Montage-Elektriker EFZ + 1 J.",w:"CHF 4'800/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2027,r:"CH",src:"https://gav-service.ch/gav/300001"},
+{b:"Elektro & Telekom (EIT.swiss)",e:"Gebäudeinformatiker/Telematiker EFZ",w:"CHF 4'870/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2027,r:"CH",src:"https://gav-service.ch/gav/300001"},
+{b:"Elektro & Telekom (EIT.swiss)",e:"Ohne Berufsausbildung",w:"CHF 4'300/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2027,r:"CH",src:"https://gav-service.ch/gav/300001"},
+{b:"Elektro & Telekom (EIT.swiss)",e:"Ohne Ausbildung, nach 2 J. Erfahrung",w:"CHF 4'600/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2027,r:"CH",src:"https://gav-service.ch/gav/300001"},
+{b:"Elektro & Telekom (EIT.swiss)",e:"Teamleiter (Zertifikat EIT)",w:"CHF 5'700/Mt",g:"GAV Elektrobranche 2026–2029",ave:true,y:2027,r:"CH",src:"https://gav-service.ch/gav/300001"},
 {b:"Gebäudetechnik (suissetec)",e:"Installateur EFZ (ab Lehrabschluss)",w:"CHF 4'600/Mt (26.54/h)",g:"GAV Gebäudetechnik 2025–2028",ave:true,y:2026,r:"Sanitär/Heizung/Spengler/Lüftung; exkl. GE/VD/VS",src:"https://service-cct.ch/gav/305001"},
 {b:"Gebäudetechnik (suissetec)",e:"Installateur EFZ ab 3. Jahr",w:"CHF 5'100/Mt",g:"GAV Gebäudetechnik 2025–2028",ave:true,y:2026,r:"CH (exkl. GE/VD/VS)",src:"https://service-cct.ch/gav/305001"},
 {b:"Gebäudetechnik (suissetec)",e:"Installateur EFZ ab 5. Jahr",w:"CHF 5'300/Mt",g:"GAV Gebäudetechnik 2025–2028",ave:true,y:2026,r:"CH",src:"https://service-cct.ch/gav/305001"},
@@ -384,7 +384,7 @@ var GAVDATA=[
 {b:"Ohne verbindlichen GAV-Mindestlohn",e:"Landwirtschaft",w:"kein GAV; kant. NAV / Richtlohn ~3'450/Mt",g:"NAV / Richtlohn",ave:false,y:2025,r:"",src:"https://agrimpuls.ch"},
 {b:"Ohne verbindlichen GAV-Mindestlohn",e:"Bestattung / Floristik",w:"kein Branchen-GAV; marktbasiert",g:"–",ave:false,y:2026,r:"",src:"https://gav-service.ch"}
 ];
-var KANTONE={ZH:["Zürich",1.20],BE:["Bern",1.60],LU:["Luzern",1.60],UR:["Uri",1.70],SZ:["Schwyz",1.60],OW:["Obwalden",1.60],NW:["Nidwalden",1.50],GL:["Glarus",1.90],ZG:["Zug",1.60],FR:["Freiburg",2.50],SO:["Solothurn",1.70],BS:["Basel-Stadt",1.50],BL:["Basel-Landschaft",1.50],SH:["Schaffhausen",1.50],AR:["Appenzell A.Rh.",1.60],AI:["Appenzell I.Rh.",1.60],SG:["St. Gallen",1.60],GR:["Graubünden",1.70],AG:["Aargau",1.70],TG:["Thurgau",1.50],TI:["Tessin",1.90],VD:["Waadt",2.45],VS:["Wallis",3.00],NE:["Neuenburg",2.60],GE:["Genf",2.45],JU:["Jura",3.00]};
+var KANTONE={ZH:["Zürich",1.025],BE:["Bern",1.50],LU:["Luzern",1.35],UR:["Uri",1.70],SZ:["Schwyz",1.30],OW:["Obwalden",1.40],NW:["Nidwalden",1.50],GL:["Glarus",1.40],ZG:["Zug",1.35],FR:["Freiburg",2.27],SO:["Solothurn",1.25],BS:["Basel-Stadt",1.65],BL:["Basel-Landschaft",1.30],SH:["Schaffhausen",1.30],AR:["Appenzell A.Rh.",1.60],AI:["Appenzell I.Rh.",1.60],SG:["St. Gallen",1.80],GR:["Graubünden",1.50],AG:["Aargau",1.45],TG:["Thurgau",1.40],TI:["Tessin",1.60],VD:["Waadt",2.37],VS:["Wallis",2.50],NE:["Neuenburg",1.80],GE:["Genf",2.22],JU:["Jura",2.75]};
 var selK=document.getElementById('kanton');
 for(var k in KANTONE){var o=document.createElement('option');o.value=k;o.textContent=KANTONE[k][0]+" ("+k+")";if(k==='BE')o.selected=true;selK.appendChild(o);}
 var selB=document.getElementById('branche'),selBer=document.getElementById('beruf'),branchen=[];
@@ -401,7 +401,7 @@ function v(id){return parseFloat(document.getElementById(id).value)||0;}
 function val(id){return document.getElementById(id).value;}
 function chf(x){return x.toLocaleString('de-CH',{minimumFractionDigits:2,maximumFractionDigits:2})+' CHF';}
 function chf0(x){return Math.round(x).toLocaleString('de-CH')+' CHF';}
-function applyCanton(){var k=val('kanton');if(KANTONE[k])document.getElementById('fak').value=KANTONE[k][1].toFixed(2);}
+function applyCanton(){var k=val('kanton');if(KANTONE[k])var r=KANTONE[k][1];document.getElementById('fak').value=r.toFixed(Math.round(r*1000)%10?3:2);}
 function applyAge(){var a=v('alter');document.getElementById('ferien').value=(a<20||a>=50)?"10.60":"8.33";var bvg=4.0;if(a<25)bvg=1.5;else if(a<35)bvg=4.0;else if(a<45)bvg=6.0;else if(a<55)bvg=8.0;else bvg=9.5;document.getElementById('bvg').value=bvg.toFixed(2);}
 var priceDriver='ansatz';
 var LAST={};
