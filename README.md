@@ -168,7 +168,9 @@ sie im selben Zug an, ebenso die Content-Security-Policy der Seite (`connect-src
 Esri-Konto (Element «Rayon-Rechner Webseite», Typ API-Schlüssel, öffentliche Anwendung) auf
 die Referrer `https://naville-handwerk.ch` und `https://www.naville-handwerk.ch` beschränkt
 und auf die zwei Berechtigungen «Einfaches Routing» und «Einzugsgebiet» unter
-Positionsservices, und er läuft nach höchstens einem Jahr ab. Esri prüft den Referrer
+Positionsservices, und er läuft nach höchstens einem Jahr ab. **Der jetzige Schlüssel läuft am 24.1.2027 ab**
+(Stand Esri-Dashboard 21.11.2026); danach misst der Rayon-Rechner keine Fahrzeit mehr, darum vorher erneuern.
+Neues Ablaufdatum nach jedem Erneuern hier eintragen. Esri prüft den Referrer
 serverseitig: Aufrufe ohne oder mit fremdem Referrer erhalten «Invalid Token». Das Konto hat kein Zahlungsmittel; wird das
 Freikontingent (Routen und Service areas je Monat) überschritten, sperrt Esri bis zum
 Monatsanfang, es entstehen keine Kosten. Erneuern oder ersetzen: im Esri-Dashboard einen neuen
